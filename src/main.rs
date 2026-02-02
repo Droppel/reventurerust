@@ -1204,7 +1204,7 @@ impl ReventureGraph {
                     let reachable = self.regions[menu_idx].get_reachable_regions_ignore(self, Some(region_idx));
                     if reachable.len() + 1 == original_region_count {
                         let region_name = self.regions[region_idx].name.clone();
-                        original_region_count -= 1;
+                        original_region_count -= 1; // we removed one region, so of course next time we expect one less
                         self.remove_region(region_idx);
                         changed.push_str(&format!("Removed {} as it is redundant\n", region_name));
                     }
