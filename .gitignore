@@ -5,3 +5,4 @@ out/
 target/
 output.reg
 graphs/
+location_apstates.txt
