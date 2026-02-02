@@ -5,7 +5,8 @@ fn create_plant_uml(graph: &ReventureGraph) -> String {
     plant_uml.push_str("@startuml\n");
     plant_uml.push_str("hide circle\n");
 
-    for  region in graph.regions.iter() {
+    for  (_, &region_idx) in graph.region_map.iter() {
+        let region = &graph.regions[region_idx];
         plant_uml.push_str(&format!("class \"{}\"\n", region.name));
         for connection in &region.connections {
             plant_uml.push_str(&format!(

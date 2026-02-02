@@ -1,4 +1,4 @@
-use crate::BaseRegion;
+use crate::{BaseRegion, locations::regions::DESERT};
 
 /// Location region indices
 /// These represent the 100 ending locations in Reventure
@@ -118,83 +118,85 @@ pub mod events {
 pub mod regions {
     pub const MENU: usize = 102;
     pub const LONKS_HOUSE: usize = 103;
-    pub const SWORD_CHEST: usize = 104;
-    pub const ELDER: usize = 105;
-    pub const CHICKEN: usize = 106;
-    pub const SHOVEL: usize = 107;
-    pub const CASTLE_FIRST_FLOOR: usize = 108;
-    pub const CASTLE_SHIELD_CHEST: usize = 109;
-    pub const CASTLE_MAP_CHEST: usize = 110;
-    pub const CASTLE_ROOF: usize = 111;
-    pub const CHIMNEY: usize = 112;
-    pub const PRINCESS_ROOM: usize = 113;
-    pub const VOLCANO_TOP_EXIT: usize = 114;
-    pub const LAVA_TRINKET: usize = 115;
-    pub const VOLCANO_DROP_STONE: usize = 116;
-    pub const VOLCANO_BRIDGE: usize = 117;
-    pub const BELOW_VOLCANO_BRIDGE: usize = 118;
-    pub const SEWER: usize = 119;
-    pub const MUSIC_CLUB: usize = 120;
-    pub const LEFT_OF_DRAGON: usize = 121;
-    pub const RIGHT_OF_DRAGON: usize = 122;
-    pub const GOLD_ROOM: usize = 123;
-    pub const SEWER_PIPE: usize = 124;
-    pub const VOLCANO_GEYSER: usize = 125;
-    pub const ULTIMATE_DOOR: usize = 126;
-    pub const CASTLE_MINIONS: usize = 127;
-    pub const CLOUD: usize = 128;
-    pub const BELOW_CASTLE_BRIDGE: usize = 129;
-    pub const SECRET_PATH_MOAT_WELL: usize = 130;
-    pub const CASTLE_MOAT: usize = 131;
-    pub const BARN: usize = 132;
-    pub const BARN_SECOND_FLOOR: usize = 133;
-    pub const BEHIND_SHOP_BUSH: usize = 134;
-    pub const SHOP: usize = 135;
-    pub const SHOP_ROOF: usize = 136;
-    pub const SHOP_LAKE: usize = 137;
-    pub const OCEAN: usize = 138;
-    pub const NUKE_STORAGE: usize = 139;
-    pub const SHOP_CELLAR: usize = 140;
-    pub const PARASITE: usize = 141;
-    pub const HOOK_AREA: usize = 142;
-    pub const ABOVE_HOOK: usize = 143;
-    pub const ABOVE_ABOVE_HOOK: usize = 144;
-    pub const CASTLE_CANNON_TO_SHOP: usize = 145;
-    pub const ALTAR: usize = 146;
-    pub const BOMB: usize = 147;
-    pub const FISHING_BRIDGE: usize = 148;
-    pub const BELOW_FISHING_BRIDGE: usize = 149;
-    pub const FISHING_ROD: usize = 150;
-    pub const MOUNTAIN_LEFT_OUTCROP: usize = 151;
-    pub const MOUNTAIN_TOP: usize = 152;
-    pub const STRAWBERRY: usize = 153;
-    pub const MOUNTAIN_TREASURE: usize = 154;
-    pub const LEVERS: usize = 155;
-    pub const GREAT_WATERFALL: usize = 156;
-    pub const GREAT_WATERFALL_BOTTOM: usize = 157;
-    pub const FORTRESS_MOAT: usize = 158;
-    pub const FAIRY_FOUNTAIN: usize = 159;
-    pub const FORTRESS_BRIDGE_BUTTON: usize = 160;
-    pub const SECRET_ABOVE_BOMB: usize = 161;
-    pub const WATER_FALLS: usize = 162;
-    pub const ABOVE_WATERFALLS: usize = 163;
-    pub const WHISTLE: usize = 164;
-    pub const WHISTLE_ALTAR: usize = 165;
-    pub const BELOW_LEAP_OF_FAITH: usize = 166;
-    pub const ELEVATOR: usize = 167;
-    pub const FORTRESS_ROOF: usize = 168;
-    pub const ANVIL: usize = 169;
-    pub const PRINCESS: usize = 170;
-    pub const SPIKE_TRAP: usize = 171;
-    pub const FIRE_ESCAPE: usize = 172;
-    pub const FORTRESS_TREASURE: usize = 173;
-    pub const RIGHT_OF_FORTRESS: usize = 174;
-    pub const DARKSTONE: usize = 175;
-    pub const DESERT: usize = 176;
+    pub const LONKS_BACKGARDEN: usize = 104;
+    pub const LONKS_FRONTGARDEN: usize = 105;
+    pub const SWORD_CHEST: usize = 106;
+    pub const ELDER: usize = 107;
+    pub const CHICKEN: usize = 108;
+    pub const SHOVEL: usize = 109;
+    pub const CASTLE_FIRST_FLOOR: usize = 110;
+    pub const CASTLE_SHIELD_CHEST: usize = 111;
+    pub const CASTLE_MAP_CHEST: usize = 112;
+    pub const CASTLE_ROOF: usize = 113;
+    pub const CHIMNEY: usize = 114;
+    pub const PRINCESS_ROOM: usize = 115;
+    pub const VOLCANO_TOP_EXIT: usize = 116;
+    pub const LAVA_TRINKET: usize = 117;
+    pub const VOLCANO_DROP_STONE: usize = 118;
+    pub const VOLCANO_BRIDGE: usize = 119;
+    pub const BELOW_VOLCANO_BRIDGE: usize = 120;
+    pub const SEWER: usize = 121;
+    pub const MUSIC_CLUB: usize = 122;
+    pub const LEFT_OF_DRAGON: usize = 123;
+    pub const RIGHT_OF_DRAGON: usize = 124;
+    pub const GOLD_ROOM: usize = 125;
+    pub const SEWER_PIPE: usize = 126;
+    pub const VOLCANO_GEYSER: usize = 127;
+    pub const ULTIMATE_DOOR: usize = 128;
+    pub const CASTLE_MINIONS: usize = 129;
+    pub const CLOUD: usize = 130;
+    pub const BELOW_CASTLE_BRIDGE: usize = 131;
+    pub const SECRET_PATH_MOAT_WELL: usize = 132;
+    pub const CASTLE_MOAT: usize = 133;
+    pub const BARN: usize = 134;
+    pub const BARN_SECOND_FLOOR: usize = 135;
+    pub const BEHIND_SHOP_BUSH: usize = 136;
+    pub const SHOP: usize = 137;
+    pub const SHOP_ROOF: usize = 138;
+    pub const SHOP_LAKE: usize = 139;
+    pub const OCEAN: usize = 140;
+    pub const NUKE_STORAGE: usize = 141;
+    pub const SHOP_CELLAR: usize = 142;
+    pub const PARASITE: usize = 143;
+    pub const HOOK_AREA: usize = 144;
+    pub const ABOVE_HOOK: usize = 145;
+    pub const ABOVE_ABOVE_HOOK: usize = 146;
+    pub const CASTLE_CANNON_TO_SHOP: usize = 147;
+    pub const ALTAR: usize = 148;
+    pub const BOMB: usize = 149;
+    pub const FISHING_BRIDGE: usize = 150;
+    pub const BELOW_FISHING_BRIDGE: usize = 151;
+    pub const FISHING_ROD: usize = 152;
+    pub const MOUNTAIN_LEFT_OUTCROP: usize = 153;
+    pub const MOUNTAIN_TOP: usize = 154;
+    pub const STRAWBERRY: usize = 155;
+    pub const MOUNTAIN_TREASURE: usize = 156;
+    pub const LEVERS: usize = 157;
+    pub const GREAT_WATERFALL: usize = 158;
+    pub const GREAT_WATERFALL_BOTTOM: usize = 159;
+    pub const FORTRESS_MOAT: usize = 160;
+    pub const FAIRY_FOUNTAIN: usize = 161;
+    pub const FORTRESS_BRIDGE_BUTTON: usize = 162;
+    pub const SECRET_ABOVE_BOMB: usize = 163;
+    pub const WATER_FALLS: usize = 164;
+    pub const ABOVE_WATERFALLS: usize = 165;
+    pub const WHISTLE: usize = 166;
+    pub const WHISTLE_ALTAR: usize = 167;
+    pub const BELOW_LEAP_OF_FAITH: usize = 168;
+    pub const ELEVATOR: usize = 169;
+    pub const FORTRESS_ROOF: usize = 170;
+    pub const ANVIL: usize = 171;
+    pub const PRINCESS: usize = 172;
+    pub const SPIKE_TRAP: usize = 173;
+    pub const FIRE_ESCAPE: usize = 174;
+    pub const FORTRESS_TREASURE: usize = 175;
+    pub const RIGHT_OF_FORTRESS: usize = 176;
+    pub const DARKSTONE: usize = 177;
+    pub const DESERT: usize = 178;
 }
 
 /// Total number of base regions (locations + events + game regions)
-pub const TOTAL_BASE_REGIONS: usize = 177;
+pub const TOTAL_BASE_REGIONS: usize = DESERT + 1;
 
 /// Creates all base regions with their names
 pub fn create_all_base_regions() -> Vec<BaseRegion> {
@@ -312,6 +314,8 @@ pub fn create_all_base_regions() -> Vec<BaseRegion> {
     // Game regions
     base_regions.push(BaseRegion::new("Menu"));
     base_regions.push(BaseRegion::new("LonksHouse"));
+    base_regions.push(BaseRegion::new("LonksBackGarden"));
+    base_regions.push(BaseRegion::new("LonksFrontGarden"));
     base_regions.push(BaseRegion::new("SwordChest"));
     base_regions.push(BaseRegion::new("Elder"));
     base_regions.push(BaseRegion::new("Chicken"));
@@ -393,6 +397,8 @@ pub fn create_all_base_regions() -> Vec<BaseRegion> {
 pub fn get_all_game_regions() -> Vec<usize> {
     vec![
         regions::LONKS_HOUSE,
+        regions::LONKS_BACKGARDEN,
+        regions::LONKS_FRONTGARDEN,
         regions::ELDER,
         regions::CHICKEN,
         regions::SHOVEL,

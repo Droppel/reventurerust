@@ -1,6 +1,6 @@
 use std::{collections::{HashMap, HashSet}};
 
-use crate::{locations::regions::{LONKS_HOUSE, MENU}, plantuml::save_region_graph};
+use crate::{locations::regions::{MENU}};
 
 mod plantuml;
 
@@ -134,6 +134,7 @@ impl ReventureState {
         state.insert("has_whistle".to_string(), StateValue::Bool(false));
         state.insert("has_darkstone".to_string(), StateValue::Bool(false));
         state.insert("has_burger".to_string(), StateValue::Bool(false));
+        state.insert("has_shotgun".to_string(), StateValue::Bool(false));
         // state.insert("sacrificecount".to_string(), StateValue::Int(0));
         
         // Events
@@ -436,9 +437,8 @@ impl ReventureGraph {
     }
 
     fn count(&self) -> usize {
-        self.regions.len()
+        self.region_map.len()
     }
-
 
     fn add_connection(&mut self, parent_region_idx: usize, new_connection: Connection) {
         // Avoid self-connections and duplicate connections
@@ -802,18 +802,24 @@ impl ReventureGraph {
     }
 
     fn simplify(&mut self, level: i32) -> String {
-
-        match level {
-            0 => self.simplify_simpleregions(),
-            1 => self.simplify_deadendloops(),
-            2 => self.simplify_merge(),
-            3 => self.simplify_dupeconnections(),
-            4 => self.simplify_subrootnodes(),
-            5 => self.simplify_tryremoveregion(),
-            6 => self.simplify_tryremoveconnections(),
-            7 => self.simplify_4(),
-            _ => String::new(),
+        if level == 0 {
+            let mut changed = self.simplify_simpleregions();
+            changed.push_str(&self.simplify_deadendloops());
+            return changed;
+        } else if level == 1 {
+            return self.simplify_merge();
+        } else if level == 2 {
+            return self.simplify_dupeconnections();
+        } else if level == 3 {
+            return self.simplify_subrootnodes();
+        } else if level == 4 {
+            return self.simplify_tryremoveregion();
+        } else if level == 5 {
+            return self.simplify_tryremoveconnections();
+        } else if level == 6 {
+            return self.simplify_4();
         }
+        String::new()
     }
 
     fn simplify_simpleregions(&mut self) -> String {
@@ -910,11 +916,9 @@ impl ReventureGraph {
             
             self.remove_region(region_idx);
         }
-        self.reindex();
 
         if !simple_remove.is_empty() || !oneways.is_empty() {
             changed.push_str(&format!("Removed {} simple regions and {} oneways\n", simple_remove.len(), oneways.len()));
-            self.reindex();
         }
         changed
     }
@@ -924,11 +928,10 @@ impl ReventureGraph {
 
         // Merge regions with free bidirectional movement
         let mut merge_count = 0;
-        let region_indices: Vec<usize> = (0..self.regions.len()).collect();
         
-        for &region_idx in &region_indices {
-            if self.regions[region_idx].name == "Menu" {
-                continue;
+        for region_idx in 0..self.regions.len() {
+            if !self.region_map.contains_key(&self.regions[region_idx].name) {
+                continue; // Already removed
             }
 
             let parent_indices = self.regions[region_idx].parents.clone();
@@ -995,7 +998,6 @@ impl ReventureGraph {
 
         if merge_count > 0 {
             changed.push_str(&format!("Merged {} regions\n", merge_count));
-            self.reindex();
         }
 
         changed
@@ -1050,7 +1052,6 @@ impl ReventureGraph {
 
         if complexloop_count > 0 {
             changed.push_str(&format!("Removed {} complex loop regions\n", complexloop_count));
-            self.reindex();
         }
 
         changed
@@ -1178,9 +1179,8 @@ impl ReventureGraph {
 
         // Remove redundant regions
         let mut original_region_count = self.count();
-        let region_indices: Vec<usize> = (0..self.regions.len()).collect();
 
-        for &region_idx in &region_indices {
+        for region_idx in 0..self.regions.len() {
             if !self.region_map.contains_key(&self.regions[region_idx].name) {
                 continue;
             }
@@ -1206,9 +1206,6 @@ impl ReventureGraph {
                 }
             }
         }
-        if !changed.is_empty() {
-            self.reindex();
-        }
 
         changed
     }
@@ -1218,9 +1215,8 @@ impl ReventureGraph {
 
         // Remove unnecessary connections
         let original_region_count = self.count();
-        let region_indices: Vec<usize> = (0..self.regions.len()).collect();
 
-        for &region_idx in &region_indices {
+        for region_idx in 0..self.regions.len() {
             if !self.region_map.contains_key(&self.regions[region_idx].name) {
                 continue;
             }
@@ -1263,9 +1259,7 @@ impl ReventureGraph {
     fn simplify_4(&mut self) -> String {
         let mut changed = String::new();
 
-        let region_indices: Vec<usize> = (0..self.regions.len()).collect();
-
-        for &region_idx in &region_indices {
+        for region_idx in 0..self.regions.len() {
             if !self.region_map.contains_key(&self.regions[region_idx].name) {
                 continue;
             }
@@ -1310,50 +1304,15 @@ impl ReventureGraph {
                 }
             }
         }
-        if !changed.is_empty() {
-            self.reindex();
-        }
-
         changed
-    }
-
-    fn reindex(&mut self) {
-        let mut new_regions: Vec<Region> = Vec::new();
-        let mut new_region_map: HashMap<String, usize> = HashMap::new();
-        let mut index_map: HashMap<usize, usize> = HashMap::new();
-
-        for region_idx in 0..self.regions.len() {
-            if !self.region_map.contains_key(&self.regions[region_idx].name) {
-                continue;
-            }
-            let new_idx = new_regions.len();
-            index_map.insert(region_idx, new_idx);
-            new_region_map.insert(self.regions[region_idx].name.clone(), new_idx);
-            new_regions.push(self.regions[region_idx].clone());
-        }
-
-        // Update connections and parents to new indices
-        for region in &mut new_regions {
-            for conn in &mut region.connections {
-                if let Some(&new_idx) = index_map.get(&conn.goal_region_idx) {
-                    conn.goal_region_idx = new_idx;
-                }
-            }
-            region.parents = region.parents.iter()
-                .filter_map(|&p| index_map.get(&p).copied())
-                .collect();
-        }
-
-        self.regions = new_regions;
-        self.region_map = new_region_map;
     }
 }
 
-fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>) {
+fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_region: usize) {
     // Build the Reventure graph
     println!("Building Reventure graph...");
 
-    let mut graph = ReventureGraph::new(LONKS_HOUSE);
+    let mut graph = ReventureGraph::new(start_region);
     graph.item_locations = item_locs.clone();
     let empty_state = ReventureState::new();
     let mut todo_regions: Vec<usize> = Vec::new();
@@ -1501,37 +1460,59 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>) {
     // std::fs::create_dir("graphs".to_string()).expect("Creation error");
     // plantuml::save_plant_uml(&graph, &format!("graphs/ChangeHistory{}-Level{}", -2, 0));
 
-    // Remove duplicate solutions
-    graph.remove_duplicate_solutions();
-    println!("Duplicate solutions removed!");
-    // plantuml::save_plant_uml(&graph, &format!("graphs/ChangeHistory{}-Level{}", -1, 0));
-
-    println!("Simplifying Graph");
-
-    graph.reindex();
-    graph.detect_errors("before simplification");
-    let mut changes = 0;
-    let mut level = 0;
-    while level < 7 {
-        println!("Step {}, Simplification Level {}, Graph Size {}", changes, level, graph.count());
-        let change = graph.simplify(level);
-        if change.is_empty() {
-            level += 1;
-        } else {
-            // graph.detect_errors(format!("Step {}, Simplification Level {}", changes, level).as_str());
-            // plantuml::save_plant_uml(&graph, &format!("graphs/ChangeHistory{}-Level{}", changes, level));
-            changes += 1;
-            level = 0;
+    let mut output = String::new();
+    for region in graph.regions.iter() {
+        if !region.location {
+            continue;
         }
-    }
-    
-    println!("Final graph has {} regions!", graph.count());
-    let plantuml_filepath = "reventure_graph_rust.plantuml";
-    println!("Saving PlantUML graph to {}...", plantuml_filepath);
-    plantuml::save_plant_uml(&graph, plantuml_filepath);
-    println!("PlantUML graph saved!");
+        let loc_name = &base_regions[region.base_region_idx].name;
+        let apstate = region.apstate.clone();
 
-    save_region_graph(&graph, "output.reg");
+        output.push_str(&format!("{}:", loc_name));
+        for state in apstate.potapitems.iter() {
+            let items = Vec::from_iter(state.apitems.iter().map(|x| x.as_str())).join("&");
+            output.push_str(&format!("{}|", items));
+        }
+        // remove trailing |
+        if output.ends_with("|") {
+            output.pop();
+        }
+        output.push_str("\n");
+    }
+
+    // Write to file
+    std::fs::write("location_apstates.txt", output).expect("Unable to write file");
+
+    // // Remove duplicate solutions
+    // graph.remove_duplicate_solutions();
+    // println!("Duplicate solutions removed!");
+    // // plantuml::save_plant_uml(&graph, &format!("graphs/ChangeHistory{}-Level{}", -1, 0));
+
+    // println!("Simplifying Graph");
+
+    // graph.detect_errors("before simplification");
+    // let mut changes = 0;
+    // let mut level = 0;
+    // while level < 7 {
+    //     println!("Step {}, Simplification Level {}, Graph Size {}", changes, level, graph.count());
+    //     let change = graph.simplify(level);
+    //     if change.is_empty() {
+    //         level += 1;
+    //     } else {
+    //         // graph.detect_errors(format!("Step {}, Simplification Level {}", changes, level).as_str());
+    //         // plantuml::save_plant_uml(&graph, &format!("graphs/ChangeHistory{}-Level{}", changes, level));
+    //         changes += 1;
+    //         level = 0;
+    //     }
+    // }
+    
+    // println!("Final graph has {} regions!", graph.count());
+    // let plantuml_filepath = "reventure_graph_rust.plantuml";
+    // println!("Saving PlantUML graph to {}...", plantuml_filepath);
+    // plantuml::save_plant_uml(&graph, plantuml_filepath);
+    // println!("PlantUML graph saved!");
+
+    // save_region_graph(&graph, "output.reg");
 }
 
 
@@ -1551,5 +1532,89 @@ fn main() {
     println!();
 
     // Build the Reventure graph
-    build_graph(&item_locs, &base_regions);
+    build_graph(&item_locs, &base_regions, start_region);
+    // build_simple_graph(&item_locs, &base_regions, start_region);
+}
+
+fn build_simple_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_region: usize) {
+
+    // Build the Reventure graph
+    println!("Building Reventure graph...");
+
+    let mut graph = ReventureGraph::new(start_region);
+    graph.item_locations = item_locs.clone();
+    let empty_state = ReventureState::new();
+    let mut todo_regions: Vec<usize> = Vec::new();
+    let mut menuregion = Region::new(MENU, empty_state.clone(), false, &base_regions);
+    menuregion.apstate.potapitems.push(APItems::new());
+
+    let menu_idx = graph.add_region(menuregion);
+    todo_regions.push(menu_idx);
+
+    while todo_regions.len() > 0 {
+        let region_idx = todo_regions.pop().unwrap();
+        let region = graph.regions[region_idx].clone();
+        let base_region = &base_regions[region.base_region_idx];
+        for jump_connection in &base_region.jumpconnections {
+            // Process jump connections
+            let name = get_region_name(&vec![jump_connection.base.goal_region], &region.state, &base_regions);
+            let mut new_region_idx = graph.get_region(&name);
+            if new_region_idx.is_none() {
+                let new_region = Region::new(
+                    jump_connection.base.goal_region,
+                    region.state.clone(),
+                    false,
+                    &base_regions,
+                );
+                new_region_idx = Some(graph.add_region(new_region));
+                todo_regions.push(new_region_idx.unwrap());
+            }
+            let new_connection = Connection::new(
+                new_region_idx.unwrap(),
+                jump_connection.base.apitems.clone(),
+            );
+            graph.add_connection(region_idx, new_connection);
+        }
+
+        for base_connection in &base_region.connections {
+            let name = get_region_name(&vec![base_connection.goal_region], &region.state, &base_regions);
+            let mut new_region_idx = graph.get_region(&name);
+            if new_region_idx.is_none() {
+                let new_region = Region::new(
+                    base_connection.goal_region,
+                    region.state.clone(),
+                    false,
+                    &base_regions,
+                );
+                new_region_idx = Some(graph.add_region(new_region));
+                todo_regions.push(new_region_idx.unwrap());
+            }
+            let new_connection = Connection::new(
+                new_region_idx.unwrap(),
+                base_connection.apitems.clone(),
+            );
+            graph.add_connection(region_idx, new_connection);
+        }
+
+        // for location in &base_region.locations {
+        //     let name = get_region_name(&vec![location.goal_region], &empty_state.clone(), &base_regions);
+        //     let mut new_region_idx = graph.get_region(&name);
+        //     if new_region_idx.is_none() {
+        //         let new_region = Region::new(
+        //             location.goal_region,
+        //             empty_state.clone(),
+        //             true,
+        //             &base_regions,
+        //         );
+        //         new_region_idx = Some(graph.add_region(new_region));
+        //         // No reason to add location regions to todo list
+        //     }
+        //     let new_connection = Connection::new(
+        //         new_region_idx.unwrap(),
+        //         location.apitems.clone(),
+        //     );
+        //     graph.add_connection(region_idx, new_connection);
+        // }
+    }
+    plantuml::save_plant_uml(&graph, &format!("simple_graph.plantuml"));
 }
