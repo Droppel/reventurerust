@@ -761,26 +761,6 @@ fn build_simple_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>) {
             );
             graph.add_connection(region_idx, new_connection);
         }
-
-        // for location in &base_region.locations {
-        //     let name = get_region_name(&vec![location.goal_region], &empty_state.clone(), &base_regions);
-        //     let mut new_region_idx = graph.get_region(&name);
-        //     if new_region_idx.is_none() {
-        //         let new_region = Region::new(
-        //             location.goal_region,
-        //             empty_state.clone(),
-        //             true,
-        //             &base_regions,
-        //         );
-        //         new_region_idx = Some(graph.add_region(new_region));
-        //         // No reason to add location regions to todo list
-        //     }
-        //     let new_connection = Connection::new(
-        //         new_region_idx.unwrap(),
-        //         location.apitems.clone(),
-        //     );
-        //     graph.add_connection(region_idx, new_connection);
-        // }
     }
     plantuml::save_plant_uml(&graph, &format!("simple_graph.plantuml"));
 }
