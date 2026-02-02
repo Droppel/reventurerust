@@ -242,6 +242,10 @@ impl JumpConnection {
         let weight = state.get_weight();
         ((self.jump_req + weight - START_JUMP) * 2.0) as i32
     }
+
+    fn can_use(&self, state: &ReventureState) -> bool {
+        (self.base.rule)(state)
+    }
 }
 
 // StateChange
@@ -495,6 +499,9 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
             // Process jump connections
             let req_jump_increases = jump_connection.get_jumpitems_req(&region.state);
             if req_jump_increases > TOTAL_JUMP_INCREASE {
+                continue;
+            }
+            if !jump_connection.can_use(&region.state) {
                 continue;
             }
             let name = get_region_name(&vec![jump_connection.base.goal_region], &region.state, &base_regions);
