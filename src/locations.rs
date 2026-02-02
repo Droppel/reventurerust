@@ -1,4 +1,4 @@
-use crate::{BaseRegion, locations::regions::DESERT};
+use crate::{BaseRegion};
 
 /// Location region indices
 /// These represent the 100 ending locations in Reventure
@@ -193,10 +193,11 @@ pub mod regions {
     pub const RIGHT_OF_FORTRESS: usize = 176;
     pub const DARKSTONE: usize = 177;
     pub const DESERT: usize = 178;
+    pub const ALBERTO: usize = 179;
 }
 
 /// Total number of base regions (locations + events + game regions)
-pub const TOTAL_BASE_REGIONS: usize = DESERT + 1;
+pub const TOTAL_BASE_REGIONS: usize = regions::ALBERTO + 1;
 
 /// Creates all base regions with their names
 pub fn create_all_base_regions() -> Vec<BaseRegion> {
@@ -389,6 +390,7 @@ pub fn create_all_base_regions() -> Vec<BaseRegion> {
     base_regions.push(BaseRegion::new("RightOfFortress"));
     base_regions.push(BaseRegion::new("Darkstone"));
     base_regions.push(BaseRegion::new("Desert"));
+    base_regions.push(BaseRegion::new("Alberto"));
     
     base_regions
 }
@@ -464,7 +466,7 @@ pub fn get_all_game_regions() -> Vec<usize> {
     ]
 }
 
-/// Get the default item placement locations (from Python: item_locations)
+/// Get the default item placement locations
 pub fn get_default_item_locations() -> Vec<usize> {
     vec![
         regions::SWORD_CHEST,       // Sword Chest

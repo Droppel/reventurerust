@@ -804,6 +804,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     base_regions[ABOVE_WATERFALLS].add_connection(BaseConnection::new(FORTRESS_MOAT, rules::always, vec![]));
 
     // FortressMoat connections
+    base_regions[FORTRESS_MOAT].add_connection(BaseConnection::new(ALBERTO, rules::hook, vec![]));
     base_regions[FORTRESS_MOAT].add_connection(BaseConnection::new(WATER_FALLS, rules::always, vec![]));
     base_regions[FORTRESS_MOAT].add_jumpconnection(JumpConnection::new(ABOVE_WATERFALLS, rules::always, vec![], 2.0));
     base_regions[FORTRESS_MOAT].add_connection(BaseConnection::new(FAIRY_FOUNTAIN, rules::always, vec![]));
@@ -841,6 +842,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     base_regions[WHISTLE].add_connection(BaseConnection::new(WHISTLE_ALTAR, rules::always, vec![]));
 
     // WhistleAltar connections
+    base_regions[WHISTLE_ALTAR].add_jumpconnection(JumpConnection::new(ALBERTO, rules::always, vec![], 2.0));
     base_regions[WHISTLE_ALTAR].add_jumpconnection(JumpConnection::new(GREAT_WATERFALL, rules::always, vec![], 2.0));
     base_regions[WHISTLE_ALTAR].add_connection(BaseConnection::new(GREAT_WATERFALL_BOTTOM, rules::always, vec![]));
     base_regions[WHISTLE_ALTAR].add_jumpconnection(JumpConnection::new(BELOW_LEAP_OF_FAITH, rules::always, vec![], 3.0));
@@ -856,7 +858,6 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     base_regions[WHISTLE_ALTAR].add_location(BaseConnection::new(LOC83, rules::whistle, vec![]));
     base_regions[WHISTLE_ALTAR].add_location(BaseConnection::new(LOC90, rules::anysword_princess, vec![]));
     base_regions[WHISTLE_ALTAR].add_location(BaseConnection::new(LOC93, rules::darkstone_princess, vec![]));
-    base_regions[WHISTLE_ALTAR].add_location(BaseConnection::new(EVENT_KILL_ALBERTO, rules::sword_fortress_bridge_up, vec![]));
 
     // BelowLeapOfFaith connections
     base_regions[BELOW_LEAP_OF_FAITH].add_connection(BaseConnection::new(LEVERS, rules::always, vec![]));
@@ -940,6 +941,11 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
 
     // Desert connections
     base_regions[DESERT].add_location(BaseConnection::new(LOC91, rules::always, vec![]));
+
+    // Alberto connections
+    base_regions[ALBERTO].add_connection(BaseConnection::new(FORTRESS_MOAT, rules::always, vec![]));
+    base_regions[ALBERTO].add_connection(BaseConnection::new(GREAT_WATERFALL_BOTTOM, rules::always, vec![]));
+    base_regions[ALBERTO].add_location(BaseConnection::new(EVENT_KILL_ALBERTO, rules::anysword, vec![]));
 
     println!("Region connections setup complete!");
 }
