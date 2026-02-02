@@ -1182,7 +1182,7 @@ impl ReventureGraph {
         let mut changed = String::new();
 
         // Remove redundant regions
-        let original_region_count = self.count();
+        let mut original_region_count = self.count();
         let region_indices: Vec<usize> = (0..self.regions.len()).collect();
 
         for &region_idx in &region_indices {
@@ -1204,6 +1204,7 @@ impl ReventureGraph {
                     let reachable = self.regions[menu_idx].get_reachable_regions_ignore(self, Some(region_idx));
                     if reachable.len() + 1 == original_region_count {
                         let region_name = self.regions[region_idx].name.clone();
+                        original_region_count -= 1;
                         self.remove_region(region_idx);
                         changed.push_str(&format!("Removed {} as it is redundant\n", region_name));
                     }
@@ -1544,6 +1545,9 @@ fn main() {
     println!("Duplicate solutions removed!");
 
     println!("Simplifying Graph");
+
+    // std::fs::remove_dir_all("graphs".to_string()).expect("Deletion error");
+    // std::fs::create_dir("graphs".to_string()).expect("Creation error");
 
     graph.reindex();
     graph.detect_errors("before simplification");

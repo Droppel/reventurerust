@@ -922,5 +922,4 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     base_regions[DESERT].add_location(BaseConnection::new(LOC91, rules::always, vec![]));
 
     println!("Region connections setup complete!");
-    println!("All uncommented regions from CustomRegions.py have been ported.");
 }
