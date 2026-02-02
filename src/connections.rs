@@ -607,10 +607,13 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     fn no_shotgun_mrhugs(state: &ReventureState) -> bool {
         no_shotgun(state) && rules::mrhugs(state)
     }
+    fn no_shotgun_hook(state: &ReventureState) -> bool {
+        no_shotgun(state) && rules::hook(state)
+    }
     base_regions[SHOP].add_connection(BaseConnection::new(SHOP_LAKE, no_shotgun, vec![]));
     base_regions[SHOP].add_jumpconnection(JumpConnection::new(SHOP_ROOF, rules::always, vec![], 2.0));
-    base_regions[SHOP].add_jumpconnection(JumpConnection::new(NUKE_STORAGE, rules::always, vec![], 4.0));
-    base_regions[SHOP].add_connection(BaseConnection::new(NUKE_STORAGE, rules::hook, vec![]));
+    base_regions[SHOP].add_jumpconnection(JumpConnection::new(NUKE_STORAGE, no_shotgun, vec![], 4.0));
+    base_regions[SHOP].add_connection(BaseConnection::new(NUKE_STORAGE, no_shotgun_hook, vec![]));
     base_regions[SHOP].add_connection(BaseConnection::new(SHOP_CELLAR, princess_no_shotgun, vec![]));
     base_regions[SHOP].add_statechange(StateChange::new(
         vec!["has_shotgun".to_string()],
