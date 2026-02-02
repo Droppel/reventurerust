@@ -1,4 +1,4 @@
-use std::{collections::{HashMap, HashSet}};
+use std::collections::{HashMap, HashSet, VecDeque};
 
 use crate::{locations::regions::{MENU}};
 
@@ -391,11 +391,11 @@ impl ReventureGraph {
 
     fn propagate_apstates(&mut self) {
         // Create a todo list with all regions
-        let mut parent_todo_regions: Vec<usize> = (0..self.regions.len()).collect();
+        let mut parent_todo_regions: VecDeque<usize> = (0..self.regions.len()).collect();
         let mut parent_todo_regions_set: HashSet<usize> = parent_todo_regions.iter().copied().collect();
         
         while !parent_todo_regions.is_empty() {
-            let region_idx = parent_todo_regions.remove(0);
+            let region_idx = parent_todo_regions.pop_front().unwrap();
             parent_todo_regions_set.remove(&region_idx);
             
             // Get connections for this region (need to clone to avoid borrow checker issues)
@@ -455,7 +455,7 @@ impl ReventureGraph {
                 
                 // Check if state changed - if length changed
                 if prev_state_len != self.regions[child_idx].apstate.potapitems.len() {
-                    parent_todo_regions.push(child_idx);
+                    parent_todo_regions.push_back(child_idx);
                     parent_todo_regions_set.insert(child_idx);
                     continue;
                 }
@@ -469,7 +469,7 @@ impl ReventureGraph {
                     });
                 
                 if change {
-                    parent_todo_regions.push(child_idx);
+                    parent_todo_regions.push_back(child_idx);
                     parent_todo_regions_set.insert(child_idx);
                 }
             }
