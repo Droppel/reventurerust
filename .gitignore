@@ -3,3 +3,5 @@ out/
 *.puml
 *.plantuml
 target/
+output.reg
+graphs/
