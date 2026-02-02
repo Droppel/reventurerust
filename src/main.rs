@@ -1540,14 +1540,16 @@ fn main() {
     graph.propagate_apstates();
     println!("AP states propagated!");
 
+    // std::fs::remove_dir_all("graphs".to_string()).expect("Deletion error");
+    // std::fs::create_dir("graphs".to_string()).expect("Creation error");
+    // plantuml::save_plant_uml(&graph, &format!("graphs/ChangeHistory{}-Level{}", -2, 0));
+
     // Remove duplicate solutions
     graph.remove_duplicate_solutions();
     println!("Duplicate solutions removed!");
+    // plantuml::save_plant_uml(&graph, &format!("graphs/ChangeHistory{}-Level{}", -1, 0));
 
     println!("Simplifying Graph");
-
-    // std::fs::remove_dir_all("graphs".to_string()).expect("Deletion error");
-    // std::fs::create_dir("graphs".to_string()).expect("Creation error");
 
     graph.reindex();
     graph.detect_errors("before simplification");
