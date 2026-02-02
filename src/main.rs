@@ -548,19 +548,12 @@ impl ReventureGraph {
     fn remove_duplicate_solutions(&mut self) {
         println!("Removing duplicate solutions");
         
-        for region_idx in 0..self.regions.len() {
-            let region_name = self.regions[region_idx].name.clone();
-            
-            // Skip Menu region
-            if region_name == "Menu" {
-                continue;
-            }
-            
+        for region_idx in 0..self.regions.len() {            
             // Only process location regions
             if !self.regions[region_idx].location {
                 continue;
             }
-            
+
             // Group parents by their apitems string (including connection requirements)
             let mut parent_diffed_by_apitems: HashMap<String, Vec<usize>> = HashMap::new();
             
@@ -834,10 +827,10 @@ impl ReventureGraph {
                 continue; // Already removed
             }
 
-            if self.regions[region_idx].name == "Menu" {
+            if self.regions[region_idx].location {
                 continue;
             }
-            if self.regions[region_idx].location {
+            if self.regions[region_idx].name == "Menu" {
                 continue;
             }
 
@@ -1016,10 +1009,10 @@ impl ReventureGraph {
             if !self.region_map.contains_key(&self.regions[region_idx].name) {
                 continue;
             }
-            if self.regions[region_idx].name == "Menu" {
+            if self.regions[region_idx].location {
                 continue;
             }
-            if self.regions[region_idx].location {
+            if self.regions[region_idx].name == "Menu" {
                 continue;
             }
 
@@ -1112,10 +1105,10 @@ impl ReventureGraph {
             if !self.region_map.contains_key(&self.regions[region_idx].name) {
                 continue;
             }
-            if self.regions[region_idx].name == "Menu" {
+            if self.regions[region_idx].location {
                 continue;
             }
-            if self.regions[region_idx].location {
+            if self.regions[region_idx].name == "Menu" {
                 continue;
             }
 
@@ -1189,10 +1182,10 @@ impl ReventureGraph {
             if !self.region_map.contains_key(&self.regions[region_idx].name) {
                 continue;
             }
-            if self.regions[region_idx].name == "Menu" {
+            if self.regions[region_idx].location {
                 continue;
             }
-            if self.regions[region_idx].location {
+            if self.regions[region_idx].name == "Menu" {
                 continue;
             }
 
