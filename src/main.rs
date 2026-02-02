@@ -914,6 +914,7 @@ impl ReventureGraph {
 
         if !simple_remove.is_empty() || !oneways.is_empty() {
             changed.push_str(&format!("Removed {} simple regions and {} oneways\n", simple_remove.len(), oneways.len()));
+            self.reindex();
         }
         changed
     }
@@ -991,10 +992,10 @@ impl ReventureGraph {
                 break;
             }
         }
-        self.reindex();
 
         if merge_count > 0 {
             changed.push_str(&format!("Merged {} regions\n", merge_count));
+            self.reindex();
         }
 
         changed
@@ -1049,6 +1050,7 @@ impl ReventureGraph {
 
         if complexloop_count > 0 {
             changed.push_str(&format!("Removed {} complex loop regions\n", complexloop_count));
+            self.reindex();
         }
 
         changed
@@ -1204,6 +1206,9 @@ impl ReventureGraph {
                 }
             }
         }
+        if !changed.is_empty() {
+            self.reindex();
+        }
 
         changed
     }
@@ -1304,6 +1309,9 @@ impl ReventureGraph {
                     break;
                 }
             }
+        }
+        if !changed.is_empty() {
+            self.reindex();
         }
 
         changed
@@ -1512,7 +1520,6 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>) {
         } else {
             // graph.detect_errors(format!("Step {}, Simplification Level {}", changes, level).as_str());
             // plantuml::save_plant_uml(&graph, &format!("graphs/ChangeHistory{}-Level{}", changes, level));
-            graph.reindex();
             changes += 1;
             level = 0;
         }
@@ -1528,47 +1535,17 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>) {
 }
 
 
-fn main() {
-    println!("Reventure Regions - Rust Port");
-    println!("=================================");
-    println!();
-    
+fn main() {    
     // Create all base regions
     let mut base_regions = locations::create_all_base_regions();
-    println!("Created {} base regions:", base_regions.len());
-    println!("  - {} location regions (endings)", 97);
-    println!("  - {} event regions", 5);
-    println!("  - {} game regions", 75);
-    println!();
-    
-    // Show some example locations
-    println!("Example locations:");
-    println!("  [{}] {}", locations::locations::LOC01, base_regions[locations::locations::LOC01].name);
-    println!("  [{}] {}", locations::locations::LOC50, base_regions[locations::locations::LOC50].name);
-    println!("  [{}] {}", locations::locations::LOC100, base_regions[locations::locations::LOC100].name);
-    println!();
-    
-    println!("Example game regions:");
-    println!("  [{}] {}", locations::regions::MENU, base_regions[locations::regions::MENU].name);
-    println!("  [{}] {}", locations::regions::LONKS_HOUSE, base_regions[locations::regions::LONKS_HOUSE].name);
-    println!("  [{}] {}", locations::regions::PRINCESS, base_regions[locations::regions::PRINCESS].name);
-    println!();
-    
-    println!("Default item placement locations:");
+
     let item_locs = locations::get_default_item_locations();
-    for (i, &idx) in item_locs.iter().enumerate() {
-        println!("  Item {} -> [{}] {}", i + 1, idx, base_regions[idx].name);
-    }
-    println!();
     
     // Set up item placements
-    println!("Setting up item placements...");
     connections::setup_item_placements(&mut base_regions, &item_locs);
-    println!("Item placements configured!");
     println!();
     
     // Set up region connections
-    println!("Setting up region connections...");
     let start_region = locations::regions::LONKS_HOUSE;
     connections::setup_region_connections(&mut base_regions, start_region);
     println!();

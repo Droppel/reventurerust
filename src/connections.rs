@@ -350,13 +350,13 @@ pub fn setup_item_placements(base_regions: &mut [BaseRegion], item_locations: &[
         vec!["Bomb".to_string()],
     ));
 
-    // Item 4: Shield
-    base_regions[item_locations[4]].add_statechange(StateChange::new(
-        vec!["has_shield".to_string()],
-        vec![true],
-        rules::can_pickup_shield,
-        vec!["Shield".to_string()],
-    ));
+    // // Item 4: Shield
+    // base_regions[item_locations[4]].add_statechange(StateChange::new(
+    //     vec!["has_shield".to_string()],
+    //     vec![true],
+    //     rules::can_pickup_shield,
+    //     vec!["Shield".to_string()],
+    // ));
 
     // // Item 5: Mister Hugs
     // base_regions[item_locations[5]].add_statechange(StateChange::new(
