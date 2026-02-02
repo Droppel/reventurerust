@@ -1341,51 +1341,7 @@ impl ReventureGraph {
     }
 }
 
-fn main() {
-    println!("Reventure Regions - Rust Port");
-    println!("=================================");
-    println!();
-    
-    // Create all base regions
-    let mut base_regions = locations::create_all_base_regions();
-    println!("Created {} base regions:", base_regions.len());
-    println!("  - {} location regions (endings)", 97);
-    println!("  - {} event regions", 5);
-    println!("  - {} game regions", 75);
-    println!();
-    
-    // Show some example locations
-    println!("Example locations:");
-    println!("  [{}] {}", locations::locations::LOC01, base_regions[locations::locations::LOC01].name);
-    println!("  [{}] {}", locations::locations::LOC50, base_regions[locations::locations::LOC50].name);
-    println!("  [{}] {}", locations::locations::LOC100, base_regions[locations::locations::LOC100].name);
-    println!();
-    
-    println!("Example game regions:");
-    println!("  [{}] {}", locations::regions::MENU, base_regions[locations::regions::MENU].name);
-    println!("  [{}] {}", locations::regions::LONKS_HOUSE, base_regions[locations::regions::LONKS_HOUSE].name);
-    println!("  [{}] {}", locations::regions::PRINCESS, base_regions[locations::regions::PRINCESS].name);
-    println!();
-    
-    println!("Default item placement locations:");
-    let item_locs = locations::get_default_item_locations();
-    for (i, &idx) in item_locs.iter().enumerate() {
-        println!("  Item {} -> [{}] {}", i + 1, idx, base_regions[idx].name);
-    }
-    println!();
-    
-    // Set up item placements
-    println!("Setting up item placements...");
-    connections::setup_item_placements(&mut base_regions, &item_locs);
-    println!("Item placements configured!");
-    println!();
-    
-    // Set up region connections
-    println!("Setting up region connections...");
-    let start_region = locations::regions::LONKS_HOUSE;
-    connections::setup_region_connections(&mut base_regions, start_region);
-    println!();
-        
+fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>) {
     // Build the Reventure graph
     println!("Building Reventure graph...");
 
@@ -1569,4 +1525,54 @@ fn main() {
     println!("PlantUML graph saved!");
 
     save_region_graph(&graph, "output.reg");
+}
+
+
+fn main() {
+    println!("Reventure Regions - Rust Port");
+    println!("=================================");
+    println!();
+    
+    // Create all base regions
+    let mut base_regions = locations::create_all_base_regions();
+    println!("Created {} base regions:", base_regions.len());
+    println!("  - {} location regions (endings)", 97);
+    println!("  - {} event regions", 5);
+    println!("  - {} game regions", 75);
+    println!();
+    
+    // Show some example locations
+    println!("Example locations:");
+    println!("  [{}] {}", locations::locations::LOC01, base_regions[locations::locations::LOC01].name);
+    println!("  [{}] {}", locations::locations::LOC50, base_regions[locations::locations::LOC50].name);
+    println!("  [{}] {}", locations::locations::LOC100, base_regions[locations::locations::LOC100].name);
+    println!();
+    
+    println!("Example game regions:");
+    println!("  [{}] {}", locations::regions::MENU, base_regions[locations::regions::MENU].name);
+    println!("  [{}] {}", locations::regions::LONKS_HOUSE, base_regions[locations::regions::LONKS_HOUSE].name);
+    println!("  [{}] {}", locations::regions::PRINCESS, base_regions[locations::regions::PRINCESS].name);
+    println!();
+    
+    println!("Default item placement locations:");
+    let item_locs = locations::get_default_item_locations();
+    for (i, &idx) in item_locs.iter().enumerate() {
+        println!("  Item {} -> [{}] {}", i + 1, idx, base_regions[idx].name);
+    }
+    println!();
+    
+    // Set up item placements
+    println!("Setting up item placements...");
+    connections::setup_item_placements(&mut base_regions, &item_locs);
+    println!("Item placements configured!");
+    println!();
+    
+    // Set up region connections
+    println!("Setting up region connections...");
+    let start_region = locations::regions::LONKS_HOUSE;
+    connections::setup_region_connections(&mut base_regions, start_region);
+    println!();
+
+    // Build the Reventure graph
+    build_graph(&item_locs, &base_regions);
 }
