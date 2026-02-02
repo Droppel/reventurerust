@@ -751,7 +751,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec!["has_darkstone".to_string()],
         vec![true],
         rules::can_pickup_darkstone,
-        vec!["Darkstone".to_string()],
+        vec!["Dark Stone".to_string()],
     ));
     base_regions[DARKSTONE].add_statechange(StateChange::new(
         vec!["has_burger".to_string()],
@@ -852,7 +852,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     base_regions[ELEVATOR].add_connection(BaseConnection::new(ANVIL, rules::always, vec!["Call Elevator Buttons".to_string()]));
     base_regions[ELEVATOR].add_jumpconnection(JumpConnection::new(RIGHT_OF_FORTRESS, rules::always, vec![], 4.0));
     base_regions[ELEVATOR].add_location(BaseConnection::new(LOC34, rules::always, vec!["Elevator Button".to_string()]));
-    base_regions[ELEVATOR].add_location(BaseConnection::new(LOC34, rules::always, vec!["Call Elevator Button".to_string()]));
+    base_regions[ELEVATOR].add_location(BaseConnection::new(LOC34, rules::always, vec!["Call Elevator Buttons".to_string()]));
     base_regions[ELEVATOR].add_location(BaseConnection::new(LOC34, rules::has_princess, vec![]));
     base_regions[ELEVATOR].add_location(BaseConnection::new(LOC50, rules::has_princess, vec![]));
     base_regions[ELEVATOR].add_location(BaseConnection::new(LOC66, rules::has_darkstone, vec![]));
