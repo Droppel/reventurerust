@@ -48,3 +48,22 @@ pub fn save_plant_uml(graph: &ReventureGraph, filepath: &str) {
     let plant_uml = create_plant_uml(graph);
     std::fs::write(filepath, plant_uml).expect("Unable to write file");
 }
+
+// Format: 
+//NEWREGION
+//<RegionName>|<IsLocation>
+//<GoalRegionName>|<item1>,<item2>,...
+pub fn save_region_graph(graph: &ReventureGraph, filepath: &str) {
+    let mut output = String::new();
+    for region in graph.regions.iter() {
+        output.push_str("NEWREGION\n");
+        output.push_str(&format!("{}|{}\n", region.name, region.location));
+        for connection in &region.connections {
+            let goal_region_name = &graph.regions[connection.goal_region_idx].name;
+            let items = Vec::from_iter(connection.apitems.apitems.iter().map(|x| x.as_str())).join(",");
+            output.push_str(&format!("{}|{}\n", goal_region_name, items));
+        }
+    }
+
+    std::fs::write(filepath, output).expect("Unable to write file");
+}

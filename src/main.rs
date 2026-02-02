@@ -1,6 +1,6 @@
 use std::{collections::{HashMap, HashSet}};
 
-use crate::locations::regions::{LONKS_HOUSE, MENU};
+use crate::{locations::regions::{LONKS_HOUSE, MENU}, plantuml::save_region_graph};
 
 mod plantuml;
 
@@ -565,6 +565,7 @@ impl ReventureGraph {
             let mut parent_diffed_by_apitems: HashMap<String, Vec<usize>> = HashMap::new();
             
             let parent_indices: Vec<usize> = self.regions[region_idx].parents.clone();
+            let mut mult_connections = false;
             
             for &parent_idx in &parent_indices {
                 let connections = self.regions[parent_idx].get_connections(region_idx);
@@ -572,6 +573,13 @@ impl ReventureGraph {
                     continue; // No connections found, skip
                 }
                 
+                if connections.len() > 1 {
+                    // I am working of of the assumption that there are only ever 0 or 1 connections here
+                    // If there are multiple connections, skip this region.
+                    mult_connections = true;
+                    break;
+                }
+
                 let connection = connections[0]; // No merging has happened yet, so at most one connection
                 
                 for potapitems in &self.regions[parent_idx].apstate.potapitems {
@@ -591,6 +599,10 @@ impl ReventureGraph {
                 }
             }
             
+            if mult_connections {
+                continue;
+            }
+
             // Find used apitem sets, whilst removing unnecessary ones
             let mut used_apstates: Vec<String> = Vec::new();
             
@@ -797,14 +809,16 @@ impl ReventureGraph {
     }
 
     fn simplify(&mut self, level: i32) -> String {
+
         match level {
             0 => self.simplify_simpleregions(),
-            1 => self.simplify_merge(),
-            2 => self.simplify_deadendloops(),
+            1 => self.simplify_deadendloops(),
+            2 => self.simplify_merge(),
             3 => self.simplify_dupeconnections(),
             4 => self.simplify_subrootnodes(),
-            5 => self.simplify_3(),
-            6 => self.simplify_4(),
+            5 => self.simplify_tryremoveregion(),
+            6 => self.simplify_tryremoveconnections(),
+            7 => self.simplify_4(),
             _ => String::new(),
         }
     }
@@ -1164,7 +1178,7 @@ impl ReventureGraph {
         changed
     }
 
-    fn simplify_3(&mut self) -> String {
+    fn simplify_tryremoveregion(&mut self) -> String {
         let mut changed = String::new();
 
         // Remove redundant regions
@@ -1196,6 +1210,12 @@ impl ReventureGraph {
                 }
             }
         }
+
+        changed
+    }
+
+    fn simplify_tryremoveconnections(&mut self) -> String {
+        let mut changed = String::new();
 
         // Remove unnecessary connections
         let original_region_count = self.count();
@@ -1530,14 +1550,14 @@ fn main() {
     let mut changes = 0;
     let mut level = 0;
     while level < 7 {
+        println!("Step {}, Simplification Level {}, Graph Size {}", changes, level, graph.count());
         let change = graph.simplify(level);
-        graph.reindex();
         if change.is_empty() {
             level += 1;
         } else {
-            // println!("Step {}, Simplification Level {}", changes, level);
             // graph.detect_errors(format!("Step {}, Simplification Level {}", changes, level).as_str());
             // plantuml::save_plant_uml(&graph, &format!("graphs/ChangeHistory{}-Level{}", changes, level));
+            graph.reindex();
             changes += 1;
             level = 0;
         }
@@ -1548,4 +1568,6 @@ fn main() {
     println!("Saving PlantUML graph to {}...", plantuml_filepath);
     plantuml::save_plant_uml(&graph, plantuml_filepath);
     println!("PlantUML graph saved!");
+
+    save_region_graph(&graph, "output.reg");
 }
