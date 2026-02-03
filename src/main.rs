@@ -747,7 +747,7 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
     output.push_str(base_regions[start_region].name.as_str());
     output.push_str("\n");
     for item_loc in item_locs.iter() {
-        output.push_str(&format!("{}|", base_regions[*item_loc].name));
+        output.push_str(&format!("{},", base_regions[*item_loc].name));
     }
     // remove trailing |
     output.pop();
@@ -760,7 +760,7 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
         let loc_name = &base_regions[region.base_region_idx].name;
         let apstate = region.apstate.clone();
 
-        output.push_str(&format!("{}:", loc_name));
+        output.push_str(&format!("{}=", loc_name));
         for apitems in apstate.potapitems.iter() {
             output.push_str(&format!("{}|", apitems.to_string()));
         }
