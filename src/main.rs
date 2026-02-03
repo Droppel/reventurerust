@@ -1,6 +1,7 @@
 use std::collections::{HashMap, HashSet, VecDeque};
+use serde::{Serialize, Deserialize};
 
-use crate::{locations::regions::{MENU}};
+use crate::locations::regions::{MENU};
 
 mod plantuml;
 
@@ -11,54 +12,137 @@ const TOTAL_JUMP_INCREASE: i32 = 0;
 const START_JUMP: f32 = 4.0;
 
 // APItems - stores a set of advancement progression items
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 struct APItems {
-    apitems: HashSet<String>,
+    apitems: u64,
 }
 
+const ITEMID_TO_ITEMNAME: [&str; 64] = [
+    "Nothing",
+    "Progressive Sword",
+    "Sword Pedestal",
+    "Shovel",
+    "Boomerang",
+    "Map",
+    "Compass",
+    "Whistle",
+    "Burger",
+    "Dark Stone",
+    "Hook",
+    "Fishing Rod",
+    "Lava Trinket",
+    "Mister Hugs",
+    "Bombs",
+    "Shield",
+    "Nuke",
+    "Princess",
+    "Anvil",
+    "Strawberry",
+    "Shop Cannon",
+    "Castle To Shop Cannon",
+    "Dark Fortress Cannon",
+    "Castle To Dark Fortress Cannon",
+    "Desert Geyser East",
+    "Desert Geyser West",
+    "Volcano Geyser",  
+    "Waterfall Geyser",
+    "Elevator Button",
+    "Call Elevator Buttons",
+    "Mirror Portal",
+    "Fairy Portal",
+    "Vine",
+    "Open Castle Floor",
+    "Faceplant Stone",
+    "Sewer Pipe",
+    "Dark Stone Lever Left",
+    "Dark Stone Lever Middle",
+    "Dark Stone Lever Right",
+    "Dragon",
+    "Shopkeeper",
+    "Mimic",
+    "King",
+    "Chicken",
+    "Elder",
+    "Boulder",
+    "Closet",
+    "Princess Statue",
+    "PC",
+    "Dolphins",
+    "Mimic Pet",
+    "Gem",
+    "Change Hero Name",
+    "Change Princess Name",
+    "Change Dark Lord Name",
+    "Jump Increase",
+    "Sword Chest",
+    "Filler",
+    "Filler",
+    "Event Kill Juan",
+    "Event Kill Miguel",
+    "Event Kill Javi",
+    "Event Kill Alberto",
+    "Event Kill Daniel",
+];
+
 impl APItems {
-    fn new() -> Self {
-        APItems {
-            apitems: HashSet::new(),
-        }
-    }
-
-    fn add_apitem(&mut self, item: String) -> bool {
-        self.apitems.insert(item)
-    }
-
-    fn add_apitems(&mut self, items: Vec<String>) -> Vec<String> {
-        let mut added = Vec::new();
+    fn new(items: Vec<u8>) -> Self {
+        let mut apitems = APItems::new_empty();
         for item in items {
-            if self.add_apitem(item.clone()) {
-                added.push(item);
-            }
+            apitems.add_apitem(item);
         }
+        apitems
+    }
+
+    fn new_empty() -> Self {
+        APItems {
+            apitems: 0,
+        }
+    }
+
+    fn contains(&self, item: u8) -> bool {
+        self.apitems & (1u64 << item) != 0
+    }
+
+    fn add_apitem(&mut self, item: u8) -> bool {
+        if self.contains(item) {
+            return false;
+        }
+        self.apitems |= 1u64 << item;
+        true
+    }
+
+    fn add_apitems(&mut self, items: APItems) -> u64 {
+        let added = items.apitems & !self.apitems;
+        self.apitems |= items.apitems;
         added
     }
 
-    fn remove_apitems(&mut self, items: &[String]) {
-        for item in items {
-            self.apitems.remove(item);
-        }
+    fn remove_apitems(&mut self, items: u64) {
+        self.apitems &= !items;
     }
 
     fn is_subset(&self, other: &APItems) -> bool {
-        self.apitems.is_subset(&other.apitems)
+        (self.apitems & other.apitems) == other.apitems
     }
 
     fn to_string(&self) -> String {
-        let mut items: Vec<&String> = self.apitems.iter().collect();
-        items.sort();
-        items.iter().map(|s| s.as_str()).collect::<Vec<_>>().join(", ")
+        let mut output = String::new();
+        for item in 0..64 {
+            if self.contains(item) {
+                output.push_str(ITEMID_TO_ITEMNAME[item as usize]);
+                output.push_str("&");
+            }
+        }
+        output.pop(); // remove trailing &
+        output
     }
 }
 
 // APState - manages potential AP item states
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 struct APState {
     potapitems: Vec<APItems>,
-    reducedstates: HashSet<String>,
+    reducedstates: HashSet<u64>,
 }
 
 impl APState {
@@ -70,7 +154,7 @@ impl APState {
     }
 
     fn is_rejected(&self, apitems: &APItems) -> bool {
-        self.reducedstates.contains(&apitems.to_string())
+        self.reducedstates.contains(&apitems.apitems)
     }
 
     fn reduce_all(&mut self) -> bool {
@@ -78,11 +162,11 @@ impl APState {
         let mut new_potapitems = Vec::new();
         
         // Sort by length
-        self.potapitems.sort_by_key(|x| x.apitems.len());
+        self.potapitems.sort_by_key(|x| x.apitems.count_ones());
         
         for potapitems in &self.potapitems {
-            if new_potapitems.iter().any(|used: &APItems| potapitems.apitems.is_superset(&used.apitems)) {
-                self.reducedstates.insert(potapitems.to_string());
+            if new_potapitems.iter().any(|used: &APItems| potapitems.is_subset(used)) {
+                self.reducedstates.insert(potapitems.apitems);
             } else {
                 new_potapitems.push(potapitems.clone());
             }
@@ -94,12 +178,12 @@ impl APState {
 }
 
 // ReventureState - stores game state
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 struct ReventureState {
     state: HashMap<String, StateValue>,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 enum StateValue {
     Bool(bool),
     // Int(i32), // Used for sacrificecount if needed
@@ -206,11 +290,11 @@ impl BaseRegion {
 pub struct BaseConnection {
     pub goal_region: usize, // index into region array
     rule: CollectionRule,
-    pub apitems: Vec<String>,
+    apitems: APItems,
 }
 
 impl BaseConnection {
-    fn new(goal_region: usize, rule: CollectionRule, apitems: Vec<String>) -> Self {
+    fn new(goal_region: usize, rule: CollectionRule, apitems: APItems) -> Self {
         BaseConnection {
             goal_region,
             rule,
@@ -231,7 +315,7 @@ pub struct JumpConnection {
 }
 
 impl JumpConnection {
-    fn new(goal_region: usize, rule: CollectionRule, apitems: Vec<String>, jump_req: f32) -> Self {
+    fn new(goal_region: usize, rule: CollectionRule, apitems: APItems, jump_req: f32) -> Self {
         JumpConnection {
             base: BaseConnection::new(goal_region, rule, apitems),
             jump_req,
@@ -252,13 +336,13 @@ impl JumpConnection {
 #[derive(Clone)]
 pub struct StateChange {
     rule: CollectionRule,
-    pub apitems: Vec<String>,
+    apitems: APItems,
     pub states: Vec<String>,
     pub values: Vec<bool>,
 }
 
 impl StateChange {
-    fn new(states: Vec<String>, values: Vec<bool>, rule: CollectionRule, apitems: Vec<String>) -> Self {
+    fn new(states: Vec<String>, values: Vec<bool>, rule: CollectionRule, apitems: APItems) -> Self {
         StateChange {
             rule,
             apitems,
@@ -273,15 +357,15 @@ impl StateChange {
 }
 
 // Connection - runtime connection between regions
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 struct Connection {
     goal_region_idx: usize,
     apitems: APItems,
 }
 
 impl Connection {
-    fn new(goal_region_idx: usize, apitems: Vec<String>) -> Self {
-        let mut ap = APItems::new();
+    fn new(goal_region_idx: usize, apitems: APItems) -> Self {
+        let mut ap = APItems::new_empty();
         ap.add_apitems(apitems);
         Connection {
             goal_region_idx,
@@ -291,7 +375,7 @@ impl Connection {
 }
 
 // Region - runtime region
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 struct Region {
     name: String,
     base_region_idx: usize,
@@ -317,6 +401,31 @@ impl Region {
             apstate: APState::new(),
         }
     }
+
+    #[allow(dead_code)]
+    fn get_reachable_regions(&self, graph: &ReventureGraph, apitems: APItems) -> HashSet<usize> {
+        let mut reachable_regions = HashSet::new();
+        let mut todo_regions: Vec<usize> = vec![graph.region_map[&self.name]];
+        
+        while let Some(current_idx) = todo_regions.pop() {
+            if reachable_regions.contains(&current_idx) {
+                continue;
+            }
+            reachable_regions.insert(current_idx);
+            
+            for conn in &graph.regions[current_idx].connections {
+                if !apitems.is_subset(&conn.apitems) {
+                    continue;
+                }
+                
+                if !reachable_regions.contains(&conn.goal_region_idx) {
+                    todo_regions.push(conn.goal_region_idx);
+                }
+            }
+        }
+        
+        reachable_regions
+    }
 }
 
 fn get_region_name(base_region_idxs: &[usize], state: &ReventureState, base_regions: &[BaseRegion]) -> String {
@@ -340,6 +449,7 @@ fn get_region_name(base_region_idxs: &[usize], state: &ReventureState, base_regi
 }
 
 // ReventureGraph
+#[derive(Serialize, Deserialize)]
 struct ReventureGraph {
     regions: Vec<Region>,
     region_map: HashMap<String, usize>,
@@ -379,7 +489,7 @@ impl ReventureGraph {
 
         let parent_region = &self.regions[parent_region_idx];
         for con in &parent_region.connections {
-            if con.goal_region_idx == new_connection.goal_region_idx && con.apitems.is_subset(&new_connection.apitems) {
+            if con.goal_region_idx == new_connection.goal_region_idx && new_connection.apitems.is_subset(&con.apitems) {
                 return;
             }
         }
@@ -403,27 +513,26 @@ impl ReventureGraph {
             let parent_potapitems = self.regions[region_idx].apstate.potapitems.clone();
             
             for connection in connections {
-                let child_idx = connection.goal_region_idx;
+                let child_idx: usize = connection.goal_region_idx;
                 
                 // Store previous state lengths for change detection
                 let prev_state_len = self.regions[child_idx].apstate.potapitems.len();
-                let prev_state_lengths: Vec<usize> = self.regions[child_idx].apstate.potapitems
+                let prev_state_lengths: Vec<u32> = self.regions[child_idx].apstate.potapitems
                     .iter()
-                    .map(|p| p.apitems.len())
+                    .map(|p| p.apitems.count_ones())
                     .collect();
                 
                 let mut added = false;
                 
-                if !connection.apitems.apitems.is_empty() {
+                if connection.apitems.apitems != 0 {
                     // Connection requires AP items
                     for potapitems in &parent_potapitems {
                         let mut new_potapitems = potapitems.clone();
-                        let apitems_vec: Vec<String> = connection.apitems.apitems.iter().cloned().collect();
-                        let added_items = new_potapitems.add_apitems(apitems_vec.clone());
+                        let added_items = new_potapitems.add_apitems(connection.apitems.clone());
                         
                         if self.regions[child_idx].apstate.is_rejected(&new_potapitems) {
                             // Remove the items we just added
-                            new_potapitems.remove_apitems(&added_items);
+                            new_potapitems.remove_apitems(added_items);
                             continue;
                         }
                         
@@ -465,7 +574,7 @@ impl ReventureGraph {
                     .iter()
                     .enumerate()
                     .any(|(i, potapitems)| {
-                        i < prev_state_lengths.len() && potapitems.apitems.len() != prev_state_lengths[i]
+                        i < prev_state_lengths.len() && potapitems.apitems.count_ones() != prev_state_lengths[i]
                     });
                 
                 if change {
@@ -477,7 +586,7 @@ impl ReventureGraph {
     }
 }
 
-fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_region: usize) {
+fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_region: usize) -> ReventureGraph{
     // Build the Reventure graph
     println!("Building Reventure graph...");
 
@@ -486,7 +595,7 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
     let empty_state = ReventureState::new();
     let mut todo_regions: Vec<usize> = Vec::new();
     let mut menuregion = Region::new(MENU, empty_state.clone(), false, &base_regions);
-    menuregion.apstate.potapitems.push(APItems::new());
+    menuregion.apstate.potapitems.push(APItems::new_empty());
 
     let menu_idx = graph.add_region(menuregion);
     todo_regions.push(menu_idx);
@@ -633,7 +742,8 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
     // plantuml::save_plant_uml(&graph, &format!("graphs/ChangeHistory{}-Level{}", -2, 0));
 
     let mut output = String::new();
-    output.push_str(&graph.regions[start_region].name);
+    output.push_str(start_region.to_string().as_str());
+    output.push_str("\n");
     for region in graph.regions.iter() {
         if !region.location {
             continue;
@@ -642,9 +752,9 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
         let apstate = region.apstate.clone();
 
         output.push_str(&format!("{}:", loc_name));
-        for state in apstate.potapitems.iter() {
-            let items = Vec::from_iter(state.apitems.iter().map(|x| x.as_str())).join("&");
-            output.push_str(&format!("{}|", items));
+        for apitems in apstate.potapitems.iter() {
+            println!("Location {} can be reached with AP items: {:?}", loc_name, apitems.apitems);
+            output.push_str(&format!("{}|", apitems.to_string()));
         }
         // remove trailing |
         if output.ends_with("|") {
@@ -656,36 +766,10 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
     // Write to file
     std::fs::write("location_apstates.txt", output).expect("Unable to write file");
 
-    // // Remove duplicate solutions
-    // graph.remove_duplicate_solutions();
-    // println!("Duplicate solutions removed!");
-    // // plantuml::save_plant_uml(&graph, &format!("graphs/ChangeHistory{}-Level{}", -1, 0));
+    let encoded = bincode::serialize(&graph).expect("Serialization failed");
+    std::fs::write("graph.bin", encoded).expect("Unable to write file");
 
-    // println!("Simplifying Graph");
-
-    // graph.detect_errors("before simplification");
-    // let mut changes = 0;
-    // let mut level = 0;
-    // while level < 7 {
-    //     println!("Step {}, Simplification Level {}, Graph Size {}", changes, level, graph.count());
-    //     let change = graph.simplify(level);
-    //     if change.is_empty() {
-    //         level += 1;
-    //     } else {
-    //         // graph.detect_errors(format!("Step {}, Simplification Level {}", changes, level).as_str());
-    //         // plantuml::save_plant_uml(&graph, &format!("graphs/ChangeHistory{}-Level{}", changes, level));
-    //         changes += 1;
-    //         level = 0;
-    //     }
-    // }
-    
-    // println!("Final graph has {} regions!", graph.count());
-    // let plantuml_filepath = "reventure_graph_rust.plantuml";
-    // println!("Saving PlantUML graph to {}...", plantuml_filepath);
-    // plantuml::save_plant_uml(&graph, plantuml_filepath);
-    // println!("PlantUML graph saved!");
-
-    // save_region_graph(&graph, "output.reg");
+    graph
 }
 
 
@@ -705,8 +789,10 @@ fn main() {
     println!();
 
     // Build the Reventure graph
-    build_graph(&item_locs, &base_regions, start_region);
+    let graph = build_graph(&item_locs, &base_regions, start_region);
     // build_simple_graph(&item_locs, &base_regions, start_region);
+
+    plantuml::save_plant_uml(&graph, "test.plantuml");
 }
 
 #[allow(dead_code)]
@@ -719,7 +805,7 @@ fn build_simple_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>) {
     let empty_state = ReventureState::new();
     let mut todo_regions: Vec<usize> = Vec::new();
     let mut menuregion = Region::new(MENU, empty_state.clone(), false, &base_regions);
-    menuregion.apstate.potapitems.push(APItems::new());
+    menuregion.apstate.potapitems.push(APItems::new_empty());
 
     let menu_idx = graph.add_region(menuregion);
     todo_regions.push(menu_idx);

@@ -1,4 +1,2 @@
 Add castle cannon
-Check GREAT_WATERFALL to WHISTLE connection if possible with 1 jump
 Great waterfall lever
-Alberto own region
