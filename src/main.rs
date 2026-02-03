@@ -686,7 +686,8 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
             for (i, state) in statechange.states.iter().enumerate() {
                 new_state.state.insert(state.clone(), StateValue::Bool(statechange.values[i]));
             }
-            if !region.state.event_bool("has_sword") && new_state.event_bool("has_sword") {  // This state can do the Harakiri ending
+            if !(region.state.event_bool("has_sword") || region.state.event_bool("has_swordelder"))
+             && (new_state.event_bool("has_sword") || new_state.event_bool("has_swordelder")) {  // This state can do the Harakiri ending
                 let harakiri_region_name = get_region_name(&vec![locations::locations::LOC47], &empty_state.clone(), &base_regions);
                 let mut harakiri_region_idx = graph.get_region(&harakiri_region_name);
                 if harakiri_region_idx.is_none() {
@@ -766,8 +767,8 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
     // Write to file
     std::fs::write("location_apstates.txt", output).expect("Unable to write file");
 
-    let encoded = bincode::serialize(&graph).expect("Serialization failed");
-    std::fs::write("graph.bin", encoded).expect("Unable to write file");
+    // let encoded = bincode::serialize(&graph).expect("Serialization failed");
+    // std::fs::write("graph.bin", encoded).expect("Unable to write file");
 
     graph
 }
