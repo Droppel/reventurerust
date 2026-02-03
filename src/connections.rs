@@ -75,8 +75,8 @@ pub mod rules {
         state.event_bool("castleBridgeDown")
     }
 
-    pub fn castle_bridge_up(state: &ReventureState) -> bool {
-        !state.event_bool("castleBridgeDown")
+    pub fn no_princess_castle_bridge_up(state: &ReventureState) -> bool {
+        no_princess(state) && !state.event_bool("castleBridgeDown")
     }
 
     pub fn fortress_bridge_down(state: &ReventureState) -> bool {
@@ -545,14 +545,14 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     base_regions[ULTIMATE_DOOR].add_location(BaseConnection::new(LOC100, rules::always, APItems::new_empty()));
 
     // CastleMinions connections
-    base_regions[CASTLE_MINIONS].add_connection(BaseConnection::new(CASTLE_FIRST_FLOOR, rules::castle_bridge_down, APItems::new_empty()));
     base_regions[CASTLE_MINIONS].add_statechange(StateChange::new(
         vec!["castleBridgeDown".to_string()],
         vec![true],
         rules::princess,
         APItems::new_empty(),
     ));
-    base_regions[CASTLE_MINIONS].add_connection(BaseConnection::new(SECRET_PATH_MOAT_WELL, rules::castle_bridge_up, APItems::new_empty()));
+    base_regions[CASTLE_MINIONS].add_connection(BaseConnection::new(CASTLE_FIRST_FLOOR, rules::castle_bridge_down, APItems::new_empty()));
+    base_regions[CASTLE_MINIONS].add_connection(BaseConnection::new(SECRET_PATH_MOAT_WELL, rules::no_princess_castle_bridge_up, APItems::new_empty()));
     base_regions[CASTLE_MINIONS].add_connection(BaseConnection::new(HOOK_AREA, rules::always, APItems::new_empty()));
     base_regions[CASTLE_MINIONS].add_jumpconnection(JumpConnection::new(ABOVE_HOOK, rules::always, APItems::new_empty(), 2.0));
     base_regions[CASTLE_MINIONS].add_connection(BaseConnection::new(ABOVE_HOOK, rules::hook, APItems::new_empty()));
