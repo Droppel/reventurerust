@@ -143,8 +143,8 @@ pub mod rules {
         no_princess(state) && shield(state) && lavatrinket(state)
     }
 
-    pub fn hook_or_shovel_or_bomb(state: &ReventureState) -> bool {
-        hook(state) || shovel(state) || bomb(state)
+    pub fn hook_or_shovel_or_bomb_or_chicken(state: &ReventureState) -> bool {
+        hook(state) || shovel(state) || bomb(state) || chicken(state)
     }
 
     pub fn chicken_or_shovel_no_princess(state: &ReventureState) -> bool {
@@ -819,7 +819,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     base_regions[FORTRESS_MOAT].add_jumpconnection(JumpConnection::new(FORTRESS_BRIDGE_BUTTON, rules::always, APItems::new_empty(), 3.0));
     base_regions[FORTRESS_MOAT].add_connection(BaseConnection::new(FORTRESS_BRIDGE_BUTTON, rules::hook, APItems::new_empty()));
     base_regions[FORTRESS_MOAT].add_jumpconnection(JumpConnection::new(RIGHT_OF_FORTRESS, rules::always, APItems::new_empty(), 3.0));
-    base_regions[FORTRESS_MOAT].add_connection(BaseConnection::new(RIGHT_OF_FORTRESS, rules::hook_or_shovel_or_bomb, APItems::new_empty()));
+    base_regions[FORTRESS_MOAT].add_connection(BaseConnection::new(RIGHT_OF_FORTRESS, rules::hook_or_shovel_or_bomb_or_chicken, APItems::new_empty()));
     base_regions[FORTRESS_MOAT].add_location(BaseConnection::new(LOC15, rules::always, APItems::new_empty()));
     base_regions[FORTRESS_MOAT].add_location(BaseConnection::new(LOC21, rules::always, APItems::new_empty()));
     base_regions[FORTRESS_MOAT].add_location(BaseConnection::new(LOC48, rules::always, APItems::new_empty()));
