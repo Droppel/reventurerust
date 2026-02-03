@@ -710,7 +710,7 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
             let weight = new_state.get_weight();
             let required_jump_increases = (weight * 2.0 - (START_JUMP * 2.0 - 2.0)) as i32;
             if required_jump_increases > TOTAL_JUMP_INCREASE {
-                continue; // There are only 6 increases. If we need more, we cannot reach this statechange
+                continue;
             }
             let name = get_region_name(&vec![region.base_region_idx], &new_state, &base_regions);
             let mut new_region_idx = graph.get_region(&name);
