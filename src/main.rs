@@ -9,7 +9,7 @@ mod locations;
 mod connections;
 
 const TOTAL_JUMP_INCREASE: i32 = 0;
-const START_JUMP: f32 = 4.0;
+const START_JUMP: f32 = 3.0;
 
 // APItems - stores a set of advancement progression items
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -754,7 +754,6 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
 
         output.push_str(&format!("{}:", loc_name));
         for apitems in apstate.potapitems.iter() {
-            println!("Location {} can be reached with AP items: {:?}", loc_name, apitems.apitems);
             output.push_str(&format!("{}|", apitems.to_string()));
         }
         // remove trailing |
