@@ -368,11 +368,13 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     // LonksBackGarden connections
     base_regions[LONKS_BACKGARDEN].add_jumpconnection(JumpConnection::new(ELDER, rules::always, APItems::new_empty(), 2.0));
     base_regions[LONKS_BACKGARDEN].add_connection(BaseConnection::new(LONKS_HOUSE, rules::always, APItems::new_empty()));
+    base_regions[LONKS_BACKGARDEN].add_jumpconnection(JumpConnection::new(LONKS_FRONTGARDEN, rules::always, APItems::new_empty(), 2.0));
     base_regions[LONKS_BACKGARDEN].add_connection(BaseConnection::new(VOLCANO_BRIDGE, rules::shovel, APItems::new_empty()));
     base_regions[LONKS_BACKGARDEN].add_location(BaseConnection::new(LOC03, rules::always, APItems::new_empty()));
 
     // LonksFrontGarden connections
     base_regions[LONKS_FRONTGARDEN].add_connection(BaseConnection::new(LONKS_HOUSE, rules::always, APItems::new_empty()));
+    base_regions[LONKS_FRONTGARDEN].add_jumpconnection(JumpConnection::new(LONKS_BACKGARDEN, rules::always, APItems::new_empty(), 2.0));
     base_regions[LONKS_FRONTGARDEN].add_connection(BaseConnection::new(CASTLE_FIRST_FLOOR, rules::always, APItems::new_empty()));
     base_regions[LONKS_FRONTGARDEN].add_connection(BaseConnection::new(FAIRY_FOUNTAIN, rules::always,
          APItems::new(vec![31])));
