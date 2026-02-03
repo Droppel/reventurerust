@@ -1,4 +1,5 @@
 use std::collections::{HashMap, HashSet, VecDeque};
+use rand::seq::IndexedRandom;
 use serde::{Serialize, Deserialize};
 
 use crate::locations::regions::{MENU};
@@ -743,8 +744,15 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
     // plantuml::save_plant_uml(&graph, &format!("graphs/ChangeHistory{}-Level{}", -2, 0));
 
     let mut output = String::new();
-    output.push_str(start_region.to_string().as_str());
+    output.push_str(base_regions[start_region].name.as_str());
     output.push_str("\n");
+    for item_loc in item_locs.iter() {
+        output.push_str(&format!("{}|", base_regions[*item_loc].name));
+    }
+    // remove trailing |
+    output.pop();
+    output.push_str("\n");
+
     for region in graph.regions.iter() {
         if !region.location {
             continue;
@@ -777,22 +785,29 @@ fn main() {
     // Create all base regions
     let mut base_regions = locations::create_all_base_regions();
 
-    let item_locs = locations::get_default_item_locations();
-    
+    let valid_regions = locations::get_all_game_regions();
+    let rng = &mut rand::rng();
+
+    // Get random item_locs
+    let item_locs = valid_regions.choose_multiple(rng, 10).cloned().collect::<Vec<_>>();
+
     // Set up item placements
     connections::setup_item_placements(&mut base_regions, &item_locs);
     println!();
     
+    // Select random start_region from valid_regions
+    let start_region = *valid_regions.choose(rng).unwrap();
+    println!("Selected start region: {}", base_regions[start_region].name); 
+
     // Set up region connections
-    let start_region = locations::regions::LONKS_HOUSE;
     connections::setup_region_connections(&mut base_regions, start_region);
     println!();
 
     // Build the Reventure graph
-    let graph = build_graph(&item_locs, &base_regions, start_region);
+    build_graph(&item_locs, &base_regions, start_region);
     // build_simple_graph(&item_locs, &base_regions, start_region);
 
-    plantuml::save_plant_uml(&graph, "test.plantuml");
+    // plantuml::save_plant_uml(&graph, "test.plantuml");
 }
 
 #[allow(dead_code)]
