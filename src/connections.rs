@@ -544,6 +544,12 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
 
     // CastleMinions connections
     base_regions[CASTLE_MINIONS].add_connection(BaseConnection::new(CASTLE_FIRST_FLOOR, rules::castle_bridge_down, APItems::new_empty()));
+    base_regions[CASTLE_MINIONS].add_statechange(StateChange::new(
+        vec!["castleBridgeDown".to_string()],
+        vec![true],
+        rules::princess,
+        APItems::new_empty(),
+    ));
     base_regions[CASTLE_MINIONS].add_connection(BaseConnection::new(SECRET_PATH_MOAT_WELL, rules::castle_bridge_up, APItems::new_empty()));
     base_regions[CASTLE_MINIONS].add_connection(BaseConnection::new(HOOK_AREA, rules::always, APItems::new_empty()));
     base_regions[CASTLE_MINIONS].add_jumpconnection(JumpConnection::new(ABOVE_HOOK, rules::always, APItems::new_empty(), 2.0));
@@ -893,7 +899,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     base_regions[ANVIL].add_connection(BaseConnection::new(FORTRESS_ROOF, rules::hook, APItems::new_empty()));
     base_regions[ANVIL].add_connection(BaseConnection::new(ELEVATOR, rules::always, APItems::new(vec![28])));
     base_regions[ANVIL].add_connection(BaseConnection::new(ELEVATOR, rules::always, APItems::new(vec![29])));
-    base_regions[ANVIL].add_jumpconnection(JumpConnection::new(PRINCESS, rules::always, APItems::new_empty(), 3.0));
+    base_regions[ANVIL].add_jumpconnection(JumpConnection::new(PRINCESS, rules::always, APItems::new_empty(), 2.0));
     base_regions[ANVIL].add_connection(BaseConnection::new(PRINCESS, rules::hook, APItems::new_empty()));
     base_regions[ANVIL].add_connection(BaseConnection::new(FIRE_ESCAPE, rules::princess, APItems::new_empty()));
     base_regions[ANVIL].add_connection(BaseConnection::new(FORTRESS_TREASURE, rules::princess, APItems::new_empty()));
