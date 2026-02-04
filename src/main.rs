@@ -8,7 +8,7 @@ mod plantuml;
 mod locations;
 mod connections;
 
-const TOTAL_JUMP_INCREASE: i32 = 1;
+const TOTAL_JUMP_INCREASE: i32 = 0;
 const START_JUMP: f32 = 3.0;
 
 // APItems - stores a set of advancement progression items
@@ -312,7 +312,7 @@ impl JumpConnection {
 
     fn get_jumpitems_req(&self, state: &ReventureState) -> i32 {
         let weight = state.get_weight();
-        ((self.jump_req + weight - START_JUMP)) as i32
+        ((self.jump_req + weight - START_JUMP) * 2.0) as i32
     }
 
     fn can_use(&self, state: &ReventureState) -> bool {
@@ -591,13 +591,9 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
                 new_region_idx = Some(graph.add_region(new_region));
                 todo_regions.push(new_region_idx.unwrap());
             }
-            let mut apitems = jump_connection.base.apitems.clone();
-            if req_jump_increases > 0 {
-                apitems.add_apitem(57); // Jump Increase AP item
-            }
             let new_connection = Connection::new(
                 new_region_idx.unwrap(),
-                apitems,
+                jump_connection.base.apitems.clone(),
             );
             graph.add_connection(region_idx, new_connection);
         }
