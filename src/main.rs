@@ -145,6 +145,16 @@ impl APState {
         }
     }
 
+    fn add_potapitems(&mut self, new_potapitems: SimpleBitset) -> bool {
+        for potapitems in &self.potapitems {
+            if new_potapitems.is_subset(potapitems) {
+                return false;
+            }
+        }
+        self.potapitems.push(new_potapitems);
+        true
+    }
+
     fn reduce_all(&mut self) {
         let mut new_potapitems = Vec::new();
         
@@ -494,14 +504,16 @@ impl ReventureGraph {
                         let mut new_potapitems = potapitems.clone();
                         new_potapitems.add_apitems(connection.apitems.clone());
                         
-                        added = true;
-                        self.regions[child_idx].apstate.potapitems.push(new_potapitems);
+                        if self.regions[child_idx].apstate.add_potapitems(new_potapitems) {
+                            added = true;
+                        }
                     }
                 } else {
                     // No AP items required for this connection
                     for potapitems in &parent_potapitems {
-                        added = true;
-                        self.regions[child_idx].apstate.potapitems.push(potapitems.clone());
+                        if self.regions[child_idx].apstate.add_potapitems(potapitems.clone()) {
+                            added = true;
+                        }
                     }
                 }
                 
