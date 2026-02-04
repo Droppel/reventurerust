@@ -641,6 +641,8 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
                     new_state.state.add_apitem(*state);
                 }
             }
+
+            // Check for Harakiri ending unlock
             if !(region.state.event_bool(States::HasSword as u8) || region.state.event_bool(States::HasSwordElder as u8))
              && (new_state.event_bool(States::HasSword as u8) || new_state.event_bool(States::HasSwordElder as u8)) {  // This state can do the Harakiri ending
                 let harakiri_region_name = get_region_identifier(locations::locations::LOC47, &ReventureState::new(), &base_regions);
@@ -661,11 +663,33 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
                 graph.add_connection(region_idx, harakiri_connection);
             }
 
+            // Check for greedy bastard ending 
             let weight = new_state.get_weight();
-            let required_jump_increases = (weight * 2.0 - (START_JUMP * 2.0 - 2.0)) as i32;
-            if required_jump_increases > TOTAL_JUMP_INCREASE {
-                continue;
+            if weight > 2.5 {
+                // Disabled for now because it creates a MASSIVE rule in the end
+                // let greedy_region_name = get_region_identifier(locations::locations::LOC26, &ReventureState::new(), &base_regions);
+                // let mut greedy_region_idx = graph.get_region(&greedy_region_name);
+                // if greedy_region_idx.is_none() {
+                //     let greedy_region = Region::new(
+                //         locations::locations::LOC26,
+                //         ReventureState::new(),
+                //         true,
+                //         &base_regions,
+                //     );
+                //     greedy_region_idx = Some(graph.add_region(greedy_region));
+                // }
+                // let greedy_connection = Connection::new(
+                //     greedy_region_idx.unwrap(),
+                //     statechange.apitems.clone(),
+                // );
+                // graph.add_connection(region_idx, greedy_connection);
+                continue; // This statechange leads to greedy bastard ending, no further progress is possible
             }
+
+            // let required_jump_increases = (weight * 2.0 - (START_JUMP * 2.0 - 2.0)) as i32;
+            // if required_jump_increases > TOTAL_JUMP_INCREASE {
+            //     continue;
+            // }
             let name = get_region_identifier(region.base_region_idx, &new_state, &base_regions);
             let mut new_region_idx = graph.get_region(&name);
             if new_region_idx.is_none() {
