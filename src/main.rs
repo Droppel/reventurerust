@@ -791,16 +791,16 @@ fn main() {
     build_graph(&item_locs, &base_regions, start_region);
 
     // Benchmark buildgraph
-    let iterations = 10;
-    let mut total_duration = 0;0;
-    for _ in 0..iterations {
-        let start_time = std::time::Instant::now();
-        let _graph = build_graph(&item_locs, &base_regions, start_region);
-        let duration = start_time.elapsed().as_millis();
-        total_duration += duration;
-    }
-    let average_duration = total_duration as f64 / iterations as f64;
-    println!("Average graph build time over {} iterations: {:.2} ms", iterations, average_duration);
+    // let iterations = 10;
+    // let mut total_duration = 0;0;
+    // for _ in 0..iterations {
+    //     let start_time = std::time::Instant::now();
+    //     let _graph = build_graph(&item_locs, &base_regions, start_region);
+    //     let duration = start_time.elapsed().as_millis();
+    //     total_duration += duration;
+    // }
+    // let average_duration = total_duration as f64 / iterations as f64;
+    // println!("Average graph build time over {} iterations: {:.2} ms", iterations, average_duration);
 
     // build_simple_graph(&item_locs, &base_regions, start_region);
 
