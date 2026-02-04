@@ -816,8 +816,7 @@ fn build_simple_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>) {
     graph.item_locations = item_locs.clone();
     let empty_state = ReventureState::new();
     let mut todo_regions: Vec<usize> = Vec::new();
-    let mut menuregion = Region::new(MENU, empty_state.clone(), false, &base_regions);
-    menuregion.apstate.potapitems.push(APItems::new_empty());
+    let menuregion = Region::new(MENU, empty_state.clone(), false, &base_regions);
 
     let menu_idx = graph.add_region(menuregion);
     todo_regions.push(menu_idx);
