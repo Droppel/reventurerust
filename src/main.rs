@@ -476,7 +476,7 @@ impl ReventureGraph {
     fn propagate_apstates(&mut self) {
         // Create a todo list with all regions
         let mut parent_todo_regions: VecDeque<usize> = (0..self.regions.len()).collect();
-        let mut parent_todo_regions_set: HashSet<usize> = parent_todo_regions.iter().copied().collect();
+        let mut parent_todo_regions_set: HashSet<usize> = (0..self.regions.len()).collect();
         
         while !parent_todo_regions.is_empty() {
             let region_idx = parent_todo_regions.pop_front().unwrap();
