@@ -150,7 +150,10 @@ impl APState {
         let mut new_potapitems = Vec::new();
         
         // Sort by length
-        self.potapitems.sort_by_key(|x| x.apitems.count_ones());
+        // This does not technically sound by length.
+        // Working with the assumption, that most sets have a similar small number of items, this is good enough.
+        // Performance benchmarks show the time saved by not using count_ones is slightly better than the time lost in the next step
+        self.potapitems.sort_by_key(|x| x.apitems);
         
         for potapitems in &self.potapitems {
             if !new_potapitems.iter().any(|used: &APItems| potapitems.is_subset(used)) {
