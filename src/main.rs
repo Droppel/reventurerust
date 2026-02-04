@@ -111,14 +111,8 @@ impl APItems {
         true
     }
 
-    fn add_apitems(&mut self, items: APItems) -> u64 {
-        let added = items.apitems & !self.apitems;
+    fn add_apitems(&mut self, items: APItems) {
         self.apitems |= items.apitems;
-        added
-    }
-
-    fn remove_apitems(&mut self, items: u64) {
-        self.apitems &= !items;
     }
 
     fn is_subset(&self, other: &APItems) -> bool {
@@ -142,19 +136,13 @@ impl APItems {
 #[derive(Clone, Debug)]
 struct APState {
     potapitems: Vec<APItems>,
-    reducedstates: HashSet<u64>,
 }
 
 impl APState {
     fn new() -> Self {
         APState {
             potapitems: Vec::new(),
-            reducedstates: HashSet::new(),
         }
-    }
-
-    fn is_rejected(&self, apitems: &APItems) -> bool {
-        self.reducedstates.contains(&apitems.apitems)
     }
 
     fn reduce_all(&mut self) -> bool {
@@ -165,9 +153,7 @@ impl APState {
         self.potapitems.sort_by_key(|x| x.apitems.count_ones());
         
         for potapitems in &self.potapitems {
-            if new_potapitems.iter().any(|used: &APItems| potapitems.is_subset(used)) {
-                self.reducedstates.insert(potapitems.apitems);
-            } else {
+            if !new_potapitems.iter().any(|used: &APItems| potapitems.is_subset(used)) {
                 new_potapitems.push(potapitems.clone());
             }
         }
@@ -527,13 +513,7 @@ impl ReventureGraph {
                     // Connection requires AP items
                     for potapitems in &parent_potapitems {
                         let mut new_potapitems = potapitems.clone();
-                        let added_items = new_potapitems.add_apitems(connection.apitems.clone());
-                        
-                        if self.regions[child_idx].apstate.is_rejected(&new_potapitems) {
-                            // Remove the items we just added
-                            new_potapitems.remove_apitems(added_items);
-                            continue;
-                        }
+                        new_potapitems.add_apitems(connection.apitems.clone());
                         
                         added = true;
                         self.regions[child_idx].apstate.potapitems.push(new_potapitems);
@@ -541,9 +521,6 @@ impl ReventureGraph {
                 } else {
                     // No AP items required for this connection
                     for potapitems in &parent_potapitems {
-                        if self.regions[child_idx].apstate.is_rejected(potapitems) {
-                            continue;
-                        }
                         added = true;
                         self.regions[child_idx].apstate.potapitems.push(potapitems.clone());
                     }
@@ -809,6 +786,19 @@ fn main() {
 
     // Build the Reventure graph
     build_graph(&item_locs, &base_regions, start_region);
+
+    // Benchmark buildgraph
+    let iterations = 10;
+    let mut total_duration = 0;0;
+    for _ in 0..iterations {
+        let start_time = std::time::Instant::now();
+        let _graph = build_graph(&item_locs, &base_regions, start_region);
+        let duration = start_time.elapsed().as_millis();
+        total_duration += duration;
+    }
+    let average_duration = total_duration as f64 / iterations as f64;
+    println!("Average graph build time over {} iterations: {:.2} ms", iterations, average_duration);
+
     // build_simple_graph(&item_locs, &base_regions, start_region);
 
     // plantuml::save_plant_uml(&graph, "test.plantuml");
