@@ -941,14 +941,16 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     base_regions[RIGHT_OF_FORTRESS].add_jumpconnection(JumpConnection::new(FORTRESS_TREASURE, rules::always, SimpleBitset::new_empty(), 3.0));
     base_regions[RIGHT_OF_FORTRESS].add_connection(BaseConnection::new(ELEVATOR, rules::always, SimpleBitset::new_empty()));
     base_regions[RIGHT_OF_FORTRESS].add_connection(BaseConnection::new(FORTRESS_MOAT, rules::hook, SimpleBitset::new_empty()));
+    // Same problem as greedy bastard
     // fn can_enter_desert(state: &ReventureState) -> bool {
     //     state.get_weight() >= 2.0
     // }
-    // base_regions[RIGHT_OF_FORTRESS].add_connection(BaseConnection::new(DESERT, can_enter_desert, APItems::new_empty()));
+    // base_regions[RIGHT_OF_FORTRESS].add_connection(BaseConnection::new(DESERT, can_enter_desert, SimpleBitset::new_empty()));
     base_regions[RIGHT_OF_FORTRESS].add_location(BaseConnection::new(LOC81, rules::princess, SimpleBitset::new_empty()));
 
     // Desert connections
     base_regions[DESERT].add_location(BaseConnection::new(LOC91, rules::always, SimpleBitset::new_empty()));
+    base_regions[DESERT].add_location(BaseConnection::new(LOC88, rules::always, SimpleBitset::new(vec![25])));
 
     // Alberto connections
     base_regions[ALBERTO].add_connection(BaseConnection::new(FORTRESS_MOAT, rules::always, SimpleBitset::new_empty()));
