@@ -390,7 +390,7 @@ struct Region {
 impl Region {
     fn new(base_region_idx: usize, state: ReventureState, location: bool, base_regions: &[BaseRegion]) -> Self {
         let _base_region = &base_regions[base_region_idx];
-        let name = get_region_name(&[base_region_idx], &state, base_regions);
+        let name = get_region_identifier(base_region_idx, &state, base_regions);
                 
         Region {
             name,
@@ -429,12 +429,8 @@ impl Region {
     }
 }
 
-fn get_region_name(base_region_idxs: &[usize], state: &ReventureState, base_regions: &[BaseRegion]) -> String {
-    let mut name = base_region_idxs
-        .iter()
-        .map(|&idx| base_regions[idx].name.as_str())
-        .collect::<Vec<_>>()
-        .join("_");
+fn get_region_identifier(base_region_idx: usize, state: &ReventureState, base_regions: &[BaseRegion]) -> String {
+    let mut name = base_regions[base_region_idx].name.clone();
         
     for i in 0..States::Count as u8 {
         if state.state.contains(i) {
@@ -601,7 +597,7 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
             if !jump_connection.can_use(&region.state) {
                 continue;
             }
-            let name = get_region_name(&vec![jump_connection.base.goal_region], &region.state, &base_regions);
+            let name = get_region_identifier(jump_connection.base.goal_region, &region.state, &base_regions);
             let mut new_region_idx = graph.get_region(&name);
             if new_region_idx.is_none() {
                 let new_region = Region::new(
@@ -628,7 +624,7 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
             if !base_connection.can_use(&region.state) {
                 continue;
             }
-            let name = get_region_name(&vec![base_connection.goal_region], &region.state, &base_regions);
+            let name = get_region_identifier(base_connection.goal_region, &region.state, &base_regions);
             let mut new_region_idx = graph.get_region(&name);
             if new_region_idx.is_none() {
                 let new_region = Region::new(
@@ -651,7 +647,7 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
             if !location.can_use(&region.state) {
                 continue;
             }
-            let name = get_region_name(&vec![location.goal_region], &empty_state.clone(), &base_regions);
+            let name = get_region_identifier(location.goal_region, &empty_state.clone(), &base_regions);
             let mut new_region_idx = graph.get_region(&name);
             if new_region_idx.is_none() {
                 let new_region = Region::new(
@@ -682,7 +678,7 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
             }
             if !(region.state.event_bool(States::HasSword as u8) || region.state.event_bool(States::HasSwordElder as u8))
              && (new_state.event_bool(States::HasSword as u8) || new_state.event_bool(States::HasSwordElder as u8)) {  // This state can do the Harakiri ending
-                let harakiri_region_name = get_region_name(&vec![locations::locations::LOC47], &empty_state.clone(), &base_regions);
+                let harakiri_region_name = get_region_identifier(locations::locations::LOC47, &empty_state.clone(), &base_regions);
                 let mut harakiri_region_idx = graph.get_region(&harakiri_region_name);
                 if harakiri_region_idx.is_none() {
                     let harakiri_region = Region::new(
@@ -705,7 +701,7 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
             if required_jump_increases > TOTAL_JUMP_INCREASE {
                 continue;
             }
-            let name = get_region_name(&vec![region.base_region_idx], &new_state, &base_regions);
+            let name = get_region_identifier(region.base_region_idx, &new_state, &base_regions);
             let mut new_region_idx = graph.get_region(&name);
             if new_region_idx.is_none() {
                 let new_region = Region::new(
@@ -838,7 +834,7 @@ fn build_simple_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>) {
         let base_region = &base_regions[region.base_region_idx];
         for jump_connection in &base_region.jumpconnections {
             // Process jump connections
-            let name = get_region_name(&vec![jump_connection.base.goal_region], &region.state, &base_regions);
+            let name = get_region_identifier(jump_connection.base.goal_region, &region.state, &base_regions);
             let mut new_region_idx = graph.get_region(&name);
             if new_region_idx.is_none() {
                 let new_region = Region::new(
@@ -858,7 +854,7 @@ fn build_simple_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>) {
         }
 
         for base_connection in &base_region.connections {
-            let name = get_region_name(&vec![base_connection.goal_region], &region.state, &base_regions);
+            let name = get_region_identifier(base_connection.goal_region, &region.state, &base_regions);
             let mut new_region_idx = graph.get_region(&name);
             if new_region_idx.is_none() {
                 let new_region = Region::new(

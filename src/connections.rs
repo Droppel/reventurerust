@@ -327,29 +327,29 @@ pub fn setup_item_placements(base_regions: &mut [BaseRegion], item_locations: &[
         SimpleBitset::new(vec![12]),
     ));
 
-    // // Item 7: Hook
-    // base_regions[item_locations[7]].add_statechange(StateChange::new(
-    //     vec![States::HasHook as u8],
-    //     vec![true],
-    //     rules::can_pickup_hook,
-    //     APItems::new(vec![10]),
-    // ));
+    // Item 7: Hook
+    base_regions[item_locations[7]].add_statechange(StateChange::new(
+        vec![States::HasHook as u8],
+        vec![true],
+        rules::can_pickup_hook,
+        SimpleBitset::new(vec![10]),
+    ));
 
-    // // Item 8: Nuke
-    // base_regions[item_locations[8]].add_statechange(StateChange::new(
-    //     vec![States::HasNuke as u8],
-    //     vec![true],
-    //     rules::can_pickup_nuke,
-    //     APItems::new(vec![16]),
-    // ));
+    // Item 8: Nuke
+    base_regions[item_locations[8]].add_statechange(StateChange::new(
+        vec![States::HasNuke as u8],
+        vec![true],
+        rules::can_pickup_nuke,
+        SimpleBitset::new(vec![16]),
+    ));
 
-    // // Item 9: Whistle
-    // base_regions[item_locations[9]].add_statechange(StateChange::new(
-    //     vec![States::HasWhistle as u8],
-    //     vec![true],
-    //     rules::can_pickup_whistle,
-    //     APItems::new(vec![7]),
-    // ));
+    // Item 9: Whistle
+    base_regions[item_locations[9]].add_statechange(StateChange::new(
+        vec![States::HasWhistle as u8],
+        vec![true],
+        rules::can_pickup_whistle,
+        SimpleBitset::new(vec![7]),
+    ));
 }
 
 /// Set up all region connections - this is the main function that creates the game graph
