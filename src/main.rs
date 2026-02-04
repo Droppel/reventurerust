@@ -146,32 +146,19 @@ impl APState {
     }
 
     fn add_potapitems(&mut self, new_potapitems: SimpleBitset) -> bool {
+        let mut to_remove = Vec::new();
+
         for potapitems in &self.potapitems {
             if new_potapitems.is_subset(potapitems) {
                 return false;
             }
-        }
-        self.potapitems.push(new_potapitems);
-        true
-    }
-
-    fn reduce_all(&mut self) {
-        let mut new_potapitems = Vec::new();
-        
-        // Sort by length
-        // This does not technically sort by length.
-        // Working with the assumption, that most sets have a similar small number of items, this is good enough.
-        // Performance benchmarks show the time saved by not using count_ones is slightly better than the time
-        // lost in the next step because the sorting is not perfect.
-        self.potapitems.sort_by_key(|x| x.contents);
-        
-        for potapitems in &self.potapitems {
-            if !new_potapitems.iter().any(|used: &SimpleBitset| potapitems.is_subset(used)) {
-                new_potapitems.push(potapitems.clone());
+            if potapitems.is_subset(&new_potapitems) {
+                to_remove.push(potapitems.contents);
             }
         }
-        
-        self.potapitems = new_potapitems;
+        self.potapitems.retain(|potapitems| !to_remove.contains(&potapitems.contents));
+        self.potapitems.push(new_potapitems);
+        true
     }
 }
 
@@ -522,7 +509,7 @@ impl ReventureGraph {
                 }
                 
                 // Reduce the child's AP state
-                self.regions[child_idx].apstate.reduce_all();
+                // self.regions[child_idx].apstate.reduce_all();
                 
                 // Skip if already in todo list
                 if parent_todo_regions_set.contains(&child_idx) {
@@ -541,7 +528,7 @@ impl ReventureGraph {
                     .iter()
                     .enumerate()
                     .any(|(i, potapitems)| {
-                        i < prev_state_lengths.len() && potapitems.contents != prev_state_lengths[i]
+                        potapitems.contents != prev_state_lengths[i]
                     });
                 
                 if change {
