@@ -491,9 +491,9 @@ impl ReventureGraph {
                 
                 // Store previous state lengths for change detection
                 let prev_state_len = self.regions[child_idx].apstate.potapitems.len();
-                let prev_state_lengths: Vec<u32> = self.regions[child_idx].apstate.potapitems
+                let prev_state_lengths: Vec<u64> = self.regions[child_idx].apstate.potapitems
                     .iter()
-                    .map(|p| p.contents.count_ones())
+                    .map(|p| p.contents)
                     .collect();
                 
                 let mut added = false;
@@ -541,7 +541,7 @@ impl ReventureGraph {
                     .iter()
                     .enumerate()
                     .any(|(i, potapitems)| {
-                        i < prev_state_lengths.len() && potapitems.contents.count_ones() != prev_state_lengths[i]
+                        i < prev_state_lengths.len() && potapitems.contents != prev_state_lengths[i]
                     });
                 
                 if change {
