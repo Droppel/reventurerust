@@ -569,9 +569,8 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
 
     let mut graph = ReventureGraph::new();
     graph.item_locations = item_locs.clone();
-    let empty_state = ReventureState::new();
     let mut todo_regions: Vec<usize> = Vec::new();
-    let mut menuregion = Region::new(MENU, empty_state.clone(), false, &base_regions);
+    let mut menuregion = Region::new(MENU, ReventureState::new(), false, &base_regions);
     menuregion.apstate.potapitems.push(SimpleBitset::new_empty());
 
     let menu_idx = graph.add_region(menuregion);
@@ -640,12 +639,12 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
             if !location.can_use(&region.state) {
                 continue;
             }
-            let name = get_region_identifier(location.goal_region, &empty_state.clone(), &base_regions);
+            let name = get_region_identifier(location.goal_region, &ReventureState::new(), &base_regions);
             let mut new_region_idx = graph.get_region(&name);
             if new_region_idx.is_none() {
                 let new_region = Region::new(
                     location.goal_region,
-                    empty_state.clone(),
+                    ReventureState::new(),
                     true,
                     &base_regions,
                 );
@@ -671,12 +670,12 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
             }
             if !(region.state.event_bool(States::HasSword as u8) || region.state.event_bool(States::HasSwordElder as u8))
              && (new_state.event_bool(States::HasSword as u8) || new_state.event_bool(States::HasSwordElder as u8)) {  // This state can do the Harakiri ending
-                let harakiri_region_name = get_region_identifier(locations::locations::LOC47, &empty_state.clone(), &base_regions);
+                let harakiri_region_name = get_region_identifier(locations::locations::LOC47, &ReventureState::new(), &base_regions);
                 let mut harakiri_region_idx = graph.get_region(&harakiri_region_name);
                 if harakiri_region_idx.is_none() {
                     let harakiri_region = Region::new(
                         locations::locations::LOC47,
-                        empty_state.clone(),
+                        ReventureState::new(),
                         true,
                         &base_regions,
                     );
@@ -814,9 +813,8 @@ fn build_simple_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>) {
 
     let mut graph = ReventureGraph::new();
     graph.item_locations = item_locs.clone();
-    let empty_state = ReventureState::new();
     let mut todo_regions: Vec<usize> = Vec::new();
-    let menuregion = Region::new(MENU, empty_state.clone(), false, &base_regions);
+    let menuregion = Region::new(MENU, ReventureState::new(), false, &base_regions);
 
     let menu_idx = graph.add_region(menuregion);
     todo_regions.push(menu_idx);
