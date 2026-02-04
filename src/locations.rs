@@ -28,172 +28,172 @@ pub mod locations {
     pub const LOC23: usize = 22;  // "23: True Beauty is inside"
     pub const LOC24: usize = 23;  // "24: Strawberry"
     pub const LOC25: usize = 24;  // "25: Bully"
-    // LOC26 - "26: Greedy Bastard" - Handled Extra (not used)
-    pub const LOC27: usize = 25;  // "27: Airstrike"
-    pub const LOC28: usize = 26;  // "28: Don't Try This at Home"
-    pub const LOC29: usize = 27;  // "29: The Man in the Steel Mask"
-    pub const LOC30: usize = 28;  // "30: Subliminal Message"
-    pub const LOC31: usize = 29;  // "31: Collateral Damage"
-    pub const LOC32: usize = 30;  // "32: You Monster"
-    pub const LOC33: usize = 31;  // "33: Leap of Faith"
-    pub const LOC34: usize = 32;  // "34: -1st Floor"
-    pub const LOC35: usize = 33;  // "35: Wastewater"
-    pub const LOC36: usize = 34;  // "36: Fireproof"
-    pub const LOC37: usize = 35;  // "37: Free Hugs"
-    pub const LOC38: usize = 36;  // "38: Oh Boy, I'm so Hungry"
-    pub const LOC39: usize = 37;  // "39: Everything is Terrible"
-    pub const LOC40: usize = 38;  // "40: Sexy Beard"
-    pub const LOC41: usize = 39;  // "41: Post-Traumatic Stress Disorder"
-    pub const LOC42: usize = 40;  // "42: Sneaky Bastard"
-    pub const LOC43: usize = 41;  // "43: Dinner for Two"
-    pub const LOC44: usize = 42;  // "44: Bad Leverage"
-    pub const LOC45: usize = 43;  // "45: Well Excuuuuse Me, Princess"
-    pub const LOC46: usize = 44;  // "46: Extreme Sports"
-    pub const LOC47: usize = 45;  // "47: Harakiri"
-    pub const LOC48: usize = 46;  // "48: It's my First Day"
-    pub const LOC49: usize = 47;  // "49: Victory Royale"
-    pub const LOC50: usize = 48;  // "50: P0wned"
-    pub const LOC51: usize = 49;  // "51: Politics"
-    pub const LOC52: usize = 50;  // "52: I'm Feeling Lucky"
-    pub const LOC53: usize = 51;  // "53: Videogames"
-    pub const LOC54: usize = 52;  // "54: Paraphilia"
-    pub const LOC55: usize = 53;  // "55: Escape Shortcut"
-    pub const LOC56: usize = 54;  // "56: Refund Request"
-    pub const LOC57: usize = 55;  // "57: Friendzoned"
-    pub const LOC58: usize = 56;  // "58: Dark Extreme Sports"
-    pub const LOC59: usize = 57;  // "59: Away From Kingdom"
-    pub const LOC60: usize = 58;  // "60: Viva La Resistance"
-    pub const LOC61: usize = 59;  // "61: Syndicalism"
-    pub const LOC62: usize = 60;  // "62: Jackpot"
-    pub const LOC63: usize = 61;  // "63: You Don't Mess With Chicken"
-    pub const LOC64: usize = 62;  // "64: I Thought It Was A Mimic"
-    pub const LOC65: usize = 63;  // "65: Overheal"
-    pub const LOC66: usize = 64;  // "66: Finite War"
-    pub const LOC67: usize = 65;  // "67: Stay Determined"
-    pub const LOC68: usize = 66;  // "68: Otaku Fever"
-    pub const LOC69: usize = 67;  // "69: Quick and Dirty"
-    pub const LOC70: usize = 68;  // "70: It's a Trap"
-    // LOC71 - "71: Sustainable Development" - Handled Extra (not used)
-    pub const LOC72: usize = 69;  // "72: Ecologist"
-    pub const LOC73: usize = 70;  // "73: Dark Love"
-    pub const LOC74: usize = 71;  // "74: Bittersweet Revenge"
-    pub const LOC75: usize = 72;  // "75: Please, Not Again"
-    pub const LOC76: usize = 73;  // "76: A Waifu is You"
-    pub const LOC77: usize = 74;  // "77: Battle Royale"
-    pub const LOC78: usize = 75;  // "78: Silver or Lead"
-    pub const LOC79: usize = 76;  // "79: Good Ending"
-    pub const LOC80: usize = 77;  // "80: Chicken of Doom"
-    pub const LOC81: usize = 78;  // "81: Forever Together"
-    pub const LOC82: usize = 79;  // "82: Perfect Crime"
-    pub const LOC83: usize = 80;  // "83: We Have to Go Back"
-    pub const LOC84: usize = 81;  // "84: Not what you Expected"
-    pub const LOC85: usize = 82;  // "85: Hey, Listen"
-    pub const LOC86: usize = 83;  // "86: Full House"
-    pub const LOC87: usize = 84;  // "87: Crunch Hell"
-    // LOC88 - "88: Odyssey" - Special handling in Python (commented out)
-    pub const LOC89: usize = 85;  // "89: Intestinal Parasites"
-    pub const LOC90: usize = 86;  // "90: Try Harder"
-    pub const LOC91: usize = 87;  // "91: Jump Around"
-    pub const LOC92: usize = 88;  // "92: First Date"
-    pub const LOC93: usize = 89;  // "93: Dark Delivery Boy"
-    pub const LOC94: usize = 90;  // "94: Influencers"
-    pub const LOC95: usize = 91;  // "95: Hypothermia"
-    pub const LOC96: usize = 92;  // "96: Pirates"
-    pub const LOC97: usize = 93;  // "97: Swimming Into the Sunset"
-    pub const LOC98: usize = 94;  // "98: Suspension Points"
-    pub const LOC99: usize = 95;  // "99: Delivery Boy"
-    pub const LOC100: usize = 96; // "100: The End"
+    pub const LOC26: usize = 25;  // "26: Greedy Bastard"
+    pub const LOC27: usize = 26;  // "27: Airstrike"
+    pub const LOC28: usize = 27;  // "28: Don't Try This at Home"
+    pub const LOC29: usize = 28;  // "29: The Man in the Steel Mask"
+    pub const LOC30: usize = 29;  // "30: Subliminal Message"
+    pub const LOC31: usize = 30;  // "31: Collateral Damage"
+    pub const LOC32: usize = 31;  // "32: You Monster"
+    pub const LOC33: usize = 32;  // "33: Leap of Faith"
+    pub const LOC34: usize = 33;  // "34: -1st Floor"
+    pub const LOC35: usize = 34;  // "35: Wastewater"
+    pub const LOC36: usize = 35;  // "36: Fireproof"
+    pub const LOC37: usize = 36;  // "37: Free Hugs"
+    pub const LOC38: usize = 37;  // "38: Oh Boy, I'm so Hungry"
+    pub const LOC39: usize = 38;  // "39: Everything is Terrible"
+    pub const LOC40: usize = 39;  // "40: Sexy Beard"
+    pub const LOC41: usize = 40;  // "41: Post-Traumatic Stress Disorder"
+    pub const LOC42: usize = 41;  // "42: Sneaky Bastard"
+    pub const LOC43: usize = 42;  // "43: Dinner for Two"
+    pub const LOC44: usize = 43;  // "44: Bad Leverage"
+    pub const LOC45: usize = 44;  // "45: Well Excuuuuse Me, Princess"
+    pub const LOC46: usize = 45;  // "46: Extreme Sports"
+    pub const LOC47: usize = 46;  // "47: Harakiri"
+    pub const LOC48: usize = 47;  // "48: It's my First Day"
+    pub const LOC49: usize = 48;  // "49: Victory Royale"
+    pub const LOC50: usize = 49;  // "50: P0wned"
+    pub const LOC51: usize = 50;  // "51: Politics"
+    pub const LOC52: usize = 51;  // "52: I'm Feeling Lucky"
+    pub const LOC53: usize = 52;  // "53: Videogames"
+    pub const LOC54: usize = 53;  // "54: Paraphilia"
+    pub const LOC55: usize = 54;  // "55: Escape Shortcut"
+    pub const LOC56: usize = 55;  // "56: Refund Request"
+    pub const LOC57: usize = 56;  // "57: Friendzoned"
+    pub const LOC58: usize = 57;  // "58: Dark Extreme Sports"
+    pub const LOC59: usize = 58;  // "59: Away From Kingdom"
+    pub const LOC60: usize = 59;  // "60: Viva La Resistance"
+    pub const LOC61: usize = 60;  // "61: Syndicalism"
+    pub const LOC62: usize = 61;  // "62: Jackpot"
+    pub const LOC63: usize = 62;  // "63: You Don't Mess With Chicken"
+    pub const LOC64: usize = 63;  // "64: I Thought It Was A Mimic"
+    pub const LOC65: usize = 64;  // "65: Overheal"
+    pub const LOC66: usize = 65;  // "66: Finite War"
+    pub const LOC67: usize = 66;  // "67: Stay Determined"
+    pub const LOC68: usize = 67;  // "68: Otaku Fever"
+    pub const LOC69: usize = 68;  // "69: Quick and Dirty"
+    pub const LOC70: usize = 69;  // "70: It's a Trap"
+    pub const LOC71: usize = 70;  // "71: Sustainable Development"
+    pub const LOC72: usize = 71;  // "72: Ecologist"
+    pub const LOC73: usize = 72;  // "73: Dark Love"
+    pub const LOC74: usize = 73;  // "74: Bittersweet Revenge"
+    pub const LOC75: usize = 74;  // "75: Please, Not Again"
+    pub const LOC76: usize = 75;  // "76: A Waifu is You"
+    pub const LOC77: usize = 76;  // "77: Battle Royale"
+    pub const LOC78: usize = 77;  // "78: Silver or Lead"
+    pub const LOC79: usize = 78;  // "79: Good Ending"
+    pub const LOC80: usize = 79;  // "80: Chicken of Doom"
+    pub const LOC81: usize = 80;  // "81: Forever Together"
+    pub const LOC82: usize = 81;  // "82: Perfect Crime"
+    pub const LOC83: usize = 82;  // "83: We Have to Go Back"
+    pub const LOC84: usize = 83;  // "84: Not what you Expected"
+    pub const LOC85: usize = 84;  // "85: Hey, Listen"
+    pub const LOC86: usize = 85;  // "86: Full House"
+    pub const LOC87: usize = 86;  // "87: Crunch Hell"
+    pub const LOC88: usize = 87;  // "88: Odyssey"
+    pub const LOC89: usize = 88;  // "89: Intestinal Parasites"
+    pub const LOC90: usize = 89;  // "90: Try Harder"
+    pub const LOC91: usize = 90;  // "91: Jump Around"
+    pub const LOC92: usize = 91;  // "92: First Date"
+    pub const LOC93: usize = 92;  // "93: Dark Delivery Boy"
+    pub const LOC94: usize = 93;  // "94: Influencers"
+    pub const LOC95: usize = 94;  // "95: Hypothermia"
+    pub const LOC96: usize = 95;  // "96: Pirates"
+    pub const LOC97: usize = 96;  // "97: Swimming Into the Sunset"
+    pub const LOC98: usize = 97;  // "98: Suspension Points"
+    pub const LOC99: usize = 98;  // "99: Delivery Boy"
+    pub const LOC100: usize = 99; // "100: The End"
 }
 
 /// Event region indices
 pub mod events {
-    pub const EVENT_KILL_JUAN: usize = 97;     // "Event Kill Juan"
-    pub const EVENT_KILL_MIGUEL: usize = 98;   // "Event Kill Miguel"
-    pub const EVENT_KILL_JAVI: usize = 99;     // "Event Kill Javi"
-    pub const EVENT_KILL_ALBERTO: usize = 100; // "Event Kill Alberto"
-    pub const EVENT_KILL_DANIEL: usize = 101;  // "Event Kill Daniel"
+    pub const EVENT_KILL_JUAN: usize = 100;     // "Event Kill Juan"
+    pub const EVENT_KILL_MIGUEL: usize = 101;   // "Event Kill Miguel"
+    pub const EVENT_KILL_JAVI: usize = 102;     // "Event Kill Javi"
+    pub const EVENT_KILL_ALBERTO: usize = 103; // "Event Kill Alberto"
+    pub const EVENT_KILL_DANIEL: usize = 104;  // "Event Kill Daniel"
 }
 
 /// Game region indices
 pub mod regions {
-    pub const MENU: usize = 102;
-    pub const LONKS_HOUSE: usize = 103;
-    pub const LONKS_BACKGARDEN: usize = 104;
-    pub const LONKS_FRONTGARDEN: usize = 105;
-    pub const SWORD_CHEST: usize = 106;
-    pub const ELDER: usize = 107;
-    pub const CHICKEN: usize = 108;
-    pub const SHOVEL: usize = 109;
-    pub const CASTLE_FIRST_FLOOR: usize = 110;
-    pub const CASTLE_SHIELD_CHEST: usize = 111;
-    pub const CASTLE_MAP_CHEST: usize = 112;
-    pub const CASTLE_ROOF: usize = 113;
-    pub const CHIMNEY: usize = 114;
-    pub const PRINCESS_ROOM: usize = 115;
-    pub const VOLCANO_TOP_EXIT: usize = 116;
-    pub const LAVA_TRINKET: usize = 117;
-    pub const VOLCANO_DROP_STONE: usize = 118;
-    pub const VOLCANO_BRIDGE: usize = 119;
-    pub const BELOW_VOLCANO_BRIDGE: usize = 120;
-    pub const SEWER: usize = 121;
-    pub const MUSIC_CLUB: usize = 122;
-    pub const LEFT_OF_DRAGON: usize = 123;
-    pub const RIGHT_OF_DRAGON: usize = 124;
-    pub const GOLD_ROOM: usize = 125;
-    pub const SEWER_PIPE: usize = 126;
-    pub const VOLCANO_GEYSER: usize = 127;
-    pub const ULTIMATE_DOOR: usize = 128;
-    pub const CASTLE_MINIONS: usize = 129;
-    pub const CLOUD: usize = 130;
-    pub const BELOW_CASTLE_BRIDGE: usize = 131;
-    pub const SECRET_PATH_MOAT_WELL: usize = 132;
-    pub const CASTLE_MOAT: usize = 133;
-    pub const BARN: usize = 134;
-    pub const BARN_SECOND_FLOOR: usize = 135;
-    pub const BEHIND_SHOP_BUSH: usize = 136;
-    pub const SHOP: usize = 137;
-    pub const SHOP_ROOF: usize = 138;
-    pub const SHOP_LAKE: usize = 139;
-    pub const OCEAN: usize = 140;
-    pub const NUKE_STORAGE: usize = 141;
-    pub const SHOP_CELLAR: usize = 142;
-    pub const PARASITE: usize = 143;
-    pub const HOOK_AREA: usize = 144;
-    pub const ABOVE_HOOK: usize = 145;
-    pub const ABOVE_ABOVE_HOOK: usize = 146;
-    pub const CASTLE_CANNON_TO_SHOP: usize = 147;
-    pub const ALTAR: usize = 148;
-    pub const BOMB: usize = 149;
-    pub const FISHING_BRIDGE: usize = 150;
-    pub const BELOW_FISHING_BRIDGE: usize = 151;
-    pub const FISHING_ROD: usize = 152;
-    pub const MOUNTAIN_LEFT_OUTCROP: usize = 153;
-    pub const MOUNTAIN_TOP: usize = 154;
-    pub const STRAWBERRY: usize = 155;
-    pub const MOUNTAIN_TREASURE: usize = 156;
-    pub const LEVERS: usize = 157;
-    pub const GREAT_WATERFALL: usize = 158;
-    pub const GREAT_WATERFALL_BOTTOM: usize = 159;
-    pub const FORTRESS_MOAT: usize = 160;
-    pub const FAIRY_FOUNTAIN: usize = 161;
-    pub const FORTRESS_BRIDGE_BUTTON: usize = 162;
-    pub const SECRET_ABOVE_BOMB: usize = 163;
-    pub const WATER_FALLS: usize = 164;
-    pub const ABOVE_WATERFALLS: usize = 165;
-    pub const WHISTLE: usize = 166;
-    pub const WHISTLE_ALTAR: usize = 167;
-    pub const BELOW_LEAP_OF_FAITH: usize = 168;
-    pub const ELEVATOR: usize = 169;
-    pub const FORTRESS_ROOF: usize = 170;
-    pub const ANVIL: usize = 171;
-    pub const PRINCESS: usize = 172;
-    pub const SPIKE_TRAP: usize = 173;
-    pub const FIRE_ESCAPE: usize = 174;
-    pub const FORTRESS_TREASURE: usize = 175;
-    pub const RIGHT_OF_FORTRESS: usize = 176;
-    pub const DARKSTONE: usize = 177;
-    pub const DESERT: usize = 178;
-    pub const ALBERTO: usize = 179;
+    pub const MENU: usize = 105;
+    pub const LONKS_HOUSE: usize = 106;
+    pub const LONKS_BACKGARDEN: usize = 107;
+    pub const LONKS_FRONTGARDEN: usize = 108;
+    pub const SWORD_CHEST: usize = 109;
+    pub const ELDER: usize = 110;
+    pub const CHICKEN: usize = 111;
+    pub const SHOVEL: usize = 112;
+    pub const CASTLE_FIRST_FLOOR: usize = 113;
+    pub const CASTLE_SHIELD_CHEST: usize = 114;
+    pub const CASTLE_MAP_CHEST: usize = 115;
+    pub const CASTLE_ROOF: usize = 116;
+    pub const CHIMNEY: usize = 117;
+    pub const PRINCESS_ROOM: usize = 118;
+    pub const VOLCANO_TOP_EXIT: usize = 119;
+    pub const LAVA_TRINKET: usize = 120;
+    pub const VOLCANO_DROP_STONE: usize = 121;
+    pub const VOLCANO_BRIDGE: usize = 122;
+    pub const BELOW_VOLCANO_BRIDGE: usize = 123;
+    pub const SEWER: usize = 124;
+    pub const MUSIC_CLUB: usize = 125;
+    pub const LEFT_OF_DRAGON: usize = 126;
+    pub const RIGHT_OF_DRAGON: usize = 127;
+    pub const GOLD_ROOM: usize = 128;
+    pub const SEWER_PIPE: usize = 129;
+    pub const VOLCANO_GEYSER: usize = 130;
+    pub const ULTIMATE_DOOR: usize = 131;
+    pub const CASTLE_MINIONS: usize = 132;
+    pub const CLOUD: usize = 133;
+    pub const BELOW_CASTLE_BRIDGE: usize = 134;
+    pub const SECRET_PATH_MOAT_WELL: usize = 135;
+    pub const CASTLE_MOAT: usize = 136;
+    pub const BARN: usize = 137;
+    pub const BARN_SECOND_FLOOR: usize = 138;
+    pub const BEHIND_SHOP_BUSH: usize = 139;
+    pub const SHOP: usize = 140;
+    pub const SHOP_ROOF: usize = 141;
+    pub const SHOP_LAKE: usize = 142;
+    pub const OCEAN: usize = 143;
+    pub const NUKE_STORAGE: usize = 144;
+    pub const SHOP_CELLAR: usize = 145;
+    pub const PARASITE: usize = 146;
+    pub const HOOK_AREA: usize = 147;
+    pub const ABOVE_HOOK: usize = 148;
+    pub const ABOVE_ABOVE_HOOK: usize = 149;
+    pub const CASTLE_CANNON_TO_SHOP: usize = 150;
+    pub const ALTAR: usize = 151;
+    pub const BOMB: usize = 152;
+    pub const FISHING_BRIDGE: usize = 153;
+    pub const BELOW_FISHING_BRIDGE: usize = 154;
+    pub const FISHING_ROD: usize = 155;
+    pub const MOUNTAIN_LEFT_OUTCROP: usize = 156;
+    pub const MOUNTAIN_TOP: usize = 157;
+    pub const STRAWBERRY: usize = 158;
+    pub const MOUNTAIN_TREASURE: usize = 159;
+    pub const LEVERS: usize = 160;
+    pub const GREAT_WATERFALL: usize = 161;
+    pub const GREAT_WATERFALL_BOTTOM: usize = 162;
+    pub const FORTRESS_MOAT: usize = 163;
+    pub const FAIRY_FOUNTAIN: usize = 164;
+    pub const FORTRESS_BRIDGE_BUTTON: usize = 165;
+    pub const SECRET_ABOVE_BOMB: usize = 166;
+    pub const WATER_FALLS: usize = 167;
+    pub const ABOVE_WATERFALLS: usize = 168;
+    pub const WHISTLE: usize = 169;
+    pub const WHISTLE_ALTAR: usize = 170;
+    pub const BELOW_LEAP_OF_FAITH: usize = 171;
+    pub const ELEVATOR: usize = 172;
+    pub const FORTRESS_ROOF: usize = 173;
+    pub const ANVIL: usize = 174;
+    pub const PRINCESS: usize = 175;
+    pub const SPIKE_TRAP: usize = 176;
+    pub const FIRE_ESCAPE: usize = 177;
+    pub const FORTRESS_TREASURE: usize = 178;
+    pub const RIGHT_OF_FORTRESS: usize = 179;
+    pub const DARKSTONE: usize = 180;
+    pub const DESERT: usize = 181;
+    pub const ALBERTO: usize = 182;
 }
 
 /// Total number of base regions (locations + events + game regions)
@@ -229,7 +229,7 @@ pub fn create_all_base_regions() -> Vec<BaseRegion> {
     base_regions.push(BaseRegion::new("23: True Beauty is inside"));
     base_regions.push(BaseRegion::new("24: Strawberry"));
     base_regions.push(BaseRegion::new("25: Bully"));
-    // loc26 = "26: Greedy Bastard" - Handled Extra (skipped)
+    base_regions.push(BaseRegion::new("26: Greedy Bastard"));
     base_regions.push(BaseRegion::new("27: Airstrike"));
     base_regions.push(BaseRegion::new("28: Don't Try This at Home"));
     base_regions.push(BaseRegion::new("29: The Man in the Steel Mask"));
@@ -274,7 +274,7 @@ pub fn create_all_base_regions() -> Vec<BaseRegion> {
     base_regions.push(BaseRegion::new("68: Otaku Fever"));
     base_regions.push(BaseRegion::new("69: Quick and Dirty"));
     base_regions.push(BaseRegion::new("70: It's a Trap"));
-    // loc71 = "71: Sustainable Development" - Handled Extra (skipped)
+    base_regions.push(BaseRegion::new("71: Sustainable Development"));
     base_regions.push(BaseRegion::new("72: Ecologist"));
     base_regions.push(BaseRegion::new("73: Dark Love"));
     base_regions.push(BaseRegion::new("74: Bittersweet Revenge"));
@@ -291,7 +291,7 @@ pub fn create_all_base_regions() -> Vec<BaseRegion> {
     base_regions.push(BaseRegion::new("85: Hey, Listen"));
     base_regions.push(BaseRegion::new("86: Full House"));
     base_regions.push(BaseRegion::new("87: Crunch Hell"));
-    // loc88 = "88: Odyssey" - Special handling (skipped)
+    base_regions.push(BaseRegion::new("88: Odyssey"));
     base_regions.push(BaseRegion::new("89: Intestinal Parasites"));
     base_regions.push(BaseRegion::new("90: Try Harder"));
     base_regions.push(BaseRegion::new("91: Jump Around"));
