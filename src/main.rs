@@ -429,16 +429,10 @@ impl Region {
 }
 
 fn get_region_identifier(base_region_idx: usize, state: &ReventureState, base_regions: &[BaseRegion]) -> String {
-    let mut name = base_regions[base_region_idx].name.clone();
-        
-    for i in 0..States::Count as u8 {
-        if state.state.contains(i) {
-            name.push_str("__");
-            name.push_str(STATES_AS_STRING[i as usize]);
-        }
-    }
-    
-    name
+    let mut identifier = base_regions[base_region_idx].name.clone();
+    identifier.push_str("__");
+    identifier.push_str(state.state.contents.to_string().as_str());
+    identifier
 }
 
 // ReventureGraph
