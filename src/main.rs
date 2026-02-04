@@ -191,29 +191,7 @@ enum States {
     HasShotgun,
     CastleBridgeDown,
     FortressBridgeDown,
-    Count,
 }
-const STATES_AS_STRING: [&str; States::Count as usize] = [
-    "has_sword",
-    "has_swordelder",
-    "has_chicken",
-    "has_shovel",
-    "has_shield",
-    "has_map",
-    "has_compass",
-    "has_mrhugs",
-    "has_lavatrinket",
-    "has_hook",
-    "has_princess",
-    "has_bomb",
-    "has_nuke",
-    "has_whistle",
-    "has_darkstone",
-    "has_burger",
-    "has_shotgun",
-    "castle_bridge_down",
-    "fortress_bridge_down",
-];
 
 
 impl ReventureState {
