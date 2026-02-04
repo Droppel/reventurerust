@@ -1,19 +1,18 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 use rand::seq::IndexedRandom;
-use serde::{Serialize, Deserialize};
 
-use crate::locations::regions::{MENU};
+use crate::locations::regions::{self, MENU};
 
 mod plantuml;
 
 mod locations;
 mod connections;
 
-const TOTAL_JUMP_INCREASE: i32 = 0;
+const TOTAL_JUMP_INCREASE: i32 = 1;
 const START_JUMP: f32 = 3.0;
 
 // APItems - stores a set of advancement progression items
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
 struct APItems {
     apitems: u64,
 }
@@ -140,7 +139,7 @@ impl APItems {
 }
 
 // APState - manages potential AP item states
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
 struct APState {
     potapitems: Vec<APItems>,
     reducedstates: HashSet<u64>,
@@ -179,12 +178,12 @@ impl APState {
 }
 
 // ReventureState - stores game state
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
 struct ReventureState {
     state: HashMap<String, StateValue>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
 enum StateValue {
     Bool(bool),
     // Int(i32), // Used for sacrificecount if needed
@@ -325,7 +324,7 @@ impl JumpConnection {
 
     fn get_jumpitems_req(&self, state: &ReventureState) -> i32 {
         let weight = state.get_weight();
-        ((self.jump_req + weight - START_JUMP) * 2.0) as i32
+        ((self.jump_req + weight - START_JUMP)) as i32
     }
 
     fn can_use(&self, state: &ReventureState) -> bool {
@@ -358,7 +357,7 @@ impl StateChange {
 }
 
 // Connection - runtime connection between regions
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone)]
 struct Connection {
     goal_region_idx: usize,
     apitems: APItems,
@@ -376,7 +375,7 @@ impl Connection {
 }
 
 // Region - runtime region
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone)]
 struct Region {
     name: String,
     base_region_idx: usize,
@@ -450,7 +449,6 @@ fn get_region_name(base_region_idxs: &[usize], state: &ReventureState, base_regi
 }
 
 // ReventureGraph
-#[derive(Serialize, Deserialize)]
 struct ReventureGraph {
     regions: Vec<Region>,
     region_map: HashMap<String, usize>,
@@ -626,9 +624,13 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
                 new_region_idx = Some(graph.add_region(new_region));
                 todo_regions.push(new_region_idx.unwrap());
             }
+            let mut apitems = jump_connection.base.apitems.clone();
+            if req_jump_increases > 0 {
+                apitems.add_apitem(57); // Jump Increase AP item
+            }
             let new_connection = Connection::new(
                 new_region_idx.unwrap(),
-                jump_connection.base.apitems.clone(),
+                apitems,
             );
             graph.add_connection(region_idx, new_connection);
         }
@@ -790,6 +792,7 @@ fn main() {
 
     // Get random item_locs
     let item_locs = valid_regions.choose_multiple(rng, 10).cloned().collect::<Vec<_>>();
+    let item_locs = locations::get_default_item_locations(); // For testing purposes
 
     // Set up item placements
     connections::setup_item_placements(&mut base_regions, &item_locs);
@@ -797,6 +800,7 @@ fn main() {
     
     // Select random start_region from valid_regions
     let start_region = *valid_regions.choose(rng).unwrap();
+    let start_region = regions::LONKS_HOUSE; // For testing purposes
     println!("Selected start region: {}", base_regions[start_region].name); 
 
     // Set up region connections
