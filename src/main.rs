@@ -13,8 +13,8 @@ const START_JUMP: f32 = 3.0;
 
 // APItems - stores a set of advancement progression items
 #[derive(Clone, Debug)]
-struct APItems {
-    apitems: u64,
+struct SimpleBitset {
+    contents: u64,
 }
 
 const ITEMID_TO_ITEMNAME: [&str; 64] = [
@@ -84,9 +84,9 @@ const ITEMID_TO_ITEMNAME: [&str; 64] = [
     "Event Kill Daniel",
 ];
 
-impl APItems {
+impl SimpleBitset {
     fn new(items: Vec<u8>) -> Self {
-        let mut apitems = APItems::new_empty();
+        let mut apitems = SimpleBitset::new_empty();
         for item in items {
             apitems.add_apitem(item);
         }
@@ -94,29 +94,29 @@ impl APItems {
     }
 
     fn new_empty() -> Self {
-        APItems {
-            apitems: 0,
+        SimpleBitset {
+            contents: 0,
         }
     }
 
     fn contains(&self, item: u8) -> bool {
-        self.apitems & (1u64 << item) != 0
+        self.contents & (1u64 << item) != 0
     }
 
     fn add_apitem(&mut self, item: u8) -> bool {
         if self.contains(item) {
             return false;
         }
-        self.apitems |= 1u64 << item;
+        self.contents |= 1u64 << item;
         true
     }
 
-    fn add_apitems(&mut self, items: APItems) {
-        self.apitems |= items.apitems;
+    fn add_apitems(&mut self, items: SimpleBitset) {
+        self.contents |= items.contents;
     }
 
-    fn is_subset(&self, other: &APItems) -> bool {
-        (self.apitems & other.apitems) == other.apitems
+    fn is_subset(&self, other: &SimpleBitset) -> bool {
+        (self.contents & other.contents) == other.contents
     }
 
     fn to_string(&self) -> String {
@@ -135,7 +135,7 @@ impl APItems {
 // APState - manages potential AP item states
 #[derive(Clone, Debug)]
 struct APState {
-    potapitems: Vec<APItems>,
+    potapitems: Vec<SimpleBitset>,
 }
 
 impl APState {
@@ -154,10 +154,10 @@ impl APState {
         // Working with the assumption, that most sets have a similar small number of items, this is good enough.
         // Performance benchmarks show the time saved by not using count_ones is slightly better than the time
         // lost in the next step because the sorting is not perfect.
-        self.potapitems.sort_by_key(|x| x.apitems);
+        self.potapitems.sort_by_key(|x| x.contents);
         
         for potapitems in &self.potapitems {
-            if !new_potapitems.iter().any(|used: &APItems| potapitems.is_subset(used)) {
+            if !new_potapitems.iter().any(|used: &SimpleBitset| potapitems.is_subset(used)) {
                 new_potapitems.push(potapitems.clone());
             }
         }
@@ -169,67 +169,79 @@ impl APState {
 // ReventureState - stores game state
 #[derive(Clone, Debug)]
 struct ReventureState {
-    state: HashMap<String, StateValue>,
+    state: SimpleBitset,
 }
 
-#[derive(Clone, Debug)]
-enum StateValue {
-    Bool(bool),
-    // Int(i32), // Used for sacrificecount if needed
+enum States {
+    HasSword,
+    HasSwordElder,
+    HasChicken,
+    HasShovel,
+    HasShield,
+    HasMap,
+    HasCompass,
+    HasMrHugs,
+    HasLavaTrinket,
+    HasHook,
+    HasPrincess,
+    HasBomb,
+    HasNuke,
+    HasWhistle,
+    HasDarkStone,
+    HasBurger,
+    HasShotgun,
+    CastleBridgeDown,
+    FortressBridgeDown,
+    Count,
 }
+const STATES_AS_STRING: [&str; States::Count as usize] = [
+    "has_sword",
+    "has_swordelder",
+    "has_chicken",
+    "has_shovel",
+    "has_shield",
+    "has_map",
+    "has_compass",
+    "has_mrhugs",
+    "has_lavatrinket",
+    "has_hook",
+    "has_princess",
+    "has_bomb",
+    "has_nuke",
+    "has_whistle",
+    "has_darkstone",
+    "has_burger",
+    "has_shotgun",
+    "castle_bridge_down",
+    "fortress_bridge_down",
+];
+
 
 impl ReventureState {
     fn new() -> Self {
-        let mut state = HashMap::new();
-        
-        // Items
-        state.insert("has_chicken".to_string(), StateValue::Bool(false));
-        state.insert("has_shovel".to_string(), StateValue::Bool(false));
-        state.insert("has_sword".to_string(), StateValue::Bool(false));
-        state.insert("has_swordelder".to_string(), StateValue::Bool(false));
-        state.insert("has_shield".to_string(), StateValue::Bool(false));
-        state.insert("has_map".to_string(), StateValue::Bool(false));
-        state.insert("has_compass".to_string(), StateValue::Bool(false));
-        state.insert("has_mrhugs".to_string(), StateValue::Bool(false));
-        state.insert("has_lavaTrinket".to_string(), StateValue::Bool(false));
-        state.insert("has_hook".to_string(), StateValue::Bool(false));
-        state.insert("has_princess".to_string(), StateValue::Bool(false));
-        state.insert("has_bomb".to_string(), StateValue::Bool(false));
-        state.insert("has_nuke".to_string(), StateValue::Bool(false));
-        state.insert("has_whistle".to_string(), StateValue::Bool(false));
-        state.insert("has_darkstone".to_string(), StateValue::Bool(false));
-        state.insert("has_burger".to_string(), StateValue::Bool(false));
-        state.insert("has_shotgun".to_string(), StateValue::Bool(false));
-        // state.insert("sacrificecount".to_string(), StateValue::Int(0));
-        
-        // Events
-        state.insert("castleBridgeDown".to_string(), StateValue::Bool(false));
-        state.insert("fortressBridgeDown".to_string(), StateValue::Bool(false));
+        let state = SimpleBitset::new_empty();
         
         ReventureState { state }
     }
 
-    pub fn event_bool(&self, event: &str) -> bool {
-        match self.state.get(event) {
-            Some(StateValue::Bool(b)) => *b,
-            _ => false,
-        }
+    pub fn event_bool(&self, event: u8) -> bool {
+        self.state.contains(event)
     }
 
     fn get_weight(&self) -> f32 {
         let mut weight = 0.0;
-        if self.event_bool("has_shovel") { weight += 0.5; }
-        if self.event_bool("has_sword") { weight += 0.5; }
-        if self.event_bool("has_swordelder") { weight += 0.5; }
-        if self.event_bool("has_chicken") { weight += 0.5; }
-        if self.event_bool("has_shield") { weight += 0.5; }
-        if self.event_bool("has_lavaTrinket") { weight += 0.5; }
-        if self.event_bool("has_hook") { weight += 0.5; }
-        if self.event_bool("has_bomb") { weight += 0.5; }
-        if self.event_bool("has_nuke") { weight += 0.5; }
-        if self.event_bool("has_whistle") { weight += 0.5; }
-        if self.event_bool("has_darkstone") { weight += 0.5; }
-        if self.event_bool("has_burger") { weight += 0.5; }
+        if self.event_bool(States::HasShovel as u8) { weight += 0.5; }
+        if self.event_bool(States::HasSword as u8) { weight += 0.5; }
+        if self.event_bool(States::HasSwordElder as u8) { weight += 0.5; }
+        if self.event_bool(States::HasChicken as u8) { weight += 0.5; }
+        if self.event_bool(States::HasShield as u8) { weight += 0.5; }
+        if self.event_bool(States::HasLavaTrinket as u8) { weight += 0.5; }
+        if self.event_bool(States::HasHook as u8) { weight += 0.5; }
+        if self.event_bool(States::HasBomb as u8) { weight += 0.5; }
+        if self.event_bool(States::HasNuke as u8) { weight += 0.5; }
+        if self.event_bool(States::HasWhistle as u8) { weight += 0.5; }
+        if self.event_bool(States::HasDarkStone as u8) { weight += 0.5; }
+        if self.event_bool(States::HasBurger as u8) { weight += 0.5; }
         weight
     }
 }
@@ -279,11 +291,11 @@ impl BaseRegion {
 pub struct BaseConnection {
     pub goal_region: usize, // index into region array
     rule: CollectionRule,
-    apitems: APItems,
+    apitems: SimpleBitset,
 }
 
 impl BaseConnection {
-    fn new(goal_region: usize, rule: CollectionRule, apitems: APItems) -> Self {
+    fn new(goal_region: usize, rule: CollectionRule, apitems: SimpleBitset) -> Self {
         BaseConnection {
             goal_region,
             rule,
@@ -304,7 +316,7 @@ pub struct JumpConnection {
 }
 
 impl JumpConnection {
-    fn new(goal_region: usize, rule: CollectionRule, apitems: APItems, jump_req: f32) -> Self {
+    fn new(goal_region: usize, rule: CollectionRule, apitems: SimpleBitset, jump_req: f32) -> Self {
         JumpConnection {
             base: BaseConnection::new(goal_region, rule, apitems),
             jump_req,
@@ -325,13 +337,13 @@ impl JumpConnection {
 #[derive(Clone)]
 pub struct StateChange {
     rule: CollectionRule,
-    apitems: APItems,
-    pub states: Vec<String>,
+    apitems: SimpleBitset,
+    pub states: Vec<u8>,
     pub values: Vec<bool>,
 }
 
 impl StateChange {
-    fn new(states: Vec<String>, values: Vec<bool>, rule: CollectionRule, apitems: APItems) -> Self {
+    fn new(states: Vec<u8>, values: Vec<bool>, rule: CollectionRule, apitems: SimpleBitset) -> Self {
         StateChange {
             rule,
             apitems,
@@ -349,12 +361,12 @@ impl StateChange {
 #[derive(Clone)]
 struct Connection {
     goal_region_idx: usize,
-    apitems: APItems,
+    apitems: SimpleBitset,
 }
 
 impl Connection {
-    fn new(goal_region_idx: usize, apitems: APItems) -> Self {
-        let mut ap = APItems::new_empty();
+    fn new(goal_region_idx: usize, apitems: SimpleBitset) -> Self {
+        let mut ap = SimpleBitset::new_empty();
         ap.add_apitems(apitems);
         Connection {
             goal_region_idx,
@@ -392,7 +404,7 @@ impl Region {
     }
 
     #[allow(dead_code)]
-    fn get_reachable_regions(&self, graph: &ReventureGraph, apitems: APItems) -> HashSet<usize> {
+    fn get_reachable_regions(&self, graph: &ReventureGraph, apitems: SimpleBitset) -> HashSet<usize> {
         let mut reachable_regions = HashSet::new();
         let mut todo_regions: Vec<usize> = vec![graph.region_map[&self.name]];
         
@@ -423,14 +435,11 @@ fn get_region_name(base_region_idxs: &[usize], state: &ReventureState, base_regi
         .map(|&idx| base_regions[idx].name.as_str())
         .collect::<Vec<_>>()
         .join("_");
-    
-    let mut events: Vec<_> = state.state.iter().collect();
-    events.sort_by_key(|(k, _)| k.as_str());
-    
-    for (event, value) in events {
-        if let StateValue::Bool(true) = value {
+        
+    for i in 0..States::Count as u8 {
+        if state.state.contains(i) {
             name.push_str("__");
-            name.push_str(event);
+            name.push_str(STATES_AS_STRING[i as usize]);
         }
     }
     
@@ -507,12 +516,12 @@ impl ReventureGraph {
                 let prev_state_len = self.regions[child_idx].apstate.potapitems.len();
                 let prev_state_lengths: Vec<u32> = self.regions[child_idx].apstate.potapitems
                     .iter()
-                    .map(|p| p.apitems.count_ones())
+                    .map(|p| p.contents.count_ones())
                     .collect();
                 
                 let mut added = false;
                 
-                if connection.apitems.apitems != 0 {
+                if connection.apitems.contents != 0 {
                     // Connection requires AP items
                     for potapitems in &parent_potapitems {
                         let mut new_potapitems = potapitems.clone();
@@ -553,7 +562,7 @@ impl ReventureGraph {
                     .iter()
                     .enumerate()
                     .any(|(i, potapitems)| {
-                        i < prev_state_lengths.len() && potapitems.apitems.count_ones() != prev_state_lengths[i]
+                        i < prev_state_lengths.len() && potapitems.contents.count_ones() != prev_state_lengths[i]
                     });
                 
                 if change {
@@ -574,7 +583,7 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
     let empty_state = ReventureState::new();
     let mut todo_regions: Vec<usize> = Vec::new();
     let mut menuregion = Region::new(MENU, empty_state.clone(), false, &base_regions);
-    menuregion.apstate.potapitems.push(APItems::new_empty());
+    menuregion.apstate.potapitems.push(SimpleBitset::new_empty());
 
     let menu_idx = graph.add_region(menuregion);
     todo_regions.push(menu_idx);
@@ -667,10 +676,12 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
             }
             let mut new_state = region.state.clone();
             for (i, state) in statechange.states.iter().enumerate() {
-                new_state.state.insert(state.clone(), StateValue::Bool(statechange.values[i]));
+                if statechange.values[i] {
+                    new_state.state.add_apitem(*state);
+                }
             }
-            if !(region.state.event_bool("has_sword") || region.state.event_bool("has_swordelder"))
-             && (new_state.event_bool("has_sword") || new_state.event_bool("has_swordelder")) {  // This state can do the Harakiri ending
+            if !(region.state.event_bool(States::HasSword as u8) || region.state.event_bool(States::HasSwordElder as u8))
+             && (new_state.event_bool(States::HasSword as u8) || new_state.event_bool(States::HasSwordElder as u8)) {  // This state can do the Harakiri ending
                 let harakiri_region_name = get_region_name(&vec![locations::locations::LOC47], &empty_state.clone(), &base_regions);
                 let mut harakiri_region_idx = graph.get_region(&harakiri_region_name);
                 if harakiri_region_idx.is_none() {
