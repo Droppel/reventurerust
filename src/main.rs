@@ -146,7 +146,6 @@ impl APState {
     }
 
     fn reduce_all(&mut self) {
-        let old_len = self.potapitems.len();
         let mut new_potapitems = Vec::new();
         
         // Sort by length
