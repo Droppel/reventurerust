@@ -145,14 +145,15 @@ impl APState {
         }
     }
 
-    fn reduce_all(&mut self) -> bool {
+    fn reduce_all(&mut self) {
         let old_len = self.potapitems.len();
         let mut new_potapitems = Vec::new();
         
         // Sort by length
-        // This does not technically sound by length.
+        // This does not technically sort by length.
         // Working with the assumption, that most sets have a similar small number of items, this is good enough.
-        // Performance benchmarks show the time saved by not using count_ones is slightly better than the time lost in the next step
+        // Performance benchmarks show the time saved by not using count_ones is slightly better than the time
+        // lost in the next step because the sorting is not perfect.
         self.potapitems.sort_by_key(|x| x.apitems);
         
         for potapitems in &self.potapitems {
@@ -162,7 +163,6 @@ impl APState {
         }
         
         self.potapitems = new_potapitems;
-        self.potapitems.len() != old_len
     }
 }
 
