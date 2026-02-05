@@ -828,7 +828,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![43]),
+        SimpleBitset::new(vec![]),
     ));
 
     // CastleCannonToShop connections
@@ -840,7 +840,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![43]),
+        SimpleBitset::new(vec![]),
     ));
 
     // Altar connections
@@ -854,7 +854,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![43]),
+        SimpleBitset::new(vec![]),
     ));
 
     // Bomb connections
@@ -872,22 +872,40 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![43]),
+        SimpleBitset::new(vec![]),
     ));
 
     // FishingBridge connections
     base_regions[FISHING_BRIDGE].add_connection(BaseConnection::new(CASTLE_MOAT, rules::always, SimpleBitset::new_empty()));
     base_regions[FISHING_BRIDGE].add_jumpconnection(JumpConnection::new(FISHING_ROD, rules::always, SimpleBitset::new_empty(), 2.0));
     base_regions[FISHING_BRIDGE].add_connection(BaseConnection::new(BELOW_FISHING_BRIDGE, rules::always, SimpleBitset::new_empty()));
+    base_regions[FISHING_BRIDGE].add_forcedstatechange(StateChange::new(
+        vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
+        vec![false, true],
+        rules::darkstone,
+        SimpleBitset::new(vec![]),
+    ));
 
     // BelowFishingBridge connections
     base_regions[BELOW_FISHING_BRIDGE].add_jumpconnection(JumpConnection::new(FISHING_BRIDGE, rules::always, SimpleBitset::new_empty(), 2.0));
     base_regions[BELOW_FISHING_BRIDGE].add_connection(BaseConnection::new(WATER_FALLS, rules::always, SimpleBitset::new_empty()));
+    base_regions[BELOW_FISHING_BRIDGE].add_forcedstatechange(StateChange::new(
+        vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
+        vec![false, true],
+        rules::darkstone,
+        SimpleBitset::new(vec![]),
+    ));
 
     // FishingRod connections
     base_regions[FISHING_ROD].add_connection(BaseConnection::new(FISHING_BRIDGE, rules::always, SimpleBitset::new_empty()));
     base_regions[FISHING_ROD].add_jumpconnection(JumpConnection::new(BOMB, rules::always, SimpleBitset::new_empty(), 2.0));
     base_regions[FISHING_ROD].add_location(BaseConnection::new(LOC12, rules::no_princess, SimpleBitset::new(vec![11])));
+    base_regions[FISHING_ROD].add_forcedstatechange(StateChange::new(
+        vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
+        vec![false, true],
+        rules::darkstone,
+        SimpleBitset::new(vec![]),
+    ));
 
     // MountainLeftOutcrop connections
     base_regions[MOUNTAIN_LEFT_OUTCROP].add_connection(BaseConnection::new(ALTAR, rules::always, SimpleBitset::new_empty()));
@@ -898,7 +916,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![43]),
+        SimpleBitset::new(vec![]),
     ));
 
     // MountainTop connections
@@ -911,7 +929,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![43]),
+        SimpleBitset::new(vec![]),
     ));
 
     // Strawberry connections
@@ -920,7 +938,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![43]),
+        SimpleBitset::new(vec![]),
     ));
 
     // MountainTreasure connections
@@ -931,7 +949,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![43]),
+        SimpleBitset::new(vec![]),
     ));
 
     // Levers connections
