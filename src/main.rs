@@ -186,6 +186,22 @@ enum States {
     HasDarkStone,
     HasBurger,
     HasShotgun,
+    DestroyedDarkstone,
+    // SacSword,
+    // SacSwordElder,
+    // SacChicken,
+    // SacShovel,
+    // SacShield,
+    // // SacMap,
+    // // SacCompass,
+    // SacMrHugs,
+    // SacLavaTrinket,
+    // SacHook,
+    // SacBomb,
+    // SacNuke,
+    // SacWhistle,
+    // SacDarkStone,
+    // SacBurger,
     CastleBridgeDown,
     FortressBridgeDown,
 }
@@ -226,6 +242,7 @@ type CollectionRule = fn(&ReventureState) -> bool;
 #[derive(Clone)]
 pub struct BaseRegion {
     pub name: String,
+    pub forcedstatechange: Vec<StateChange>,
     pub connections: Vec<BaseConnection>,
     pub jumpconnections: Vec<JumpConnection>,
     pub statechange: Vec<StateChange>,
@@ -236,11 +253,16 @@ impl BaseRegion {
     pub fn new(name: &str) -> Self {
         BaseRegion {
             name: name.to_string(),
+            forcedstatechange: Vec::new(),
             connections: Vec::new(),
             jumpconnections: Vec::new(),
             statechange: Vec::new(),
             locations: Vec::new(),
         }
+    }
+
+    fn add_forcedstatechange(&mut self, statechange: StateChange) {
+        self.forcedstatechange.push(statechange);
     }
 
     fn add_jumpconnection(&mut self, jumpconnection: JumpConnection) {
@@ -557,6 +579,40 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
         let region_idx = todo_regions.pop().unwrap();
         let region = graph.regions[region_idx].clone();
         let base_region = &base_regions[region.base_region_idx];
+        let mut forced_change_applied = false;
+        let mut new_forced_state = region.state.clone();
+        for forced_statechange in &base_region.forcedstatechange {
+            if !forced_statechange.can_use(&region.state) {
+                continue;
+            }
+            forced_change_applied = true;
+            for (i, state) in forced_statechange.states.iter().enumerate() {
+                if forced_statechange.values[i] {
+                    new_forced_state.state.add_apitem(*state);
+                }
+            }
+        }
+        if forced_change_applied {
+            let name = get_region_identifier(region.base_region_idx, &new_forced_state, &base_regions);
+            let mut new_region_idx = graph.get_region(&name);
+            if new_region_idx.is_none() {
+                let new_region = Region::new(
+                    region.base_region_idx,
+                    new_forced_state,
+                    region.location,
+                    &base_regions,
+                );
+                new_region_idx = Some(graph.add_region(new_region));
+                todo_regions.push(new_region_idx.unwrap());
+            }
+            let new_connection = Connection::new(
+                new_region_idx.unwrap(),
+                SimpleBitset::new_empty(),
+            );
+            graph.add_connection(region_idx, new_connection);
+            continue;
+        }
+
         for jump_connection in &base_region.jumpconnections {
             // Process jump connections
             let req_jump_increases = jump_connection.get_jumpitems_req(&region.state);
