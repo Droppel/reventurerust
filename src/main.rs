@@ -2,6 +2,7 @@ use std::collections::{HashMap, HashSet, VecDeque};
 use rand::seq::IndexedRandom;
 
 use crate::locations::regions::{self, MENU};
+use espresso_logic::{BoolExpr, expr, Minimizable};
 
 mod plantuml;
 
@@ -19,44 +20,44 @@ struct SimpleBitset {
 
 const ITEMID_TO_ITEMNAME: [&str; 64] = [
     "Nothing",
-    "Progressive Sword",
-    "Sword Pedestal",
+    "ProgressiveSword",
+    "SwordPedestal",
     "Shovel",
     "Boomerang",
     "Map",
     "Compass",
     "Whistle",
     "Burger",
-    "Dark Stone",
+    "DarkStone",
     "Hook",
-    "Fishing Rod",
-    "Lava Trinket",
-    "Mister Hugs",
+    "FishingRod",
+    "LavaTrinket",
+    "MisterHugs",
     "Bombs",
     "Shield",
     "Nuke",
     "Princess",
     "Anvil",
     "Strawberry",
-    "Shop Cannon",
-    "Castle To Shop Cannon",
-    "Dark Fortress Cannon",
-    "Castle To Dark Fortress Cannon",
-    "Desert Geyser East",
-    "Desert Geyser West",
-    "Volcano Geyser",  
-    "Waterfall Geyser",
-    "Elevator Button",
-    "Call Elevator Buttons",
-    "Mirror Portal",
-    "Fairy Portal",
+    "ShopCannon",
+    "CastleToShopCannon",
+    "DarkFortressCannon",
+    "CastleToDarkFortressCannon",
+    "DesertGeyserEast",
+    "DesertGeyserWest",
+    "VolcanoGeyser",  
+    "WaterfallGeyser",
+    "ElevatorButton",
+    "CallElevatorButtons",
+    "MirrorPortal",
+    "FairyPortal",
     "Vine",
-    "Open Castle Floor",
-    "Faceplant Stone",
-    "Sewer Pipe",
-    "Dark Stone Lever Left",
-    "Dark Stone Lever Middle",
-    "Dark Stone Lever Right",
+    "OpenCastleFloor",
+    "FaceplantStone",
+    "SewerPipe",
+    "DarkStoneLeverLeft",
+    "DarkStoneLeverMiddle",
+    "DarkStoneLeverRight",
     "Dragon",
     "Shopkeeper",
     "Mimic",
@@ -70,18 +71,18 @@ const ITEMID_TO_ITEMNAME: [&str; 64] = [
     "Dolphins",
     "Mimic Pet",
     "Gem",
-    "Change Hero Name",
-    "Change Princess Name",
-    "Change Dark Lord Name",
-    "Jump Increase",
-    "Sword Chest",
+    "ChangeHeroName",
+    "ChangePrincessName",
+    "ChangeDarkLordName",
+    "JumpIncrease",
+    "SwordChest",
     "Filler",
     "Filler",
-    "Event Kill Juan",
-    "Event Kill Miguel",
-    "Event Kill Javi",
-    "Event Kill Alberto",
-    "Event Kill Daniel",
+    "EventKillJuan",
+    "EventKillMiguel",
+    "EventKillJavi",
+    "EventKillAlberto",
+    "EventKillDaniel",
 ];
 
 impl SimpleBitset {
@@ -124,9 +125,10 @@ impl SimpleBitset {
         for item in 0..64 {
             if self.contains(item) {
                 output.push_str(ITEMID_TO_ITEMNAME[item as usize]);
-                output.push_str("&");
+                output.push_str(" & ");
             }
         }
+        output.pop(); // remove trailing " "
         output.pop(); // remove trailing &
         output
     }
@@ -723,22 +725,22 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
             let weight = new_state.get_weight();
             if weight > 2.5 {
                 // Disabled for now because it creates a MASSIVE rule in the end
-                // let greedy_region_name = get_region_identifier(locations::locations::LOC26, &ReventureState::new(), &base_regions);
-                // let mut greedy_region_idx = graph.get_region(&greedy_region_name);
-                // if greedy_region_idx.is_none() {
-                //     let greedy_region = Region::new(
-                //         locations::locations::LOC26,
-                //         ReventureState::new(),
-                //         true,
-                //         &base_regions,
-                //     );
-                //     greedy_region_idx = Some(graph.add_region(greedy_region));
-                // }
-                // let greedy_connection = Connection::new(
-                //     greedy_region_idx.unwrap(),
-                //     statechange.apitems.clone(),
-                // );
-                // graph.add_connection(region_idx, greedy_connection);
+                let greedy_region_name = get_region_identifier(locations::locations::LOC26, &ReventureState::new(), &base_regions);
+                let mut greedy_region_idx = graph.get_region(&greedy_region_name);
+                if greedy_region_idx.is_none() {
+                    let greedy_region = Region::new(
+                        locations::locations::LOC26,
+                        ReventureState::new(),
+                        true,
+                        &base_regions,
+                    );
+                    greedy_region_idx = Some(graph.add_region(greedy_region));
+                }
+                let greedy_connection = Connection::new(
+                    greedy_region_idx.unwrap(),
+                    statechange.apitems.clone(),
+                );
+                graph.add_connection(region_idx, greedy_connection);
                 continue; // This statechange leads to greedy bastard ending, no further progress is possible
             }
 
@@ -794,14 +796,26 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
         let loc_name = &base_regions[region.base_region_idx].name;
         let apstate = region.apstate.clone();
 
-        output.push_str(&format!("{}=", loc_name));
+        let mut logic_string = String::new();
+
+
         for apitems in apstate.potapitems.iter() {
-            output.push_str(&format!("{}|", apitems.to_string()));
+            logic_string.push_str(&format!("{} | ", apitems.to_string()));
         }
-        // remove trailing |
-        if output.ends_with("|") {
-            output.pop();
+        // remove trailing " | "
+        logic_string.pop();
+        logic_string.pop();
+        logic_string.pop();
+
+        if logic_string.is_empty() {
+            logic_string = "true".to_string();
         }
+
+        let logic_expression = BoolExpr::parse(&logic_string).expect(format!("Failed to parse logic expression for rules '{}'", logic_string).as_str());
+        let minimized_expression = logic_expression.minimize().expect("Failed to minimize logic expression");
+
+        output.push_str(&format!("{}=", loc_name));
+        output.push_str(&format!("{}", minimized_expression));
         output.push_str("\n");
     }
 
