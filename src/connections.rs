@@ -1120,7 +1120,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     ));
     base_regions[PRINCESS].add_location(BaseConnection::new(LOC45, rules::princess, SimpleBitset::new_empty()));
     base_regions[PRINCESS].add_location(BaseConnection::new(LOC57, rules::mrhugs_princess, SimpleBitset::new_empty()));
-    base_regions[PRINCESS].add_location(BaseConnection::new(LOC64, rules::no_princess_sword, SimpleBitset::new_empty()));
+    base_regions[PRINCESS].add_location(BaseConnection::new(LOC64, rules::no_princess_sword, SimpleBitset::new(vec![17])));
 
     // SpikeTrap connections
     base_regions[SPIKE_TRAP].add_location(BaseConnection::new(LOC70, rules::always, SimpleBitset::new_empty()));
