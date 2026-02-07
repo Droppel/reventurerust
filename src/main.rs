@@ -8,6 +8,7 @@ mod plantuml;
 
 mod locations;
 mod connections;
+mod items;
 
 const TOTAL_JUMP_INCREASE: i32 = 0;
 const START_JUMP: f32 = 3.0;
@@ -182,7 +183,7 @@ enum States {
     HasLavaTrinket,
     HasHook,
     HasPrincess,
-    HasBomb,
+    HasBombs,
     HasNuke,
     HasWhistle,
     HasDarkStone,
@@ -229,7 +230,7 @@ impl ReventureState {
         if self.event_bool(States::HasShield as u8) { weight += 0.5; }
         if self.event_bool(States::HasLavaTrinket as u8) { weight += 0.5; }
         if self.event_bool(States::HasHook as u8) { weight += 0.5; }
-        if self.event_bool(States::HasBomb as u8) { weight += 0.5; }
+        if self.event_bool(States::HasBombs as u8) { weight += 0.5; }
         if self.event_bool(States::HasNuke as u8) { weight += 0.5; }
         if self.event_bool(States::HasWhistle as u8) { weight += 0.5; }
         if self.event_bool(States::HasDarkStone as u8) { weight += 0.5; }

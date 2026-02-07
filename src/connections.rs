@@ -2,6 +2,7 @@ use std::vec;
 
 use crate::{BaseRegion, BaseConnection, JumpConnection, StateChange, ReventureState, SimpleBitset, States};
 use crate::locations::{locations::*, events::*, regions::*};
+use crate::items::APItems;
 
 // Rule helper functions - these replace the lambda functions from Python
 pub mod rules {
@@ -44,7 +45,7 @@ pub mod rules {
     }
 
     pub fn bomb(state: &ReventureState) -> bool {
-        state.event_bool(States::HasBomb as u8)
+        state.event_bool(States::HasBombs as u8)
     }
 
     pub fn bomb_hook(state: &ReventureState) -> bool {
@@ -224,7 +225,7 @@ pub mod rules {
         no_princess(state) && !shovel(state)
     }
 
-    pub fn can_pickup_bomb(state: &ReventureState) -> bool {
+    pub fn can_pickup_bombs(state: &ReventureState) -> bool {
         no_princess(state) && !bomb(state)
     }
 
@@ -276,7 +277,7 @@ pub fn setup_item_placements(base_regions: &mut [BaseRegion], item_locations: &[
         vec![States::HasSword as u8],
         vec![true],
         rules::can_pickup_sword,
-        SimpleBitset::new(vec![56]),
+        SimpleBitset::new(vec![APItems::SwordChest as u8]),
     ));
 
     // Item 1: Sword Pedestal (Elder)
@@ -284,7 +285,7 @@ pub fn setup_item_placements(base_regions: &mut [BaseRegion], item_locations: &[
         vec![States::HasSwordElder as u8],
         vec![true],
         rules::can_pickup_sword,
-        SimpleBitset::new(vec![2]),
+        SimpleBitset::new(vec![APItems::SwordPedestal as u8]),
     ));
 
     // Item 2: Shovel
@@ -292,15 +293,15 @@ pub fn setup_item_placements(base_regions: &mut [BaseRegion], item_locations: &[
         vec![States::HasShovel as u8],
         vec![true],
         rules::can_pickup_shovel,
-        SimpleBitset::new(vec![3]),
+        SimpleBitset::new(vec![APItems::Shovel as u8]),
     ));
 
     // Item 3: Bomb
     base_regions[item_locations[3]].add_statechange(StateChange::new(
-        vec![States::HasBomb as u8],
+        vec![States::HasBombs as u8],
         vec![true],
-        rules::can_pickup_bomb,
-        SimpleBitset::new(vec![14]),
+        rules::can_pickup_bombs,
+        SimpleBitset::new(vec![APItems::Bombs as u8]),
     ));
 
     // Item 4: Shield
@@ -308,7 +309,7 @@ pub fn setup_item_placements(base_regions: &mut [BaseRegion], item_locations: &[
         vec![States::HasShield as u8],
         vec![true],
         rules::can_pickup_shield,
-        SimpleBitset::new(vec![15]),
+        SimpleBitset::new(vec![APItems::Shield as u8]),
     ));
 
     // Item 5: Mister Hugs
@@ -316,7 +317,7 @@ pub fn setup_item_placements(base_regions: &mut [BaseRegion], item_locations: &[
         vec![States::HasMrHugs as u8],
         vec![true],
         rules::can_pickup_mrhugs,
-        SimpleBitset::new(vec![13]),
+        SimpleBitset::new(vec![APItems::MisterHugs as u8]),
     ));
 
     // Item 6: Lava Trinket
@@ -324,7 +325,7 @@ pub fn setup_item_placements(base_regions: &mut [BaseRegion], item_locations: &[
         vec![States::HasLavaTrinket as u8],
         vec![true],
         rules::can_pickup_lavatrinket,
-        SimpleBitset::new(vec![12]),
+        SimpleBitset::new(vec![APItems::LavaTrinket as u8]),
     ));
 
     // Item 7: Hook
@@ -332,7 +333,7 @@ pub fn setup_item_placements(base_regions: &mut [BaseRegion], item_locations: &[
         vec![States::HasHook as u8],
         vec![true],
         rules::can_pickup_hook,
-        SimpleBitset::new(vec![10]),
+        SimpleBitset::new(vec![APItems::Hook as u8]),
     ));
 
     // Item 8: Nuke
@@ -340,7 +341,7 @@ pub fn setup_item_placements(base_regions: &mut [BaseRegion], item_locations: &[
         vec![States::HasNuke as u8],
         vec![true],
         rules::can_pickup_nuke,
-        SimpleBitset::new(vec![16]),
+        SimpleBitset::new(vec![APItems::Nuke as u8]),
     ));
 
     // Item 9: Whistle
@@ -348,7 +349,7 @@ pub fn setup_item_placements(base_regions: &mut [BaseRegion], item_locations: &[
         vec![States::HasWhistle as u8],
         vec![true],
         rules::can_pickup_whistle,
-        SimpleBitset::new(vec![7]),
+        SimpleBitset::new(vec![APItems::Whistle as u8]),
     ));
 }
 
@@ -368,7 +369,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
     
     // LonksBackGarden connections
@@ -381,7 +382,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // LonksFrontGarden connections
@@ -389,16 +390,16 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     base_regions[LONKS_FRONTGARDEN].add_jumpconnection(JumpConnection::new(LONKS_BACKGARDEN, rules::always, SimpleBitset::new_empty(), 2.0));
     base_regions[LONKS_FRONTGARDEN].add_connection(BaseConnection::new(CASTLE_FIRST_FLOOR, rules::always, SimpleBitset::new_empty()));
     base_regions[LONKS_FRONTGARDEN].add_connection(BaseConnection::new(FAIRY_FOUNTAIN, rules::always,
-         SimpleBitset::new(vec![31])));
+         SimpleBitset::new(vec![APItems::FairyPortal as u8])));
     base_regions[LONKS_FRONTGARDEN].add_location(BaseConnection::new(LOC02, rules::always, 
-        SimpleBitset::new(vec![34])));
+        SimpleBitset::new(vec![APItems::FaceplantStone as u8])));
     base_regions[LONKS_FRONTGARDEN].add_location(BaseConnection::new(LOC04, rules::anysword, SimpleBitset::new_empty()));
     base_regions[LONKS_FRONTGARDEN].add_location(BaseConnection::new(LOC19, rules::mrhugs, SimpleBitset::new_empty()));
     base_regions[LONKS_FRONTGARDEN].add_forcedstatechange(StateChange::new(
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // SwordChest connections
@@ -407,7 +408,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // Elder connections
@@ -416,9 +417,9 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     base_regions[ELDER].add_jumpconnection(JumpConnection::new(LONKS_BACKGARDEN, rules::always, SimpleBitset::new_empty(), 2.0));
     base_regions[ELDER].add_jumpconnection(JumpConnection::new(VOLCANO_TOP_EXIT, rules::always, SimpleBitset::new_empty(), 2.0));
     base_regions[ELDER].add_location(BaseConnection::new(LOC01, rules::anysword, 
-        SimpleBitset::new(vec![44])));
+        SimpleBitset::new(vec![APItems::Elder as u8])));
     base_regions[ELDER].add_location(BaseConnection::new(LOC40, rules::mrhugs, 
-        SimpleBitset::new(vec![44])));
+        SimpleBitset::new(vec![APItems::Elder as u8])));
 
     // Chicken connections
     base_regions[CHICKEN].add_connection(BaseConnection::new(ELDER, rules::always, SimpleBitset::new_empty()));
@@ -427,21 +428,21 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasChicken as u8],
         vec![true],
         rules::can_pickup_chicken,
-        SimpleBitset::new(vec![43]),
+        SimpleBitset::new(vec![APItems::Chicken as u8]),
     ));
     fn rule_loc63(state: &ReventureState) -> bool {
         !rules::chicken(state) && rules::anysword(state)
     }
-    base_regions[CHICKEN].add_location(BaseConnection::new(LOC63, rule_loc63, SimpleBitset::new(vec![43])));
+    base_regions[CHICKEN].add_location(BaseConnection::new(LOC63, rule_loc63, SimpleBitset::new(vec![APItems::Chicken as u8])));
     fn rule_loc79(state: &ReventureState) -> bool {
         !rules::chicken(state) && rules::mrhugs(state)
     }
-    base_regions[CHICKEN].add_location(BaseConnection::new(LOC79, rule_loc79, SimpleBitset::new(vec![43])));
+    base_regions[CHICKEN].add_location(BaseConnection::new(LOC79, rule_loc79, SimpleBitset::new(vec![APItems::Chicken as u8])));
     base_regions[CHICKEN].add_forcedstatechange(StateChange::new(
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // Shovel connections
@@ -452,7 +453,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     base_regions[CASTLE_FIRST_FLOOR].add_connection(BaseConnection::new(LONKS_FRONTGARDEN, rules::no_burger_no_princess, SimpleBitset::new_empty()));
     base_regions[CASTLE_FIRST_FLOOR].add_jumpconnection(JumpConnection::new(CASTLE_SHIELD_CHEST, rules::no_burger_no_princess, SimpleBitset::new_empty(), 2.0));
     base_regions[CASTLE_FIRST_FLOOR].add_jumpconnection(JumpConnection::new(CASTLE_MAP_CHEST, rules::no_burger_no_princess, SimpleBitset::new_empty(), 3.0));
-    base_regions[CASTLE_FIRST_FLOOR].add_connection(BaseConnection::new(SEWER, rules::no_burger_no_princess, SimpleBitset::new(vec![33])));
+    base_regions[CASTLE_FIRST_FLOOR].add_connection(BaseConnection::new(SEWER, rules::no_burger_no_princess, SimpleBitset::new(vec![APItems::OpenCastleFloor as u8])));
     base_regions[CASTLE_FIRST_FLOOR].add_connection(BaseConnection::new(CASTLE_MINIONS, rules::no_burger_no_princess_castle_bridge, SimpleBitset::new_empty()));
     fn can_lower_castle_bridge(state: &ReventureState) -> bool {
         rules::no_burger_no_princess(state) && 
@@ -466,17 +467,17 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         SimpleBitset::new_empty(),
     ));
     base_regions[CASTLE_FIRST_FLOOR].add_location(BaseConnection::new(LOC04, rules::no_burger_no_princess_sword, SimpleBitset::new_empty()));
-    base_regions[CASTLE_FIRST_FLOOR].add_location(BaseConnection::new(LOC05, rules::no_burger_no_princess_sword, SimpleBitset::new(vec![42])));
-    base_regions[CASTLE_FIRST_FLOOR].add_location(BaseConnection::new(LOC18, rules::no_burger_no_princess_mrhugs, SimpleBitset::new(vec![42])));
+    base_regions[CASTLE_FIRST_FLOOR].add_location(BaseConnection::new(LOC05, rules::no_burger_no_princess_sword, SimpleBitset::new(vec![APItems::King as u8])));
+    base_regions[CASTLE_FIRST_FLOOR].add_location(BaseConnection::new(LOC18, rules::no_burger_no_princess_mrhugs, SimpleBitset::new(vec![APItems::King as u8])));
     base_regions[CASTLE_FIRST_FLOOR].add_location(BaseConnection::new(LOC19, rules::no_burger_no_princess_mrhugs, SimpleBitset::new_empty()));
     base_regions[CASTLE_FIRST_FLOOR].add_location(BaseConnection::new(LOC51, rules::no_burger_has_princess, SimpleBitset::new_empty()));
     base_regions[CASTLE_FIRST_FLOOR].add_location(BaseConnection::new(LOC60, rules::no_burger_no_princess_bomb, SimpleBitset::new_empty()));
-    base_regions[CASTLE_FIRST_FLOOR].add_location(BaseConnection::new(LOC99, rules::no_princess_has_burger, SimpleBitset::new(vec![42])));
+    base_regions[CASTLE_FIRST_FLOOR].add_location(BaseConnection::new(LOC99, rules::no_princess_has_burger, SimpleBitset::new(vec![APItems::King as u8])));
     base_regions[CASTLE_FIRST_FLOOR].add_forcedstatechange(StateChange::new(
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // CastleShieldChest connections
@@ -485,7 +486,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // CastleMapChest connections
@@ -495,7 +496,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // CastleRoof connections
@@ -507,7 +508,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // Chimney connections
@@ -516,13 +517,13 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // PrincessRoom connections
     base_regions[PRINCESS_ROOM].add_jumpconnection(JumpConnection::new(CASTLE_ROOF, rules::always, SimpleBitset::new_empty(), 3.0));
     base_regions[PRINCESS_ROOM].add_connection(BaseConnection::new(CASTLE_MINIONS, rules::always, SimpleBitset::new_empty()));
-    base_regions[PRINCESS_ROOM].add_connection(BaseConnection::new(ANVIL, rules::always, SimpleBitset::new(vec![30])));
+    base_regions[PRINCESS_ROOM].add_connection(BaseConnection::new(ANVIL, rules::always, SimpleBitset::new(vec![APItems::MirrorPortal as u8])));
     base_regions[PRINCESS_ROOM].add_location(BaseConnection::new(LOC04, rules::anysword, SimpleBitset::new_empty()));
     base_regions[PRINCESS_ROOM].add_location(BaseConnection::new(LOC11, rules::mrhugs, SimpleBitset::new_empty()));
     base_regions[PRINCESS_ROOM].add_location(BaseConnection::new(LOC19, rules::mrhugs, SimpleBitset::new_empty()));
@@ -530,7 +531,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // VolcanoTopExit connections
@@ -541,7 +542,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // LavaTrinket connections
@@ -561,7 +562,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     base_regions[VOLCANO_BRIDGE].add_connection(BaseConnection::new(SEWER, rules::sword_or_hook, SimpleBitset::new_empty()));
 
     // Sewer connections
-    base_regions[SEWER].add_jumpconnection(JumpConnection::new(CASTLE_FIRST_FLOOR, rules::always, SimpleBitset::new(vec![33]), 3.0));
+    base_regions[SEWER].add_jumpconnection(JumpConnection::new(CASTLE_FIRST_FLOOR, rules::always, SimpleBitset::new(vec![APItems::OpenCastleFloor as u8]), 3.0));
     base_regions[SEWER].add_connection(BaseConnection::new(VOLCANO_BRIDGE, rules::always, SimpleBitset::new_empty()));
     base_regions[SEWER].add_connection(BaseConnection::new(BELOW_CASTLE_BRIDGE, rules::always, SimpleBitset::new_empty()));
     base_regions[SEWER].add_connection(BaseConnection::new(MUSIC_CLUB, rules::shovel, SimpleBitset::new_empty()));
@@ -584,30 +585,30 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     // LeftOfDragon connections
     base_regions[LEFT_OF_DRAGON].add_connection(BaseConnection::new(VOLCANO_GEYSER, rules::shovel, SimpleBitset::new_empty()));
     base_regions[LEFT_OF_DRAGON].add_location(BaseConnection::new(LOC10, rules::shovel, SimpleBitset::new_empty()));
-    base_regions[LEFT_OF_DRAGON].add_location(BaseConnection::new(LOC14, rules::no_princess_no_shield_no_lavatrinket, SimpleBitset::new(vec![39])));
-    base_regions[LEFT_OF_DRAGON].add_location(BaseConnection::new(LOC29, rules::no_princess_shield_no_lavatrinket, SimpleBitset::new(vec![39])));
-    base_regions[LEFT_OF_DRAGON].add_location(BaseConnection::new(LOC36, rules::no_princess_no_shield_lavatrinket, SimpleBitset::new(vec![39])));
-    base_regions[LEFT_OF_DRAGON].add_location(BaseConnection::new(LOC41, rules::no_princess_shield_lavatrinket, SimpleBitset::new(vec![39])));
-    base_regions[LEFT_OF_DRAGON].add_location(BaseConnection::new(LOC92, rules::princess, SimpleBitset::new(vec![39])));
+    base_regions[LEFT_OF_DRAGON].add_location(BaseConnection::new(LOC14, rules::no_princess_no_shield_no_lavatrinket, SimpleBitset::new(vec![APItems::Dragon as u8])));
+    base_regions[LEFT_OF_DRAGON].add_location(BaseConnection::new(LOC29, rules::no_princess_shield_no_lavatrinket, SimpleBitset::new(vec![APItems::Dragon as u8])));
+    base_regions[LEFT_OF_DRAGON].add_location(BaseConnection::new(LOC36, rules::no_princess_no_shield_lavatrinket, SimpleBitset::new(vec![APItems::Dragon as u8])));
+    base_regions[LEFT_OF_DRAGON].add_location(BaseConnection::new(LOC41, rules::no_princess_shield_lavatrinket, SimpleBitset::new(vec![APItems::Dragon as u8])));
+    base_regions[LEFT_OF_DRAGON].add_location(BaseConnection::new(LOC92, rules::princess, SimpleBitset::new(vec![APItems::Dragon as u8])));
 
     // RightOfDragon connections
     base_regions[RIGHT_OF_DRAGON].add_connection(BaseConnection::new(VOLCANO_GEYSER, rules::always, SimpleBitset::new_empty()));
     base_regions[RIGHT_OF_DRAGON].add_jumpconnection(JumpConnection::new(GOLD_ROOM, rules::always, SimpleBitset::new_empty(), 4.0));
-    base_regions[RIGHT_OF_DRAGON].add_location(BaseConnection::new(LOC14, rules::always, SimpleBitset::new(vec![39])));
-    base_regions[RIGHT_OF_DRAGON].add_location(BaseConnection::new(LOC16, rules::anysword, SimpleBitset::new(vec![39])));
-    base_regions[RIGHT_OF_DRAGON].add_location(BaseConnection::new(LOC29, rules::shield_no_lavatrinket, SimpleBitset::new(vec![39])));
-    base_regions[RIGHT_OF_DRAGON].add_location(BaseConnection::new(LOC36, rules::no_shield_has_lava, SimpleBitset::new(vec![39])));
-    base_regions[RIGHT_OF_DRAGON].add_location(BaseConnection::new(LOC41, rules::has_shield_and_lava, SimpleBitset::new(vec![39])));
-    base_regions[RIGHT_OF_DRAGON].add_location(BaseConnection::new(LOC43, rules::mrhugs, SimpleBitset::new(vec![39])));
-    base_regions[RIGHT_OF_DRAGON].add_location(BaseConnection::new(LOC92, rules::princess, SimpleBitset::new(vec![39])));
+    base_regions[RIGHT_OF_DRAGON].add_location(BaseConnection::new(LOC14, rules::always, SimpleBitset::new(vec![APItems::Dragon as u8])));
+    base_regions[RIGHT_OF_DRAGON].add_location(BaseConnection::new(LOC16, rules::anysword, SimpleBitset::new(vec![APItems::Dragon as u8])));
+    base_regions[RIGHT_OF_DRAGON].add_location(BaseConnection::new(LOC29, rules::shield_no_lavatrinket, SimpleBitset::new(vec![APItems::Dragon as u8])));
+    base_regions[RIGHT_OF_DRAGON].add_location(BaseConnection::new(LOC36, rules::no_shield_has_lava, SimpleBitset::new(vec![APItems::Dragon as u8])));
+    base_regions[RIGHT_OF_DRAGON].add_location(BaseConnection::new(LOC41, rules::has_shield_and_lava, SimpleBitset::new(vec![APItems::Dragon as u8])));
+    base_regions[RIGHT_OF_DRAGON].add_location(BaseConnection::new(LOC43, rules::mrhugs, SimpleBitset::new(vec![APItems::Dragon as u8])));
+    base_regions[RIGHT_OF_DRAGON].add_location(BaseConnection::new(LOC92, rules::princess, SimpleBitset::new(vec![APItems::Dragon as u8])));
 
     // SewerPipe connections
     base_regions[SEWER_PIPE].add_connection(BaseConnection::new(GOLD_ROOM, rules::always, SimpleBitset::new_empty()));
-    base_regions[SEWER_PIPE].add_location(BaseConnection::new(LOC35, rules::always, SimpleBitset::new(vec![35])));
+    base_regions[SEWER_PIPE].add_location(BaseConnection::new(LOC35, rules::always, SimpleBitset::new(vec![APItems::SewerPipe as u8])));
 
     // VolcanoGeyser connections
     base_regions[VOLCANO_GEYSER].add_connection(BaseConnection::new(LEFT_OF_DRAGON, rules::lavatrinket, SimpleBitset::new_empty()));
-    base_regions[VOLCANO_GEYSER].add_connection(BaseConnection::new(CASTLE_MINIONS, rules::always, SimpleBitset::new(vec![26])));
+    base_regions[VOLCANO_GEYSER].add_connection(BaseConnection::new(CASTLE_MINIONS, rules::always, SimpleBitset::new(vec![APItems::VolcanoGeyser as u8])));
     base_regions[VOLCANO_GEYSER].add_jumpconnection(JumpConnection::new(ULTIMATE_DOOR, rules::always, SimpleBitset::new_empty(), 2.0));
     base_regions[VOLCANO_GEYSER].add_location(BaseConnection::new(LOC06, rules::no_princess, SimpleBitset::new_empty()));
 
@@ -628,7 +629,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     base_regions[CASTLE_MINIONS].add_connection(BaseConnection::new(HOOK_AREA, rules::always, SimpleBitset::new_empty()));
     base_regions[CASTLE_MINIONS].add_jumpconnection(JumpConnection::new(ABOVE_HOOK, rules::always, SimpleBitset::new_empty(), 2.0));
     base_regions[CASTLE_MINIONS].add_connection(BaseConnection::new(ABOVE_HOOK, rules::hook, SimpleBitset::new_empty()));
-    base_regions[CASTLE_MINIONS].add_connection(BaseConnection::new(CLOUD, rules::always, SimpleBitset::new(vec![32])));
+    base_regions[CASTLE_MINIONS].add_connection(BaseConnection::new(CLOUD, rules::always, SimpleBitset::new(vec![APItems::Vine as u8])));
     base_regions[CASTLE_MINIONS].add_location(BaseConnection::new(LOC03, rules::always, SimpleBitset::new_empty()));
     base_regions[CASTLE_MINIONS].add_location(BaseConnection::new(LOC13, rules::mrhugs, SimpleBitset::new_empty()));
     base_regions[CASTLE_MINIONS].add_location(BaseConnection::new(LOC25, rules::anysword, SimpleBitset::new_empty()));
@@ -637,7 +638,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // Cloud connections
@@ -649,7 +650,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // BelowCastleBridge connections
@@ -711,16 +712,16 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasShotgun as u8],
         vec![true],
         no_shotgun_anysword,
-        SimpleBitset::new(vec![40]),
+        SimpleBitset::new(vec![APItems::Shopkeeper as u8]),
     ));
-    base_regions[SHOP].add_location(BaseConnection::new(LOC09, no_shotgun_anysword, SimpleBitset::new(vec![40])));
-    base_regions[SHOP].add_location(BaseConnection::new(LOC37, no_shotgun_mrhugs, SimpleBitset::new(vec![40])));
+    base_regions[SHOP].add_location(BaseConnection::new(LOC09, no_shotgun_anysword, SimpleBitset::new(vec![APItems::Shopkeeper as u8])));
+    base_regions[SHOP].add_location(BaseConnection::new(LOC37, no_shotgun_mrhugs, SimpleBitset::new(vec![APItems::Shopkeeper as u8])));
     base_regions[SHOP].add_location(BaseConnection::new(LOC95, no_shotgun, SimpleBitset::new_empty()));
     base_regions[SHOP].add_forcedstatechange(StateChange::new(
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // ShopRoof connections
@@ -733,20 +734,20 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     base_regions[SHOP_ROOF].add_connection(BaseConnection::new(SHOP, no_shotgun, SimpleBitset::new_empty()));
     base_regions[SHOP_ROOF].add_jumpconnection(JumpConnection::new(OCEAN, no_shotgun, SimpleBitset::new_empty(), 3.0));
     base_regions[SHOP_ROOF].add_connection(BaseConnection::new(OCEAN, no_shotgun_anysword, SimpleBitset::new_empty()));
-    base_regions[SHOP_ROOF].add_connection(BaseConnection::new(FORTRESS_MOAT, no_shotgun_no_princess_no_nuke, SimpleBitset::new(vec![20])));
+    base_regions[SHOP_ROOF].add_connection(BaseConnection::new(FORTRESS_MOAT, no_shotgun_no_princess_no_nuke, SimpleBitset::new(vec![APItems::ShopCannon as u8])));
     base_regions[SHOP_ROOF].add_location(BaseConnection::new(LOC03, no_shotgun, SimpleBitset::new_empty()));
     base_regions[SHOP_ROOF].add_location(BaseConnection::new(LOC13, no_shotgun_mrhugs, SimpleBitset::new_empty()));
-    base_regions[SHOP_ROOF].add_location(BaseConnection::new(LOC17, no_shotgun_no_princess_no_nuke, SimpleBitset::new(vec![20])));
+    base_regions[SHOP_ROOF].add_location(BaseConnection::new(LOC17, no_shotgun_no_princess_no_nuke, SimpleBitset::new(vec![APItems::ShopCannon as u8])));
     base_regions[SHOP_ROOF].add_location(BaseConnection::new(LOC25, no_shotgun_anysword, SimpleBitset::new_empty()));
-    base_regions[SHOP_ROOF].add_location(BaseConnection::new(LOC27, no_shotgun_no_princess_nuke, SimpleBitset::new(vec![20])));
-    base_regions[SHOP_ROOF].add_location(BaseConnection::new(LOC74, shotgun, SimpleBitset::new(vec![20, 41, 28])));
-    base_regions[SHOP_ROOF].add_location(BaseConnection::new(LOC74, shotgun, SimpleBitset::new(vec![20, 41, 29])));
+    base_regions[SHOP_ROOF].add_location(BaseConnection::new(LOC27, no_shotgun_no_princess_nuke, SimpleBitset::new(vec![APItems::ShopCannon as u8])));
+    base_regions[SHOP_ROOF].add_location(BaseConnection::new(LOC74, shotgun, SimpleBitset::new(vec![APItems::ShopCannon as u8, APItems::Mimic as u8, APItems::ElevatorButton as u8])));
+    base_regions[SHOP_ROOF].add_location(BaseConnection::new(LOC74, shotgun, SimpleBitset::new(vec![APItems::ShopCannon as u8, APItems::Mimic as u8, APItems::CallElevatorButtons as u8])));
     base_regions[SHOP_ROOF].add_location(BaseConnection::new(EVENT_KILL_JUAN, no_shotgun_anysword, SimpleBitset::new_empty()));
     base_regions[SHOP_ROOF].add_forcedstatechange(StateChange::new(
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // ShopLake connections
@@ -757,7 +758,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // Ocean connections
@@ -769,7 +770,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // NukeStorage connections
@@ -778,7 +779,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // ShopCellar connections
@@ -789,7 +790,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // Parasite connections
@@ -802,7 +803,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // AboveHook connections
@@ -815,7 +816,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // AboveAboveHook connections
@@ -828,19 +829,19 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // CastleCannonToShop connections
     base_regions[CASTLE_CANNON_TO_SHOP].add_connection(BaseConnection::new(ABOVE_ABOVE_HOOK, rules::always, SimpleBitset::new_empty()));
-    base_regions[CASTLE_CANNON_TO_SHOP].add_connection(BaseConnection::new(SHOP_LAKE, rules::no_princess_no_nuke, SimpleBitset::new(vec![21])));
-    base_regions[CASTLE_CANNON_TO_SHOP].add_location(BaseConnection::new(LOC17, rules::no_princess_no_nuke, SimpleBitset::new(vec![21])));
-    base_regions[CASTLE_CANNON_TO_SHOP].add_location(BaseConnection::new(LOC56, rules::nuke_no_princess, SimpleBitset::new(vec![21])));
+    base_regions[CASTLE_CANNON_TO_SHOP].add_connection(BaseConnection::new(SHOP_LAKE, rules::no_princess_no_nuke, SimpleBitset::new(vec![APItems::CastleToShopCannon as u8])));
+    base_regions[CASTLE_CANNON_TO_SHOP].add_location(BaseConnection::new(LOC17, rules::no_princess_no_nuke, SimpleBitset::new(vec![APItems::CastleToShopCannon as u8])));
+    base_regions[CASTLE_CANNON_TO_SHOP].add_location(BaseConnection::new(LOC56, rules::nuke_no_princess, SimpleBitset::new(vec![APItems::CastleToShopCannon as u8])));
     base_regions[CASTLE_CANNON_TO_SHOP].add_forcedstatechange(StateChange::new(
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // Altar connections
@@ -854,7 +855,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // Bomb connections
@@ -866,13 +867,13 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     base_regions[BOMB].add_jumpconnection(JumpConnection::new(GREAT_WATERFALL, rules::bomb, SimpleBitset::new_empty(), 2.0));
     base_regions[BOMB].add_connection(BaseConnection::new(GREAT_WATERFALL, rules::bomb_hook, SimpleBitset::new_empty()));
     base_regions[BOMB].add_location(BaseConnection::new(LOC28, rules::bomb, SimpleBitset::new_empty()));
-    base_regions[BOMB].add_location(BaseConnection::new(LOC32, rules::anysword, SimpleBitset::new(vec![45])));
-    base_regions[BOMB].add_location(BaseConnection::new(LOC54, rules::mrhugs, SimpleBitset::new(vec![45])));
+    base_regions[BOMB].add_location(BaseConnection::new(LOC32, rules::anysword, SimpleBitset::new(vec![APItems::Boulder as u8])));
+    base_regions[BOMB].add_location(BaseConnection::new(LOC54, rules::mrhugs, SimpleBitset::new(vec![APItems::Boulder as u8])));
     base_regions[BOMB].add_forcedstatechange(StateChange::new(
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // FishingBridge connections
@@ -883,7 +884,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // BelowFishingBridge connections
@@ -893,18 +894,18 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // FishingRod connections
     base_regions[FISHING_ROD].add_connection(BaseConnection::new(FISHING_BRIDGE, rules::always, SimpleBitset::new_empty()));
     base_regions[FISHING_ROD].add_jumpconnection(JumpConnection::new(BOMB, rules::always, SimpleBitset::new_empty(), 2.0));
-    base_regions[FISHING_ROD].add_location(BaseConnection::new(LOC12, rules::no_princess, SimpleBitset::new(vec![11])));
+    base_regions[FISHING_ROD].add_location(BaseConnection::new(LOC12, rules::no_princess, SimpleBitset::new(vec![APItems::FishingRod as u8])));
     base_regions[FISHING_ROD].add_forcedstatechange(StateChange::new(
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // MountainLeftOutcrop connections
@@ -916,7 +917,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // MountainTop connections
@@ -929,16 +930,16 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // Strawberry connections
-    base_regions[STRAWBERRY].add_location(BaseConnection::new(LOC24, rules::always, SimpleBitset::new(vec![19])));
+    base_regions[STRAWBERRY].add_location(BaseConnection::new(LOC24, rules::always, SimpleBitset::new(vec![APItems::Strawberry as u8])));
     base_regions[STRAWBERRY].add_forcedstatechange(StateChange::new(
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // MountainTreasure connections
@@ -949,7 +950,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
-        SimpleBitset::new(vec![]),
+        SimpleBitset::new_empty(),
     ));
 
     // Levers connections
@@ -957,11 +958,11 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     base_regions[LEVERS].add_connection(BaseConnection::new(ALTAR, rules::hook, SimpleBitset::new_empty()));
     base_regions[LEVERS].add_jumpconnection(JumpConnection::new(BELOW_LEAP_OF_FAITH, rules::always, SimpleBitset::new_empty(), 4.0));
     base_regions[LEVERS].add_connection(BaseConnection::new(BELOW_LEAP_OF_FAITH, rules::hook, SimpleBitset::new_empty()));
-    base_regions[LEVERS].add_jumpconnection(JumpConnection::new(DARKSTONE, rules::always, SimpleBitset::new(vec![37]), 3.0));
-    base_regions[LEVERS].add_connection(BaseConnection::new(DARKSTONE, rules::hook, SimpleBitset::new(vec![37])));
-    base_regions[LEVERS].add_connection(BaseConnection::new(GREAT_WATERFALL, rules::always, SimpleBitset::new(vec![37])));
-    base_regions[LEVERS].add_location(BaseConnection::new(LOC38, rules::no_princess, SimpleBitset::new(vec![36])));
-    base_regions[LEVERS].add_location(BaseConnection::new(LOC44, rules::no_princess, SimpleBitset::new(vec![38])));
+    base_regions[LEVERS].add_jumpconnection(JumpConnection::new(DARKSTONE, rules::always, SimpleBitset::new(vec![APItems::DarkStoneLeverMiddle as u8]), 3.0));
+    base_regions[LEVERS].add_connection(BaseConnection::new(DARKSTONE, rules::hook, SimpleBitset::new(vec![APItems::DarkStoneLeverMiddle as u8])));
+    base_regions[LEVERS].add_connection(BaseConnection::new(GREAT_WATERFALL, rules::always, SimpleBitset::new(vec![APItems::DarkStoneLeverMiddle as u8])));
+    base_regions[LEVERS].add_location(BaseConnection::new(LOC38, rules::no_princess, SimpleBitset::new(vec![APItems::DarkStoneLeverLeft as u8])));
+    base_regions[LEVERS].add_location(BaseConnection::new(LOC44, rules::no_princess, SimpleBitset::new(vec![APItems::DarkStoneLeverRight as u8])));
 
     // Darkstone connections
     base_regions[DARKSTONE].add_connection(BaseConnection::new(LEVERS, rules::always, SimpleBitset::new_empty()));
@@ -969,13 +970,13 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasDarkStone as u8],
         vec![true],
         rules::can_pickup_darkstone,
-        SimpleBitset::new(vec![9]),
+        SimpleBitset::new(vec![APItems::DarkStone as u8]),
     ));
     base_regions[DARKSTONE].add_statechange(StateChange::new(
         vec![States::HasBurger as u8],
         vec![true],
         rules::can_pickup_burger,
-        SimpleBitset::new(vec![8]),
+        SimpleBitset::new(vec![APItems::Burger as u8]),
     ));
 
     // GreatWaterfall connections
@@ -998,11 +999,14 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
 
     // WaterFalls connections
     base_regions[WATER_FALLS].add_jumpconnection(JumpConnection::new(BELOW_FISHING_BRIDGE, rules::always, SimpleBitset::new_empty(), 2.0));
-    base_regions[WATER_FALLS].add_connection(BaseConnection::new(MOUNTAIN_TOP, rules::chicken_or_shovel_no_princess, SimpleBitset::new(vec![27])));
+    base_regions[WATER_FALLS].add_connection(BaseConnection::new(MOUNTAIN_TOP, rules::chicken_or_shovel_no_princess, SimpleBitset::new(vec![APItems::WaterfallGeyser as u8])));
     base_regions[WATER_FALLS].add_jumpconnection(JumpConnection::new(ABOVE_WATERFALLS, rules::always, SimpleBitset::new_empty(), 2.0));
     base_regions[WATER_FALLS].add_location(BaseConnection::new(LOC08, rules::no_princess, SimpleBitset::new_empty()));
     base_regions[WATER_FALLS].add_location(BaseConnection::new(LOC82, rules::princess, SimpleBitset::new_empty()));
-    base_regions[WATER_FALLS].add_location(BaseConnection::new(LOC87, rules::always, SimpleBitset::new(vec![59,60,61,62,63])));
+    base_regions[WATER_FALLS].add_location(BaseConnection::new(LOC87, rules::always, 
+        SimpleBitset::new(vec![APItems::EventKillJuan as u8, APItems::EventKillMiguel as u8,
+                                              APItems::EventKillJavi as u8, APItems::EventKillAlberto as u8,
+                                              APItems::EventKillDaniel as u8])));
 
     // AboveWaterfalls connections
     base_regions[ABOVE_WATERFALLS].add_connection(BaseConnection::new(WATER_FALLS, rules::always, SimpleBitset::new_empty()));
@@ -1037,7 +1041,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
 
     // FairyFountain connections
     base_regions[FAIRY_FOUNTAIN].add_connection(BaseConnection::new(FORTRESS_MOAT, rules::always, SimpleBitset::new_empty()));
-    base_regions[FAIRY_FOUNTAIN].add_connection(BaseConnection::new(LONKS_FRONTGARDEN, rules::always, SimpleBitset::new(vec![31])));
+    base_regions[FAIRY_FOUNTAIN].add_connection(BaseConnection::new(LONKS_FRONTGARDEN, rules::always, SimpleBitset::new(vec![APItems::FairyPortal as u8])));
     base_regions[FAIRY_FOUNTAIN].add_location(BaseConnection::new(LOC65, rules::always, SimpleBitset::new_empty()));
     base_regions[FAIRY_FOUNTAIN].add_location(BaseConnection::new(LOC85, rules::sword_or_mrhugs, SimpleBitset::new_empty()));
 
@@ -1071,11 +1075,11 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
 
     // Elevator connections
     base_regions[ELEVATOR].add_connection(BaseConnection::new(WHISTLE_ALTAR, rules::fortress_bridge_down_no_princess, SimpleBitset::new_empty()));
-    base_regions[ELEVATOR].add_connection(BaseConnection::new(ANVIL, rules::always, SimpleBitset::new(vec![28])));
-    base_regions[ELEVATOR].add_connection(BaseConnection::new(ANVIL, rules::always, SimpleBitset::new(vec![29])));
+    base_regions[ELEVATOR].add_connection(BaseConnection::new(ANVIL, rules::always, SimpleBitset::new(vec![APItems::ElevatorButton as u8])));
+    base_regions[ELEVATOR].add_connection(BaseConnection::new(ANVIL, rules::always, SimpleBitset::new(vec![APItems::CallElevatorButtons as u8])));
     base_regions[ELEVATOR].add_jumpconnection(JumpConnection::new(RIGHT_OF_FORTRESS, rules::always, SimpleBitset::new_empty(), 4.0));
-    base_regions[ELEVATOR].add_location(BaseConnection::new(LOC34, rules::always, SimpleBitset::new(vec![28])));
-    base_regions[ELEVATOR].add_location(BaseConnection::new(LOC34, rules::always, SimpleBitset::new(vec![29])));
+    base_regions[ELEVATOR].add_location(BaseConnection::new(LOC34, rules::always, SimpleBitset::new(vec![APItems::ElevatorButton as u8])));
+    base_regions[ELEVATOR].add_location(BaseConnection::new(LOC34, rules::always, SimpleBitset::new(vec![APItems::CallElevatorButtons as u8])));
     base_regions[ELEVATOR].add_location(BaseConnection::new(LOC34, rules::princess, SimpleBitset::new_empty()));
     base_regions[ELEVATOR].add_location(BaseConnection::new(LOC50, rules::princess, SimpleBitset::new_empty()));
     base_regions[ELEVATOR].add_location(BaseConnection::new(LOC66, rules::darkstone, SimpleBitset::new_empty()));
@@ -1086,27 +1090,27 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     base_regions[FORTRESS_ROOF].add_jumpconnection(JumpConnection::new(WHISTLE_ALTAR, rules::always, SimpleBitset::new_empty(), 4.0));
     base_regions[FORTRESS_ROOF].add_connection(BaseConnection::new(WHISTLE_ALTAR, rules::fortress_bridge_down, SimpleBitset::new_empty()));
     base_regions[FORTRESS_ROOF].add_connection(BaseConnection::new(ANVIL, rules::always, SimpleBitset::new_empty()));
-    base_regions[FORTRESS_ROOF].add_connection(BaseConnection::new(CASTLE_MINIONS, rules::no_princess_no_nuke, SimpleBitset::new(vec![22])));
-    base_regions[FORTRESS_ROOF].add_location(BaseConnection::new(LOC17, rules::no_princess_no_nuke, SimpleBitset::new(vec![22])));
-    base_regions[FORTRESS_ROOF].add_location(BaseConnection::new(LOC42, rules::no_princess, SimpleBitset::new(vec![17])));
-    base_regions[FORTRESS_ROOF].add_location(BaseConnection::new(LOC52, rules::princess, SimpleBitset::new(vec![22])));
+    base_regions[FORTRESS_ROOF].add_connection(BaseConnection::new(CASTLE_MINIONS, rules::no_princess_no_nuke, SimpleBitset::new(vec![APItems::DarkFortressCannon as u8])));
+    base_regions[FORTRESS_ROOF].add_location(BaseConnection::new(LOC17, rules::no_princess_no_nuke, SimpleBitset::new(vec![APItems::DarkFortressCannon as u8])));
+    base_regions[FORTRESS_ROOF].add_location(BaseConnection::new(LOC42, rules::no_princess, SimpleBitset::new(vec![APItems::Princess as u8])));
+    base_regions[FORTRESS_ROOF].add_location(BaseConnection::new(LOC52, rules::princess, SimpleBitset::new(vec![APItems::DarkFortressCannon as u8])));
     base_regions[FORTRESS_ROOF].add_location(BaseConnection::new(LOC55, rules::no_chicken_princess, SimpleBitset::new_empty()));
     base_regions[FORTRESS_ROOF].add_location(BaseConnection::new(LOC58, rules::no_chicken_no_princess, SimpleBitset::new_empty()));
-    base_regions[FORTRESS_ROOF].add_location(BaseConnection::new(LOC84, rules::nuke_no_princess, SimpleBitset::new(vec![22])));
+    base_regions[FORTRESS_ROOF].add_location(BaseConnection::new(LOC84, rules::nuke_no_princess, SimpleBitset::new(vec![APItems::DarkFortressCannon as u8])));
 
     // Anvil connections
     base_regions[ANVIL].add_jumpconnection(JumpConnection::new(FORTRESS_ROOF, rules::always, SimpleBitset::new_empty(), 4.0));
     base_regions[ANVIL].add_connection(BaseConnection::new(FORTRESS_ROOF, rules::hook, SimpleBitset::new_empty()));
-    base_regions[ANVIL].add_connection(BaseConnection::new(ELEVATOR, rules::always, SimpleBitset::new(vec![28])));
-    base_regions[ANVIL].add_connection(BaseConnection::new(ELEVATOR, rules::always, SimpleBitset::new(vec![29])));
+    base_regions[ANVIL].add_connection(BaseConnection::new(ELEVATOR, rules::always, SimpleBitset::new(vec![APItems::ElevatorButton as u8])));
+    base_regions[ANVIL].add_connection(BaseConnection::new(ELEVATOR, rules::always, SimpleBitset::new(vec![APItems::CallElevatorButtons as u8])));
     base_regions[ANVIL].add_jumpconnection(JumpConnection::new(PRINCESS, rules::always, SimpleBitset::new_empty(), 2.0));
     base_regions[ANVIL].add_connection(BaseConnection::new(PRINCESS, rules::hook, SimpleBitset::new_empty()));
     base_regions[ANVIL].add_connection(BaseConnection::new(FIRE_ESCAPE, rules::princess, SimpleBitset::new_empty()));
     base_regions[ANVIL].add_connection(BaseConnection::new(FORTRESS_TREASURE, rules::princess, SimpleBitset::new_empty()));
-    base_regions[ANVIL].add_location(BaseConnection::new(LOC22, rules::always, SimpleBitset::new(vec![18])));
-    base_regions[ANVIL].add_location(BaseConnection::new(LOC23, rules::always, SimpleBitset::new(vec![41])));
+    base_regions[ANVIL].add_location(BaseConnection::new(LOC22, rules::always, SimpleBitset::new(vec![APItems::Anvil as u8])));
+    base_regions[ANVIL].add_location(BaseConnection::new(LOC23, rules::always, SimpleBitset::new(vec![APItems::Mimic as u8])));
     base_regions[ANVIL].add_location(BaseConnection::new(LOC53, rules::princess, SimpleBitset::new_empty()));
-    base_regions[ANVIL].add_location(BaseConnection::new(LOC98, rules::no_princess_burger, SimpleBitset::new(vec![41])));
+    base_regions[ANVIL].add_location(BaseConnection::new(LOC98, rules::no_princess_burger, SimpleBitset::new(vec![APItems::Mimic as u8])));
 
     // Princess connections
     base_regions[PRINCESS].add_connection(BaseConnection::new(ANVIL, rules::always, SimpleBitset::new_empty()));
@@ -1116,11 +1120,11 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         vec![States::HasPrincess as u8, States::FortressBridgeDown as u8],
         vec![true, true],
         rules::can_pickup_princess,
-        SimpleBitset::new(vec![17]),
+        SimpleBitset::new(vec![APItems::Princess as u8]),
     ));
     base_regions[PRINCESS].add_location(BaseConnection::new(LOC45, rules::princess, SimpleBitset::new_empty()));
     base_regions[PRINCESS].add_location(BaseConnection::new(LOC57, rules::mrhugs_princess, SimpleBitset::new_empty()));
-    base_regions[PRINCESS].add_location(BaseConnection::new(LOC64, rules::no_princess_sword, SimpleBitset::new(vec![17])));
+    base_regions[PRINCESS].add_location(BaseConnection::new(LOC64, rules::no_princess_sword, SimpleBitset::new(vec![APItems::Princess as u8])));
 
     // SpikeTrap connections
     base_regions[SPIKE_TRAP].add_location(BaseConnection::new(LOC70, rules::always, SimpleBitset::new_empty()));
@@ -1148,7 +1152,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
 
     // Desert connections
     base_regions[DESERT].add_location(BaseConnection::new(LOC91, rules::always, SimpleBitset::new_empty()));
-    base_regions[DESERT].add_location(BaseConnection::new(LOC88, rules::always, SimpleBitset::new(vec![25])));
+    base_regions[DESERT].add_location(BaseConnection::new(LOC88, rules::always, SimpleBitset::new(vec![APItems::DesertGeyserWest as u8])));
 
     // Alberto connections
     base_regions[ALBERTO].add_connection(BaseConnection::new(FORTRESS_MOAT, rules::always, SimpleBitset::new_empty()));
