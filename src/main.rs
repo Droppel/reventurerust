@@ -823,6 +823,16 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
     // Write to file
     std::fs::write("location_apstates.txt", output).expect("Unable to write file");
 
+    // let test_state = ReventureState {
+    //     state: SimpleBitset::new(vec![States::FortressBridgeDown as u8, States::HasPrincess as u8, States::HasSwordElder as u8]),
+    // };
+    // let region_name = get_region_identifier(regions::ELDER, &test_state, base_regions);
+    // let region = &graph.regions[graph.region_map[&region_name]];
+    // print!("AP states for region {}:\n", region.name);
+    // for apstate in &region.apstate.potapitems {
+    //     println!("{}", apstate.to_string());
+    // }
+
     // let encoded = bincode::serialize(&graph).expect("Serialization failed");
     // std::fs::write("graph.bin", encoded).expect("Unable to write file");
 
