@@ -174,7 +174,7 @@ pub mod rules {
     }
 
     pub fn anysword_princess(state: &ReventureState) -> bool {
-        anysword(state) && princess(state)
+        shield(state) && princess(state)
     }
 
     pub fn mrhugs_princess(state: &ReventureState) -> bool {
