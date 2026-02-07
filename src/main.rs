@@ -1,8 +1,8 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 use rand::seq::IndexedRandom;
 
-use crate::locations::regions::{self, MENU};
-use espresso_logic::{BoolExpr, expr, Minimizable};
+use crate::locations::regions::{MENU};
+use espresso_logic::{BoolExpr, Minimizable};
 
 mod plantuml;
 
@@ -846,7 +846,7 @@ fn main() {
     
     // Select random start_region from valid_regions
     let start_region = *valid_regions.choose(rng).unwrap();
-    let start_region = regions::LONKS_HOUSE; // For testing purposes
+    let start_region = locations::regions::LONKS_HOUSE; // For testing purposes
     println!("Selected start region: {}", base_regions[start_region].name); 
 
     // Set up region connections
