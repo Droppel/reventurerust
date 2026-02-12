@@ -1,11 +1,12 @@
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::{collections::{HashMap, HashSet, VecDeque}, env};
+use std::io::Write;
+use std::fs::OpenOptions;
 use rand::seq::IndexedRandom;
 
 use crate::locations::regions::{MENU};
 use espresso_logic::{BoolExpr, Minimizable};
 
 mod plantuml;
-
 mod locations;
 mod connections;
 mod items;
@@ -565,7 +566,7 @@ impl ReventureGraph {
     }
 }
 
-fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_region: usize) -> ReventureGraph{
+fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>) -> ReventureGraph{
     // Build the Reventure graph
     println!("Building Reventure graph...");
 
@@ -780,20 +781,69 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
     // std::fs::create_dir("graphs".to_string()).expect("Creation error");
     // plantuml::save_plant_uml(&graph, &format!("graphs/ChangeHistory{}-Level{}", -2, 0));
 
-    let mut output = String::new();
-    output.push_str(base_regions[start_region].name.as_str());
-    output.push_str("\n");
-    for item_loc in item_locs.iter() {
-        output.push_str(&format!("{},", base_regions[*item_loc].name));
-    }
+    graph
+
+    // let test_state = ReventureState {
+    //     state: SimpleBitset::new(vec![States::FortressBridgeDown as u8, States::HasPrincess as u8, States::HasSwordElder as u8]),
+    // };
+    // let region_name = get_region_identifier(regions::ELDER, &test_state, base_regions);
+    // let region = &graph.regions[graph.region_map[&region_name]];
+    // print!("AP states for region {}:\n", region.name);
+    // for apstate in &region.apstate.potapitems {
+    //     println!("{}", apstate.to_string());
+    // }
+
+    // let encoded = bincode::serialize(&graph).expect("Serialization failed");
+    // std::fs::write("graph.bin", encoded).expect("Unable to write file");
+}
+
+
+fn main() {
+    // Parse options
+    let args: Vec<String> = env::args().collect();
+    
+    let option_hard_jumps = args.contains(&"--hard-jumps".to_string());
+    let option_hard_combat = args.contains(&"--hard-combat".to_string());
+
+    // Create all base regions
+    let mut base_regions = locations::create_all_base_regions();
+
+    let valid_regions = locations::get_all_game_regions();
+    let rng = &mut rand::rng();
+
+    // Get random item_locs
+    let item_locs = valid_regions.choose_multiple(rng, 10).cloned().collect::<Vec<_>>();
+    // let item_locs = locations::get_default_item_locations(); // For testing purposes
+
+    // Set up item placements
+    connections::setup_item_placements(&mut base_regions, &item_locs);
+    println!();
+    
+    // Select random start_region from valid_regions
+    let start_region = *valid_regions.choose(rng).unwrap();
+    // let start_region = locations::regions::LONKS_HOUSE; // For testing purposes
+    println!("Selected start region: {}", base_regions[start_region].name); 
+
+    // Set up region connections
+    connections::setup_region_connections(&mut base_regions, start_region, option_hard_jumps, option_hard_combat);
+    println!();
+
+    // Build the Reventure graph
+    let graph = build_graph(&item_locs, &base_regions);
+
+    let mut options_file_content = String::new();
+    options_file_content.push_str("\n  logic:\n");
+    options_file_content.push_str(format!("    start_region: {},\n", base_regions[start_region].name).as_str());
+    let item_locs_str = item_locs.iter().map(|loc| base_regions[*loc].name.clone()).collect::<Vec<_>>().join("|");
+    options_file_content.push_str(format!("    item_locations: '{}'\n", item_locs_str).as_str());
     // remove trailing |
-    output.pop();
-    output.push_str("\n");
+    let mut possible_locations = 0;
 
     for region in graph.regions.iter() {
         if !region.location {
             continue;
         }
+        possible_locations += 1;
         let loc_name = &base_regions[region.base_region_idx].name;
         let apstate = region.apstate.clone();
 
@@ -815,57 +865,33 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>, start_reg
         let logic_expression = BoolExpr::parse(&logic_string).expect(format!("Failed to parse logic expression for rules '{}'", logic_string).as_str());
         let minimized_expression = logic_expression.minimize().expect("Failed to minimize logic expression");
 
-        output.push_str(&format!("{}=", loc_name));
-        output.push_str(&format!("{}", minimized_expression));
-        output.push_str("\n");
+        options_file_content.push_str(&format!("    {}: '{}'\n", loc_name.replace(" ", "_"), minimized_expression));
     }
 
     // Write to file
-    std::fs::write("location_apstates.txt", output).expect("Unable to write file");
+    let mut args_min_len = 0;
+    if option_hard_jumps {
+        args_min_len += 1;
+    }
+    if option_hard_combat {
+        args_min_len += 1;
+    }
 
-    // let test_state = ReventureState {
-    //     state: SimpleBitset::new(vec![States::FortressBridgeDown as u8, States::HasPrincess as u8, States::HasSwordElder as u8]),
-    // };
-    // let region_name = get_region_identifier(regions::ELDER, &test_state, base_regions);
-    // let region = &graph.regions[graph.region_map[&region_name]];
-    // print!("AP states for region {}:\n", region.name);
-    // for apstate in &region.apstate.potapitems {
-    //     println!("{}", apstate.to_string());
-    // }
+    let reventure_file_name: &str;
+    if args.len() < args_min_len + 2 {
+        reventure_file_name = "Reventure.yaml";
+    } else {
+        reventure_file_name = args.last().unwrap();
+    }
 
-    // let encoded = bincode::serialize(&graph).expect("Serialization failed");
-    // std::fs::write("graph.bin", encoded).expect("Unable to write file");
+    let mut reventure_file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(reventure_file_name)
+        .expect("Unable to open file");
+    writeln!(reventure_file, "{options_file_content}").expect("Unable to write to file");
 
-    graph
-}
-
-
-fn main() {    
-    // Create all base regions
-    let mut base_regions = locations::create_all_base_regions();
-
-    let valid_regions = locations::get_all_game_regions();
-    let rng = &mut rand::rng();
-
-    // Get random item_locs
-    let item_locs = valid_regions.choose_multiple(rng, 10).cloned().collect::<Vec<_>>();
-    let item_locs = locations::get_default_item_locations(); // For testing purposes
-
-    // Set up item placements
-    connections::setup_item_placements(&mut base_regions, &item_locs);
-    println!();
-    
-    // Select random start_region from valid_regions
-    let start_region = *valid_regions.choose(rng).unwrap();
-    let start_region = locations::regions::LONKS_HOUSE; // For testing purposes
-    println!("Selected start region: {}", base_regions[start_region].name); 
-
-    // Set up region connections
-    connections::setup_region_connections(&mut base_regions, start_region);
-    println!();
-
-    // Build the Reventure graph
-    build_graph(&item_locs, &base_regions, start_region);
+    println!("Finished Generating Logic! Possible item locations: {}", possible_locations);
 
     // Benchmark buildgraph
     // let iterations = 10;

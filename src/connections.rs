@@ -354,7 +354,7 @@ pub fn setup_item_placements(base_regions: &mut [BaseRegion], item_locations: &[
 }
 
 /// Set up all region connections - this is the main function that creates the game graph
-pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: usize) {
+pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: usize, option_hard_jumps: bool, option_hard_combat: bool) {
     // Menu connections
     base_regions[MENU].add_connection(BaseConnection::new(start_region, rules::always, SimpleBitset::new_empty()));
     base_regions[MENU].add_location(BaseConnection::new(LOC59, rules::always, SimpleBitset::new_empty()));
@@ -575,7 +575,14 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     // BelowVolcanoBridge connections
     base_regions[BELOW_VOLCANO_BRIDGE].add_connection(BaseConnection::new(LEFT_OF_DRAGON, rules::shovel, SimpleBitset::new_empty()));
     base_regions[BELOW_VOLCANO_BRIDGE].add_jumpconnection(JumpConnection::new(GOLD_ROOM, rules::always, SimpleBitset::new_empty(), 2.0));
-    base_regions[BELOW_VOLCANO_BRIDGE].add_connection(BaseConnection::new(PARASITE, rules::shovel, SimpleBitset::new_empty()));
+    fn shovel_and_trinket(state: &ReventureState) -> bool {
+        rules::shovel(state) && rules::lavatrinket(state)
+    }
+    if option_hard_jumps {
+        base_regions[BELOW_VOLCANO_BRIDGE].add_connection(BaseConnection::new(PARASITE, rules::shovel, SimpleBitset::new_empty()));
+    } else {
+        base_regions[BELOW_VOLCANO_BRIDGE].add_connection(BaseConnection::new(PARASITE, shovel_and_trinket, SimpleBitset::new_empty()));
+    }
     base_regions[BELOW_VOLCANO_BRIDGE].add_location(BaseConnection::new(LOC06, rules::no_princess, SimpleBitset::new_empty()));
 
     // GoldRoom connections
@@ -740,8 +747,20 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     base_regions[SHOP_ROOF].add_location(BaseConnection::new(LOC17, no_shotgun_no_princess_no_nuke, SimpleBitset::new(vec![APItems::ShopCannon as u8])));
     base_regions[SHOP_ROOF].add_location(BaseConnection::new(LOC25, no_shotgun_anysword, SimpleBitset::new_empty()));
     base_regions[SHOP_ROOF].add_location(BaseConnection::new(LOC27, no_shotgun_no_princess_nuke, SimpleBitset::new(vec![APItems::ShopCannon as u8])));
-    base_regions[SHOP_ROOF].add_location(BaseConnection::new(LOC74, shotgun, SimpleBitset::new(vec![APItems::ShopCannon as u8, APItems::Mimic as u8, APItems::ElevatorButton as u8])));
-    base_regions[SHOP_ROOF].add_location(BaseConnection::new(LOC74, shotgun, SimpleBitset::new(vec![APItems::ShopCannon as u8, APItems::Mimic as u8, APItems::CallElevatorButtons as u8])));
+    if option_hard_combat {
+        base_regions[SHOP_ROOF].add_location(BaseConnection::new(LOC74, shotgun, 
+            SimpleBitset::new(vec![APItems::ShopCannon as u8, APItems::Mimic as u8, APItems::ElevatorButton as u8])));
+        base_regions[SHOP_ROOF].add_location(BaseConnection::new(LOC74, shotgun, 
+            SimpleBitset::new(vec![APItems::ShopCannon as u8, APItems::Mimic as u8, APItems::CallElevatorButtons as u8])));
+    } else {
+        fn shotgun_bombs_or_shovel(state: &ReventureState) -> bool {
+            shotgun(state) && (rules::bomb(state) || rules::shovel(state))
+        }
+        base_regions[SHOP_ROOF].add_location(BaseConnection::new(LOC74, shotgun_bombs_or_shovel, 
+            SimpleBitset::new(vec![APItems::ShopCannon as u8, APItems::Mimic as u8, APItems::ElevatorButton as u8])));
+        base_regions[SHOP_ROOF].add_location(BaseConnection::new(LOC74, shotgun_bombs_or_shovel, 
+            SimpleBitset::new(vec![APItems::ShopCannon as u8, APItems::Mimic as u8, APItems::CallElevatorButtons as u8])));
+    }
     base_regions[SHOP_ROOF].add_location(BaseConnection::new(EVENT_KILL_JUAN, no_shotgun_anysword, SimpleBitset::new_empty()));
     base_regions[SHOP_ROOF].add_forcedstatechange(StateChange::new(
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
@@ -1020,7 +1039,12 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     base_regions[FORTRESS_MOAT].add_connection(BaseConnection::new(FAIRY_FOUNTAIN, rules::always, SimpleBitset::new_empty()));
     base_regions[FORTRESS_MOAT].add_jumpconnection(JumpConnection::new(FORTRESS_BRIDGE_BUTTON, rules::always, SimpleBitset::new_empty(), 3.0));
     base_regions[FORTRESS_MOAT].add_connection(BaseConnection::new(FORTRESS_BRIDGE_BUTTON, rules::hook, SimpleBitset::new_empty()));
-    base_regions[FORTRESS_MOAT].add_jumpconnection(JumpConnection::new(RIGHT_OF_FORTRESS, rules::always, SimpleBitset::new_empty(), 3.0));
+    if option_hard_jumps {
+        base_regions[FORTRESS_MOAT].add_jumpconnection(JumpConnection::new(RIGHT_OF_FORTRESS, rules::always, SimpleBitset::new_empty(), 3.0));
+    }
+    if option_hard_combat {
+        base_regions[FORTRESS_MOAT].add_connection(BaseConnection::new(RIGHT_OF_FORTRESS, rules::anysword, SimpleBitset::new_empty()));
+    }
     base_regions[FORTRESS_MOAT].add_connection(BaseConnection::new(RIGHT_OF_FORTRESS, rules::hook_or_shovel_or_bomb_or_chicken, SimpleBitset::new_empty()));
     base_regions[FORTRESS_MOAT].add_location(BaseConnection::new(LOC15, rules::always, SimpleBitset::new_empty()));
     base_regions[FORTRESS_MOAT].add_location(BaseConnection::new(LOC21, rules::always, SimpleBitset::new_empty()));
