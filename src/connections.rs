@@ -1168,10 +1168,10 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     base_regions[RIGHT_OF_FORTRESS].add_connection(BaseConnection::new(ELEVATOR, rules::always, SimpleBitset::new_empty()));
     base_regions[RIGHT_OF_FORTRESS].add_connection(BaseConnection::new(FORTRESS_MOAT, rules::hook, SimpleBitset::new_empty()));
     // Same problem as greedy bastard
-    // fn can_enter_desert(state: &ReventureState) -> bool {
-    //     state.get_weight() >= 2.0
-    // }
-    // base_regions[RIGHT_OF_FORTRESS].add_connection(BaseConnection::new(DESERT, can_enter_desert, SimpleBitset::new_empty()));
+    fn can_enter_desert(state: &ReventureState) -> bool {
+        state.get_weight() >= 2.0
+    }
+    base_regions[RIGHT_OF_FORTRESS].add_connection(BaseConnection::new(DESERT, can_enter_desert, SimpleBitset::new_empty()));
     base_regions[RIGHT_OF_FORTRESS].add_location(BaseConnection::new(LOC81, rules::princess, SimpleBitset::new_empty()));
 
     // Desert connections
