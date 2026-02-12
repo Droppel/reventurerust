@@ -392,6 +392,7 @@ pub fn create_all_base_regions() -> Vec<BaseRegion> {
     base_regions.push(BaseRegion::new("Darkstone"));
     base_regions.push(BaseRegion::new("Desert"));
     base_regions.push(BaseRegion::new("Alberto"));
+    base_regions.push(BaseRegion::new("CastleCannonToFortress"));
     
     base_regions
 }
