@@ -2,3 +2,8 @@ Add castle cannon
 Great waterfall lever
 Burger spoils
 Sacrifice support
+Add princessstatue
+Shuffle Chicken
+Shuffle DarkStone
+Shuffle Burger
+Shuffle Princess
