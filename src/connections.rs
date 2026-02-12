@@ -513,12 +513,17 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
 
     // Chimney connections
     base_regions[CHIMNEY].add_location(BaseConnection::new(LOC30, rules::always, SimpleBitset::new_empty()));
+    base_regions[CHIMNEY].add_jumpconnection(JumpConnection::new(CASTLE_CANNON_TO_FORTRESS, rules::always, SimpleBitset::new(vec![APItems::CastleToDarkFortressCannon as u8]), 3.0));
     base_regions[CHIMNEY].add_forcedstatechange(StateChange::new(
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
         SimpleBitset::new_empty(),
     ));
+
+    // CastleCannonToFortress connections
+    base_regions[CASTLE_CANNON_TO_FORTRESS].add_connection(BaseConnection::new(FORTRESS_MOAT, rules::always, SimpleBitset::new(vec![APItems::CastleToDarkFortressCannon as u8])));
+    base_regions[CASTLE_CANNON_TO_FORTRESS].add_location(BaseConnection::new(LOC17, rules::no_princess_no_nuke, SimpleBitset::new(vec![APItems::CastleToDarkFortressCannon as u8])));
 
     // PrincessRoom connections
     base_regions[PRINCESS_ROOM].add_jumpconnection(JumpConnection::new(CASTLE_ROOF, rules::always, SimpleBitset::new_empty(), 3.0));

@@ -194,10 +194,11 @@ pub mod regions {
     pub const DARKSTONE: usize = 180;
     pub const DESERT: usize = 181;
     pub const ALBERTO: usize = 182;
+    pub const CASTLE_CANNON_TO_FORTRESS: usize = 183;
 }
 
 /// Total number of base regions (locations + events + game regions)
-pub const TOTAL_BASE_REGIONS: usize = regions::ALBERTO + 1;
+pub const TOTAL_BASE_REGIONS: usize = regions::CASTLE_CANNON_TO_FORTRESS + 1;
 
 /// Creates all base regions with their names
 pub fn create_all_base_regions() -> Vec<BaseRegion> {
