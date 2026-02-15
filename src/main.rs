@@ -1,9 +1,9 @@
-use std::{collections::{HashMap, HashSet, VecDeque}, env};
+use std::{collections::{HashMap, HashSet, VecDeque}, env, fs};
 use std::io::Write;
 use std::fs::OpenOptions;
 use rand::seq::IndexedRandom;
 
-use crate::locations::regions::{MENU};
+use crate::{items::APItems, locations::regions::MENU};
 use espresso_logic::{BoolExpr, Minimizable};
 
 mod plantuml;
@@ -118,6 +118,10 @@ impl SimpleBitset {
         self.contents |= items.contents;
     }
 
+    fn remove_apitem(&mut self, item: u8) {
+        self.contents &= !(1u64 << item);
+    }
+
     fn is_subset(&self, other: &SimpleBitset) -> bool {
         (self.contents & other.contents) == other.contents
     }
@@ -150,17 +154,10 @@ impl APState {
     }
 
     fn add_potapitems(&mut self, new_potapitems: SimpleBitset) -> bool {
-        let mut to_remove = Vec::new();
-
-        for potapitems in &self.potapitems {
-            if new_potapitems.is_subset(potapitems) {
-                return false;
-            }
-            if potapitems.is_subset(&new_potapitems) {
-                to_remove.push(potapitems.contents);
-            }
+        if self.potapitems.iter().any(|p| new_potapitems.is_subset(p)) {
+            return false;
         }
-        self.potapitems.retain(|potapitems| !to_remove.contains(&potapitems.contents));
+        self.potapitems.retain(|p| !p.is_subset(&new_potapitems));
         self.potapitems.push(new_potapitems);
         true
     }
@@ -174,7 +171,6 @@ struct ReventureState {
 
 enum States {
     HasSword,
-    HasSwordElder,
     HasChicken,
     HasShovel,
     HasShield,
@@ -191,21 +187,20 @@ enum States {
     HasBurger,
     HasShotgun,
     DestroyedDarkstone,
-    // SacSword,
-    // SacSwordElder,
-    // SacChicken,
-    // SacShovel,
-    // SacShield,
-    // // SacMap,
-    // // SacCompass,
-    // SacMrHugs,
-    // SacLavaTrinket,
-    // SacHook,
-    // SacBomb,
-    // SacNuke,
-    // SacWhistle,
-    // SacDarkStone,
-    // SacBurger,
+    SacSword,
+    SacChicken,
+    SacShovel,
+    SacShield,
+    SacMap,
+    SacCompass,
+    SacMrHugs,
+    SacLavaTrinket,
+    SacHook,
+    SacBombs,
+    SacNuke,
+    SacWhistle,
+    SacDarkStone,
+    SacBurger,
     CastleBridgeDown,
     FortressBridgeDown,
 }
@@ -226,7 +221,6 @@ impl ReventureState {
         let mut weight = 0.0;
         if self.event_bool(States::HasShovel as u8) { weight += 0.5; }
         if self.event_bool(States::HasSword as u8) { weight += 0.5; }
-        if self.event_bool(States::HasSwordElder as u8) { weight += 0.5; }
         if self.event_bool(States::HasChicken as u8) { weight += 0.5; }
         if self.event_bool(States::HasShield as u8) { weight += 0.5; }
         if self.event_bool(States::HasLavaTrinket as u8) { weight += 0.5; }
@@ -250,6 +244,7 @@ pub struct BaseRegion {
     pub connections: Vec<BaseConnection>,
     pub jumpconnections: Vec<JumpConnection>,
     pub statechange: Vec<StateChange>,
+    pub specialstatechange: Vec<SpecialStatechange>,
     pub locations: Vec<BaseConnection>,
 }
 
@@ -261,6 +256,7 @@ impl BaseRegion {
             connections: Vec::new(),
             jumpconnections: Vec::new(),
             statechange: Vec::new(),
+            specialstatechange: Vec::new(),
             locations: Vec::new(),
         }
     }
@@ -279,6 +275,10 @@ impl BaseRegion {
 
     fn add_statechange(&mut self, statechange: StateChange) {
         self.statechange.push(statechange);
+    }
+
+    fn add_specialstatechange(&mut self, specialstatechange: SpecialStatechange) {
+        self.specialstatechange.push(specialstatechange);
     }
 
     fn add_location(&mut self, location: BaseConnection) {
@@ -330,6 +330,28 @@ impl JumpConnection {
 
     fn can_use(&self, state: &ReventureState) -> bool {
         (self.base.rule)(state)
+    }
+}
+
+// SpecialStatechange
+#[derive(Clone)]
+pub struct SpecialStatechange {
+    rule: CollectionRule,
+    apitems: SimpleBitset,
+    pub special_action: fn(&mut ReventureState),
+}
+
+impl SpecialStatechange {
+    fn new(rule: CollectionRule, apitems: SimpleBitset, special_action: fn(&mut ReventureState)) -> Self {
+        SpecialStatechange {
+            rule,
+            apitems,
+            special_action,
+        }
+    }
+
+    fn can_use(&self, state: &ReventureState) -> bool {
+        (self.rule)(state)
     }
 }
 
@@ -503,8 +525,7 @@ impl ReventureGraph {
                 let child_idx: usize = connection.goal_region_idx;
                 
                 // Store previous state lengths for change detection
-                let prev_state_len = self.regions[child_idx].apstate.potapitems.len();
-                let prev_state_lengths: Vec<u64> = self.regions[child_idx].apstate.potapitems
+                let prev_states: Vec<u64> = self.regions[child_idx].apstate.potapitems
                     .iter()
                     .map(|p| p.contents)
                     .collect();
@@ -534,16 +555,13 @@ impl ReventureGraph {
                     continue;
                 }
                 
-                // Reduce the child's AP state
-                // self.regions[child_idx].apstate.reduce_all();
-                
                 // Skip if already in todo list
                 if parent_todo_regions_set.contains(&child_idx) {
                     continue;
                 }
                 
                 // Check if state changed - if length changed
-                if prev_state_len != self.regions[child_idx].apstate.potapitems.len() {
+                if prev_states.len() != self.regions[child_idx].apstate.potapitems.len() {
                     parent_todo_regions.push_back(child_idx);
                     parent_todo_regions_set.insert(child_idx);
                     continue;
@@ -554,7 +572,7 @@ impl ReventureGraph {
                     .iter()
                     .enumerate()
                     .any(|(i, potapitems)| {
-                        potapitems.contents != prev_state_lengths[i]
+                        potapitems.contents != prev_states[i]
                     });
                 
                 if change {
@@ -703,8 +721,8 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>) -> Revent
             }
 
             // Check for Harakiri ending unlock
-            if !(region.state.event_bool(States::HasSword as u8) || region.state.event_bool(States::HasSwordElder as u8))
-             && (new_state.event_bool(States::HasSword as u8) || new_state.event_bool(States::HasSwordElder as u8)) {  // This state can do the Harakiri ending
+            if !region.state.event_bool(States::HasSword as u8)
+             && new_state.event_bool(States::HasSword as u8) {  // This state can do the Harakiri ending
                 let harakiri_region_name = get_region_identifier(locations::locations::LOC47, &ReventureState::new(), &base_regions);
                 let mut harakiri_region_idx = graph.get_region(&harakiri_region_name);
                 if harakiri_region_idx.is_none() {
@@ -768,9 +786,41 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>) -> Revent
             );
             graph.add_connection(region_idx, new_connection);
         }
+
+        for special_statechange in &base_region.specialstatechange {
+            if !special_statechange.can_use(&region.state) {
+                continue;
+            }
+            let mut new_state = region.state.clone();
+            (special_statechange.special_action)(&mut new_state);
+
+            let name = get_region_identifier(region.base_region_idx, &new_state, &base_regions);
+            let mut new_region_idx = graph.get_region(&name);
+            if new_region_idx.is_none() {
+                let new_region = Region::new(
+                    region.base_region_idx,
+                    new_state,
+                    region.location,
+                    &base_regions,
+                );
+                new_region_idx = Some(graph.add_region(new_region));
+                todo_regions.push(new_region_idx.unwrap());
+            }
+            let new_connection = Connection::new(
+                new_region_idx.unwrap(),
+                special_statechange.apitems.clone(),
+            );
+            graph.add_connection(region_idx, new_connection);
+        }
     }
 
     println!("Reventure graph built with {} regions!", graph.count());
+
+    // Simplify graph
+    // println!("Simplifying graph...");
+    // graph.simplify();
+    // println!("Graph simplified to {} regions!", graph.count());
+
 
     // Propagate AP states
     println!("Propagating AP states...");
@@ -801,6 +851,8 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>) -> Revent
 fn main() {
     // Parse options
     let args: Vec<String> = env::args().collect();
+
+    let debug = true; // For testing purposes
     
     let option_hard_jumps = args.contains(&"--hard-jumps".to_string());
     let option_hard_combat = args.contains(&"--hard-combat".to_string());
@@ -812,16 +864,20 @@ fn main() {
     let rng = &mut rand::rng();
 
     // Get random item_locs
-    let item_locs = valid_regions.choose_multiple(rng, 10).cloned().collect::<Vec<_>>();
-    // let item_locs = locations::get_default_item_locations(); // For testing purposes
+    let mut item_locs = valid_regions.choose_multiple(rng, 10).cloned().collect::<Vec<_>>();
+    if debug {
+        item_locs = locations::get_default_item_locations(); // For testing purposes
+    }
 
     // Set up item placements
     connections::setup_item_placements(&mut base_regions, &item_locs);
     println!();
     
     // Select random start_region from valid_regions
-    let start_region = *valid_regions.choose(rng).unwrap();
-    // let start_region = locations::regions::LONKS_HOUSE; // For testing purposes
+    let mut start_region = *valid_regions.choose(rng).unwrap();
+    if debug {
+        start_region = locations::regions::LONKS_HOUSE; // For testing purposes
+    }
     println!("Selected start region: {}", base_regions[start_region].name); 
 
     // Set up region connections
@@ -884,12 +940,16 @@ fn main() {
         reventure_file_name = args.last().unwrap();
     }
 
-    let mut reventure_file = OpenOptions::new()
-        .write(true)
-        .append(true)
-        .open(reventure_file_name)
-        .expect("Unable to open file");
-    writeln!(reventure_file, "{options_file_content}").expect("Unable to write to file");
+    if debug {
+        fs::write("test.yaml", options_file_content.clone()).expect("Unable to write file");
+    } else {
+        let mut reventure_file = OpenOptions::new()
+            .write(true)
+            .append(true)
+            .open(reventure_file_name)
+            .expect("Unable to open file");
+        writeln!(reventure_file, "{options_file_content}").expect("Unable to write to file");
+    }
 
     println!("Finished Generating Logic! Possible item locations: {}", possible_locations);
 
