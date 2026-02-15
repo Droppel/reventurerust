@@ -338,7 +338,7 @@ impl JumpConnection {
 pub struct SpecialStatechange {
     rule: CollectionRule,
     apitems: SimpleBitset,
-    pub special_action: fn(&mut ReventureState),
+    special_action: fn(&mut ReventureState),
 }
 
 impl SpecialStatechange {
