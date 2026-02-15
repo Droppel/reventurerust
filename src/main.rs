@@ -523,15 +523,8 @@ impl ReventureGraph {
             
             for connection in connections {
                 let child_idx: usize = connection.goal_region_idx;
-                
-                // Store previous state lengths for change detection
-                let prev_states: Vec<u64> = self.regions[child_idx].apstate.potapitems
-                    .iter()
-                    .map(|p| p.contents)
-                    .collect();
-                
+                                
                 let mut added = false;
-                
                 if connection.apitems.contents != 0 {
                     // Connection requires AP items
                     for potapitems in &parent_potapitems {
@@ -559,26 +552,9 @@ impl ReventureGraph {
                 if parent_todo_regions_set.contains(&child_idx) {
                     continue;
                 }
-                
-                // Check if state changed - if length changed
-                if prev_states.len() != self.regions[child_idx].apstate.potapitems.len() {
-                    parent_todo_regions.push_back(child_idx);
-                    parent_todo_regions_set.insert(child_idx);
-                    continue;
-                }
-                
-                // Check if any individual state lengths changed
-                let change = self.regions[child_idx].apstate.potapitems
-                    .iter()
-                    .enumerate()
-                    .any(|(i, potapitems)| {
-                        potapitems.contents != prev_states[i]
-                    });
-                
-                if change {
-                    parent_todo_regions.push_back(child_idx);
-                    parent_todo_regions_set.insert(child_idx);
-                }
+
+                parent_todo_regions.push_back(child_idx);
+                parent_todo_regions_set.insert(child_idx);
             }
         }
     }
