@@ -3,7 +3,7 @@ use std::io::Write;
 use std::fs::OpenOptions;
 use rand::seq::IndexedRandom;
 
-use crate::{items::APItems, locations::regions::MENU};
+use crate::{locations::regions::MENU};
 use espresso_logic::{BoolExpr, Minimizable};
 
 mod plantuml;
@@ -169,6 +169,7 @@ struct ReventureState {
     state: SimpleBitset,
 }
 
+#[allow(unused)]
 enum States {
     HasSword,
     HasChicken,

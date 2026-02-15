@@ -6,6 +6,7 @@
 
 
 // Aligned with line numbers. LN - 10 = AP Item ID
+#[allow(unused)]
 pub enum APItems {
     Nothing,
     ProgressiveSword,
