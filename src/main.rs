@@ -522,13 +522,15 @@ impl ReventureGraph {
         // Create a todo list with all regions
         let mut parent_todo_regions: VecDeque<usize> = (0..self.regions.len()).collect();
         let mut in_queue = vec![true; self.regions.len()];
+
+        let connection_clones = self.regions.iter().map(|r| r.connections.clone()).collect::<Vec<_>>();
         
         while !parent_todo_regions.is_empty() {
             let region_idx = parent_todo_regions.pop_front().unwrap();
             in_queue[region_idx] = false;
             
             // Get connections for this region (need to clone to avoid borrow checker issues)
-            let connections: Vec<Connection> = self.regions[region_idx].connections.clone();
+            let connections = &connection_clones[region_idx];
             let parent_potapitems = self.regions[region_idx].apstate.potapitems.clone();
             
             for connection in connections {
