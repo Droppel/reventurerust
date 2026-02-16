@@ -521,11 +521,11 @@ impl ReventureGraph {
     fn propagate_apstates(&mut self) {
         // Create a todo list with all regions
         let mut parent_todo_regions: VecDeque<usize> = (0..self.regions.len()).collect();
-        let mut parent_todo_regions_set: HashSet<usize> = (0..self.regions.len()).collect();
+        let mut in_queue = vec![true; self.regions.len()];
         
         while !parent_todo_regions.is_empty() {
             let region_idx = parent_todo_regions.pop_front().unwrap();
-            parent_todo_regions_set.remove(&region_idx);
+            in_queue[region_idx] = false;
             
             // Get connections for this region (need to clone to avoid borrow checker issues)
             let connections: Vec<Connection> = self.regions[region_idx].connections.clone();
@@ -559,12 +559,12 @@ impl ReventureGraph {
                 }
                 
                 // Skip if already in todo list
-                if parent_todo_regions_set.contains(&child_idx) {
+                if in_queue[child_idx] {
                     continue;
                 }
 
                 parent_todo_regions.push_back(child_idx);
-                parent_todo_regions_set.insert(child_idx);
+                in_queue[child_idx] = true;
             }
         }
     }
