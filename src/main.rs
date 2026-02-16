@@ -247,6 +247,7 @@ pub struct BaseRegion {
     pub statechange: Vec<StateChange>,
     pub specialstatechange: Vec<SpecialStatechange>,
     pub locations: Vec<BaseConnection>,
+    pub forced_location: Option<BaseConnection>,
 }
 
 impl BaseRegion {
@@ -259,7 +260,15 @@ impl BaseRegion {
             statechange: Vec::new(),
             specialstatechange: Vec::new(),
             locations: Vec::new(),
+            forced_location: None,
         }
+    }
+
+    fn set_forced_location(&mut self, location: BaseConnection) {
+        if self.forced_location.is_some() {
+            panic!("BaseRegion {} already has a forced location!", self.name);
+        }
+        self.forced_location = Some(location);
     }
 
     fn add_forcedstatechange(&mut self, statechange: StateChange) {
@@ -578,6 +587,31 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>) -> Revent
         let region_idx = todo_regions.pop().unwrap();
         let region = graph.regions[region_idx].clone();
         let base_region = &base_regions[region.base_region_idx];
+
+        if !&base_region.forced_location.is_none() {
+            let forced_location = base_region.forced_location.as_ref().unwrap();
+            if forced_location.can_use(&region.state) {
+                let name = get_region_identifier(forced_location.goal_region, &ReventureState::new(), &base_regions);
+                let mut new_region_idx = graph.get_region(&name);
+                if new_region_idx.is_none() {
+                    let new_region = Region::new(
+                        forced_location.goal_region,
+                        ReventureState::new(),
+                        true,
+                        &base_regions,
+                    );
+                    new_region_idx = Some(graph.add_region(new_region));
+                    // No reason to add location regions to todo list
+                }
+                let new_connection = Connection::new(
+                    new_region_idx.unwrap(),
+                    forced_location.apitems.clone(),
+                );
+                graph.add_connection(region_idx, new_connection);
+                continue; // Forced location connections take priority over all other connections, so skip the rest of the loop
+            }
+        }
+
         let mut forced_change_applied = false;
         let mut new_forced_state = region.state.clone();
         for forced_statechange in &base_region.forcedstatechange {
