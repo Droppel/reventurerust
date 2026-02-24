@@ -875,78 +875,78 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     base_regions[ALTAR].add_connection(BaseConnection::new(LEVERS, rules::hook, SimpleBitset::new_empty()));
     base_regions[ALTAR].add_connection(BaseConnection::new(GREAT_WATERFALL, rules::always, SimpleBitset::new_empty()));
     base_regions[ALTAR].add_location(BaseConnection::new(LOC72, rules::princess, SimpleBitset::new_empty()));
-    base_regions[ALTAR].add_specialstatechange(SpecialStatechange::new(rules::always, SimpleBitset::new_empty(), |state: &mut ReventureState| {
-        let sacable_states = vec![
-            (States::HasSword as u8, States::SacSword as u8),
-            (States::HasChicken as u8, States::SacChicken as u8),
-            (States::HasShovel as u8, States::SacShovel as u8),
-            (States::HasShield as u8, States::SacShield as u8),
-            (States::HasMap as u8, States::SacMap as u8),
-            (States::HasCompass as u8, States::SacCompass as u8),
-            (States::HasMrHugs as u8, States::SacMrHugs as u8),
-            (States::HasLavaTrinket as u8, States::SacLavaTrinket as u8),
-            (States::HasHook as u8, States::SacHook as u8),
-            (States::HasBombs as u8, States::SacBombs as u8),
-            (States::HasNuke as u8, States::SacNuke as u8),
-            (States::HasWhistle as u8, States::SacWhistle as u8),
-            (States::HasDarkStone as u8, States::SacDarkStone as u8),
-            (States::HasBurger as u8, States::SacBurger as u8),
-        ];
-        for &s in sacable_states.iter() {
-            let (has, sac) = s;
-            if state.event_bool(has) {
-                state.state.remove_apitem(has);
-                state.state.add_apitem(sac);
-            }
-        }
-    }));
-    fn sac_rule(state: &ReventureState) -> bool {
-        let mut sacced_items = 0;
-        if state.event_bool(States::SacSword as u8) {
-            sacced_items += 1;
-        }
-        if state.event_bool(States::SacChicken as u8) {
-            sacced_items += 1;
-        }
-        if state.event_bool(States::SacShovel as u8) {
-            sacced_items += 1;
-        }
-        if state.event_bool(States::SacShield as u8) {
-            sacced_items += 1;
-        }
-        if state.event_bool(States::SacMap as u8) {
-            sacced_items += 1;
-        }
-        if state.event_bool(States::SacCompass as u8) {
-            sacced_items += 1;
-        }
-        if state.event_bool(States::SacMrHugs as u8) {
-            sacced_items += 1;
-        }
-        if state.event_bool(States::SacLavaTrinket as u8) {
-            sacced_items += 1;
-        }
-        if state.event_bool(States::SacHook as u8) {
-            sacced_items += 1;
-        }
-        if state.event_bool(States::SacBombs as u8) {
-            sacced_items += 1;
-        }
-        if state.event_bool(States::SacNuke as u8) {
-            sacced_items += 1;
-        }
-        if state.event_bool(States::SacWhistle as u8) {
-            sacced_items += 1;
-        }
-        if state.event_bool(States::SacDarkStone as u8) {
-            sacced_items += 1;
-        }
-        if state.event_bool(States::SacBurger as u8) {
-            sacced_items += 1;
-        }
-        return sacced_items >= 6;
-    }
-    base_regions[ALTAR].set_forced_location(BaseConnection::new(LOC71, sac_rule, SimpleBitset::new_empty()));
+    // base_regions[ALTAR].add_specialstatechange(SpecialStatechange::new(rules::always, SimpleBitset::new_empty(), |state: &mut ReventureState| {
+    //     let sacable_states = vec![
+    //         (States::HasSword as u8, States::SacSword as u8),
+    //         (States::HasChicken as u8, States::SacChicken as u8),
+    //         (States::HasShovel as u8, States::SacShovel as u8),
+    //         (States::HasShield as u8, States::SacShield as u8),
+    //         (States::HasMap as u8, States::SacMap as u8),
+    //         (States::HasCompass as u8, States::SacCompass as u8),
+    //         (States::HasMrHugs as u8, States::SacMrHugs as u8),
+    //         (States::HasLavaTrinket as u8, States::SacLavaTrinket as u8),
+    //         (States::HasHook as u8, States::SacHook as u8),
+    //         (States::HasBombs as u8, States::SacBombs as u8),
+    //         (States::HasNuke as u8, States::SacNuke as u8),
+    //         (States::HasWhistle as u8, States::SacWhistle as u8),
+    //         (States::HasDarkStone as u8, States::SacDarkStone as u8),
+    //         (States::HasBurger as u8, States::SacBurger as u8),
+    //     ];
+    //     for &s in sacable_states.iter() {
+    //         let (has, sac) = s;
+    //         if state.event_bool(has) {
+    //             state.state.remove_apitem(has);
+    //             state.state.add_apitem(sac);
+    //         }
+    //     }
+    // }));
+    // fn sac_rule(state: &ReventureState) -> bool {
+    //     let mut sacced_items = 0;
+    //     if state.event_bool(States::SacSword as u8) {
+    //         sacced_items += 1;
+    //     }
+    //     if state.event_bool(States::SacChicken as u8) {
+    //         sacced_items += 1;
+    //     }
+    //     if state.event_bool(States::SacShovel as u8) {
+    //         sacced_items += 1;
+    //     }
+    //     if state.event_bool(States::SacShield as u8) {
+    //         sacced_items += 1;
+    //     }
+    //     if state.event_bool(States::SacMap as u8) {
+    //         sacced_items += 1;
+    //     }
+    //     if state.event_bool(States::SacCompass as u8) {
+    //         sacced_items += 1;
+    //     }
+    //     if state.event_bool(States::SacMrHugs as u8) {
+    //         sacced_items += 1;
+    //     }
+    //     if state.event_bool(States::SacLavaTrinket as u8) {
+    //         sacced_items += 1;
+    //     }
+    //     if state.event_bool(States::SacHook as u8) {
+    //         sacced_items += 1;
+    //     }
+    //     if state.event_bool(States::SacBombs as u8) {
+    //         sacced_items += 1;
+    //     }
+    //     if state.event_bool(States::SacNuke as u8) {
+    //         sacced_items += 1;
+    //     }
+    //     if state.event_bool(States::SacWhistle as u8) {
+    //         sacced_items += 1;
+    //     }
+    //     if state.event_bool(States::SacDarkStone as u8) {
+    //         sacced_items += 1;
+    //     }
+    //     if state.event_bool(States::SacBurger as u8) {
+    //         sacced_items += 1;
+    //     }
+    //     return sacced_items >= 6;
+    // }
+    // base_regions[ALTAR].set_forced_location(BaseConnection::new(LOC71, sac_rule, SimpleBitset::new_empty()));
 
     // Bomb connections
     base_regions[BOMB].add_jumpconnection(JumpConnection::new(ABOVE_HOOK, rules::always, SimpleBitset::new_empty(), 3.0));
