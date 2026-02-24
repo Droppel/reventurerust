@@ -20,73 +20,6 @@ struct SimpleBitset {
     contents: u64,
 }
 
-const ITEMID_TO_ITEMNAME: [&str; 64] = [
-    "Nothing",
-    "ProgressiveSword",
-    "SwordPedestal",
-    "Shovel",
-    "Boomerang",
-    "Map",
-    "Compass",
-    "Whistle",
-    "Burger",
-    "DarkStone",
-    "Hook",
-    "FishingRod",
-    "LavaTrinket",
-    "MisterHugs",
-    "Bombs",
-    "Shield",
-    "Nuke",
-    "Princess",
-    "Anvil",
-    "Strawberry",
-    "ShopCannon",
-    "CastleToShopCannon",
-    "DarkFortressCannon",
-    "CastleToDarkFortressCannon",
-    "DesertGeyserEast",
-    "DesertGeyserWest",
-    "VolcanoGeyser",  
-    "WaterfallGeyser",
-    "ElevatorButton",
-    "CallElevatorButtons",
-    "MirrorPortal",
-    "FairyPortal",
-    "Vine",
-    "OpenCastleFloor",
-    "FaceplantStone",
-    "SewerPipe",
-    "DarkStoneLeverLeft",
-    "DarkStoneLeverMiddle",
-    "DarkStoneLeverRight",
-    "Dragon",
-    "Shopkeeper",
-    "Mimic",
-    "King",
-    "Chicken",
-    "Elder",
-    "Boulder",
-    "Closet",
-    "Princess Statue",
-    "PC",
-    "Dolphins",
-    "Mimic Pet",
-    "Gem",
-    "ChangeHeroName",
-    "ChangePrincessName",
-    "ChangeDarkLordName",
-    "JumpIncrease",
-    "SwordChest",
-    "Filler",
-    "Filler",
-    "EventKillJuan",
-    "EventKillMiguel",
-    "EventKillJavi",
-    "EventKillAlberto",
-    "EventKillDaniel",
-];
-
 impl SimpleBitset {
     fn new(items: Vec<u8>) -> Self {
         let mut apitems = SimpleBitset::new_empty();
@@ -128,9 +61,9 @@ impl SimpleBitset {
 
     fn to_string(&self) -> String {
         let mut output = String::new();
-        for item in 0..64 {
+        for item in 0..64 as u8 {
             if self.contains(item) {
-                output.push_str(ITEMID_TO_ITEMNAME[item as usize]);
+                output.push_str(items::ITEMID_TO_ITEMNAME[item as usize]);
                 output.push_str(" & ");
             }
         }
