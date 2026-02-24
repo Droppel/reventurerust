@@ -42,13 +42,15 @@ pub enum APItems {
     Chicken,
     Elder,
     Boulder,
-    JumpIncrease,
     SwordChest,
     EventKillJuan,
     EventKillMiguel,
     EventKillJavi,
     EventKillAlberto,
     EventKillDaniel,
+    JumpIncreaseBit1,
+    JumpIncreaseBit2,
+    JumpIncreaseBit3,
 }
 
 pub const ITEMID_TO_ITEMNAME: [&str; 47] = [
@@ -95,11 +97,11 @@ pub const ITEMID_TO_ITEMNAME: [&str; 47] = [
     "Chicken",
     "Elder",
     "Boulder",
-    "JumpIncrease",
     "SwordChest",
     "EventKillJuan",
     "EventKillMiguel",
     "EventKillJavi",
     "EventKillAlberto",
     "EventKillDaniel",
+    "JumpIncrease",
 ];

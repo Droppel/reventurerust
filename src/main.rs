@@ -11,8 +11,8 @@ mod locations;
 mod connections;
 mod items;
 
-const TOTAL_JUMP_INCREASE: i32 = 0;
-const START_JUMP: f32 = 3.0;
+const TOTAL_JUMP_INCREASE: i32 = 6;
+const START_JUMP: f32 = 1.0;
 
 // APItems - stores a set of advancement progression items
 #[derive(Clone, Debug)]
@@ -61,11 +61,16 @@ impl SimpleBitset {
 
     fn to_string(&self) -> String {
         let mut output = String::new();
-        for item in 0..64 as u8 {
+        for item in 0..items::APItems::JumpIncreaseBit1 as u8 {
             if self.contains(item) {
                 output.push_str(items::ITEMID_TO_ITEMNAME[item as usize]);
                 output.push_str(" & ");
             }
+        }
+        let jump_mask = 0b111 << items::APItems::JumpIncreaseBit1 as u8;
+        let current_jump_increases = (self.contents & jump_mask) >> items::APItems::JumpIncreaseBit1 as u8;
+        if current_jump_increases > 0 {
+            output.push_str(&format!("JumpIncreases_{} & ", current_jump_increases));
         }
         output.pop(); // remove trailing " "
         output.pop(); // remove trailing &
@@ -268,7 +273,12 @@ impl JumpConnection {
 
     fn get_jumpitems_req(&self, state: &ReventureState) -> i32 {
         let weight = state.get_weight();
-        ((self.jump_req + weight - START_JUMP) * 2.0) as i32
+        let req = ((self.jump_req + weight - START_JUMP) * 2.0) as i32;
+        if req < 0 {
+            0
+        } else {
+            req
+        }
     }
 
     fn can_use(&self, state: &ReventureState) -> bool {
@@ -602,9 +612,14 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>) -> Revent
                 new_region_idx = Some(graph.add_region(new_region));
                 todo_regions.push(new_region_idx.unwrap());
             }
+            let jump_mask = 0b111 << items::APItems::JumpIncreaseBit1 as u8;
+            let mut apitems = jump_connection.base.apitems.clone();
+            let current_jump_increases = apitems.contents & jump_mask >> items::APItems::JumpIncreaseBit1 as u8;
+            let new_jump_increases = std::cmp::max(current_jump_increases, req_jump_increases as u64);
+            apitems.contents = (apitems.contents & !jump_mask) | (new_jump_increases << items::APItems::JumpIncreaseBit1 as u8);
             let new_connection = Connection::new(
                 new_region_idx.unwrap(),
-                jump_connection.base.apitems.clone(),
+                apitems,
             );
             graph.add_connection(region_idx, new_connection);
         }
@@ -830,6 +845,9 @@ fn main() {
 
         let mut logic_string = String::new();
 
+        if loc_name.contains("is Lava") {
+            print!("");
+        }
 
         for apitems in apstate.potapitems.iter() {
             logic_string.push_str(&format!("{} | ", apitems.to_string()));
