@@ -196,10 +196,11 @@ pub mod regions {
     pub const ALBERTO: usize = 182;
     pub const CASTLE_CANNON_TO_FORTRESS: usize = 183;
     pub const FORTRESS_ABOVE_SD_SWITCH: usize = 184;
+    pub const FORTRESS_RIGHT_OF_SPIKEPIT: usize = 185;
 }
 
 /// Total number of base regions (locations + events + game regions)
-pub const TOTAL_BASE_REGIONS: usize = regions::FORTRESS_ABOVE_SD_SWITCH + 1;
+pub const TOTAL_BASE_REGIONS: usize = regions::FORTRESS_RIGHT_OF_SPIKEPIT + 1;
 
 /// Creates all base regions with their names
 pub fn create_all_base_regions() -> Vec<BaseRegion> {
@@ -395,6 +396,7 @@ pub fn create_all_base_regions() -> Vec<BaseRegion> {
     base_regions.push(BaseRegion::new("Alberto"));
     base_regions.push(BaseRegion::new("CastleCannonToFortress"));
     base_regions.push(BaseRegion::new("FortressAboveSDSwitch"));
+    base_regions.push(BaseRegion::new("FortressRightOfSpikepit"));
     
     base_regions
 }
