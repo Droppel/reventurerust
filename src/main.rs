@@ -886,6 +886,7 @@ fn main() {
     // remove trailing |
     let mut possible_locations = 0;
 
+    let mut location_logic_strings: Vec<(String, String)> = Vec::new();
     for region in graph.regions.iter() {
         if !region.location {
             continue;
@@ -912,6 +913,13 @@ fn main() {
         let logic_expression = BoolExpr::parse(&logic_string).expect(format!("Failed to parse logic expression for rules '{}'", logic_string).as_str());
         let minimized_expression = logic_expression.minimize().expect("Failed to minimize logic expression");
 
+        location_logic_strings.push((loc_name.clone(), minimized_expression.to_string()));
+    }
+    
+    // Sort location logic strings alphabetically by location name
+    location_logic_strings.sort_by(|a, b| a.0.cmp(&b.0));
+
+    for (loc_name, minimized_expression) in location_logic_strings {
         options_file_content.push_str(&format!("    {}: '{}'\n", loc_name.replace(" ", "_"), minimized_expression));
     }
 
