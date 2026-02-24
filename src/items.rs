@@ -1,20 +1,9 @@
-
-
-
-
-
-
-
-// Aligned with line numbers. LN - 10 = AP Item ID
-#[allow(unused)]
 pub enum APItems {
-    Nothing,
-    ProgressiveSword,
     SwordPedestal,
     Shovel,
-    Boomerang,
-    Map,
-    Compass,
+    // Boomerang,
+    // Map,
+    // Compass,
     Whistle,
     Burger,
     DarkStone,
@@ -32,7 +21,6 @@ pub enum APItems {
     CastleToShopCannon,
     DarkFortressCannon,
     CastleToDarkFortressCannon,
-    DesertGeyserEast,
     DesertGeyserWest,
     VolcanoGeyser, 
     WaterfallGeyser,
@@ -54,19 +42,8 @@ pub enum APItems {
     Chicken,
     Elder,
     Boulder,
-    Closet,
-    PrincessStatue,
-    PC,
-    Dolphins,
-    MimicPet,
-    Gem,
-    ChangeHeroName,
-    ChangePrincessName,
-    ChangeDarkLordName,
     JumpIncrease,
     SwordChest,
-    Filler,
-    Filler2,
     EventKillJuan,
     EventKillMiguel,
     EventKillJavi,
@@ -74,14 +51,12 @@ pub enum APItems {
     EventKillDaniel,
 }
 
-pub const ITEMID_TO_ITEMNAME: [&str; 64] = [
-    "Nothing",
-    "ProgressiveSword",
+pub const ITEMID_TO_ITEMNAME: [&str; 47] = [
     "SwordPedestal",
     "Shovel",
-    "Boomerang",
-    "Map",
-    "Compass",
+    // "Boomerang",
+    // "Map",
+    // "Compass",
     "Whistle",
     "Burger",
     "DarkStone",
@@ -99,7 +74,6 @@ pub const ITEMID_TO_ITEMNAME: [&str; 64] = [
     "CastleToShopCannon",
     "DarkFortressCannon",
     "CastleToDarkFortressCannon",
-    "DesertGeyserEast",
     "DesertGeyserWest",
     "VolcanoGeyser",  
     "WaterfallGeyser",
@@ -121,19 +95,8 @@ pub const ITEMID_TO_ITEMNAME: [&str; 64] = [
     "Chicken",
     "Elder",
     "Boulder",
-    "Closet",
-    "Princess Statue",
-    "PC",
-    "Dolphins",
-    "Mimic Pet",
-    "Gem",
-    "ChangeHeroName",
-    "ChangePrincessName",
-    "ChangeDarkLordName",
     "JumpIncrease",
     "SwordChest",
-    "Filler",
-    "Filler",
     "EventKillJuan",
     "EventKillMiguel",
     "EventKillJavi",
