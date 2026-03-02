@@ -279,7 +279,7 @@ pub fn setup_item_placements(base_regions: &mut [BaseRegion], item_locations: &[
         rules::can_pickup_sword,
         SimpleBitset::new(vec![APItems::SwordChest as u8]),
     ));
-    base_regions[item_locations[0]].add_location(BaseConnection::new(LOC47, rules::always, 
+    base_regions[item_locations[0]].add_location(BaseConnection::new(LOC47, rules::can_pickup_sword, 
         SimpleBitset::new(vec![APItems::SwordChest as u8])));
 
     // Item 1: Sword Pedestal (Elder)
@@ -289,7 +289,7 @@ pub fn setup_item_placements(base_regions: &mut [BaseRegion], item_locations: &[
         rules::can_pickup_sword,
         SimpleBitset::new(vec![APItems::SwordPedestal as u8]),
     ));
-    base_regions[item_locations[1]].add_location(BaseConnection::new(LOC47, rules::always, 
+    base_regions[item_locations[1]].add_location(BaseConnection::new(LOC47, rules::can_pickup_sword, 
         SimpleBitset::new(vec![APItems::SwordPedestal as u8])));
 
     // Item 2: Shovel
