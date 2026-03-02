@@ -48,7 +48,12 @@ impl SimpleBitset {
     }
 
     fn add_apitems(&mut self, items: SimpleBitset) {
+        let jump_mask = 0b111 << items::APItems::JumpIncreaseBit1 as u8;
+        let jump_increases_before = (self.contents & jump_mask) >> items::APItems::JumpIncreaseBit1 as u8;
+        let jump_increases_to_add = (items.contents & jump_mask) >> items::APItems::JumpIncreaseBit1 as u8;
         self.contents |= items.contents;
+        let jump_increases = std::cmp::max(jump_increases_before, jump_increases_to_add);
+        self.contents = (self.contents & !jump_mask) | (jump_increases << items::APItems::JumpIncreaseBit1 as u8);
     }
 
     fn remove_apitem(&mut self, item: u8) {
