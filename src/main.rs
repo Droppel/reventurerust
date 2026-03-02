@@ -70,7 +70,7 @@ impl SimpleBitset {
         let jump_mask = 0b111 << items::APItems::JumpIncreaseBit1 as u8;
         let current_jump_increases = (self.contents & jump_mask) >> items::APItems::JumpIncreaseBit1 as u8;
         if current_jump_increases > 0 {
-            output.push_str(&format!("JumpIncreases_{} & ", current_jump_increases));
+            output.push_str(&format!("JumpIncrease_{} & ", current_jump_increases));
         }
         output.pop(); // remove trailing " "
         output.pop(); // remove trailing &
@@ -791,7 +791,7 @@ fn main() {
     // Parse options
     let args: Vec<String> = env::args().collect();
 
-    let debug = true; // For testing purposes
+    let debug = false; // For testing purposes
     
     let option_hard_jumps = args.contains(&"--hard-jumps".to_string());
     let option_hard_combat = args.contains(&"--hard-combat".to_string());
@@ -828,9 +828,11 @@ fn main() {
 
     let mut options_file_content = String::new();
     options_file_content.push_str("\n  logic:\n");
-    options_file_content.push_str(format!("    start_region: {},\n", base_regions[start_region].name).as_str());
+    options_file_content.push_str(format!("    start_region: {}\n", base_regions[start_region].name).as_str());
     let item_locs_str = item_locs.iter().map(|loc| base_regions[*loc].name.clone()).collect::<Vec<_>>().join("|");
     options_file_content.push_str(format!("    item_locations: '{}'\n", item_locs_str).as_str());
+    options_file_content.push_str(format!("    starting_jumps: '{}'\n", START_JUMP.to_string()).as_str());
+    options_file_content.push_str(format!("    total_jump_increase: '{}'\n", TOTAL_JUMP_INCREASE.to_string()).as_str());
     // remove trailing |
     let mut possible_locations = 0;
 
@@ -918,65 +920,4 @@ fn main() {
     // build_simple_graph(&item_locs, &base_regions, start_region);
 
     // plantuml::save_plant_uml(&graph, "test.plantuml");
-}
-
-#[allow(dead_code)]
-fn build_simple_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>) {
-    // Build the Reventure graph
-    println!("Building Reventure graph...");
-
-    let mut graph = ReventureGraph::new();
-    graph.item_locations = item_locs.clone();
-    let mut todo_regions: Vec<usize> = Vec::new();
-    let menuregion = Region::new(MENU, ReventureState::new(), false, &base_regions);
-
-    let menu_idx = graph.add_region(menuregion);
-    todo_regions.push(menu_idx);
-
-    while todo_regions.len() > 0 {
-        let region_idx = todo_regions.pop().unwrap();
-        let region = graph.regions[region_idx].clone();
-        let base_region = &base_regions[region.base_region_idx];
-        for jump_connection in &base_region.jumpconnections {
-            // Process jump connections
-            let name = get_region_identifier(jump_connection.base.goal_region, &region.state, &base_regions);
-            let mut new_region_idx = graph.get_region(&name);
-            if new_region_idx.is_none() {
-                let new_region = Region::new(
-                    jump_connection.base.goal_region,
-                    region.state.clone(),
-                    false,
-                    &base_regions,
-                );
-                new_region_idx = Some(graph.add_region(new_region));
-                todo_regions.push(new_region_idx.unwrap());
-            }
-            let new_connection = Connection::new(
-                new_region_idx.unwrap(),
-                jump_connection.base.apitems.clone(),
-            );
-            graph.add_connection(region_idx, new_connection);
-        }
-
-        for base_connection in &base_region.connections {
-            let name = get_region_identifier(base_connection.goal_region, &region.state, &base_regions);
-            let mut new_region_idx = graph.get_region(&name);
-            if new_region_idx.is_none() {
-                let new_region = Region::new(
-                    base_connection.goal_region,
-                    region.state.clone(),
-                    false,
-                    &base_regions,
-                );
-                new_region_idx = Some(graph.add_region(new_region));
-                todo_regions.push(new_region_idx.unwrap());
-            }
-            let new_connection = Connection::new(
-                new_region_idx.unwrap(),
-                base_connection.apitems.clone(),
-            );
-            graph.add_connection(region_idx, new_connection);
-        }
-    }
-    plantuml::save_plant_uml(&graph, &format!("simple_graph.plantuml"));
 }
