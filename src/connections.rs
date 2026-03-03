@@ -801,15 +801,19 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
 
     // Ocean connections
     base_regions[OCEAN].add_connection(BaseConnection::new(SHOP_ROOF, rules::always, SimpleBitset::new_empty()));
+    base_regions[OCEAN].add_jumpconnection(JumpConnection::new(PIRATE_SHIP, rules::always, SimpleBitset::new_empty(), 2.0));
     base_regions[OCEAN].add_location(BaseConnection::new(LOC95, rules::always, SimpleBitset::new_empty()));
-    base_regions[OCEAN].add_location(BaseConnection::new(LOC96, rules::always, SimpleBitset::new_empty()));
-    base_regions[OCEAN].add_location(BaseConnection::new(LOC97, rules::always, SimpleBitset::new_empty()));
     base_regions[OCEAN].add_forcedstatechange(StateChange::new(
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
         rules::darkstone,
         SimpleBitset::new_empty(),
     ));
+
+    // PirateShip connections
+    base_regions[PIRATE_SHIP].add_location(BaseConnection::new(LOC96, rules::always, SimpleBitset::new_empty()));
+    base_regions[PIRATE_SHIP].add_location(BaseConnection::new(LOC97, rules::always, SimpleBitset::new_empty()));
+
 
     // NukeStorage connections
     base_regions[NUKE_STORAGE].add_connection(BaseConnection::new(SHOP, rules::always, SimpleBitset::new_empty()));
