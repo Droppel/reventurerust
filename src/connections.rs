@@ -1133,6 +1133,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     if option_hard_combat {
         base_regions[FORTRESS_MOAT].add_connection(BaseConnection::new(FORTRESS_RIGHT_OF_SPIKEPIT, rules::sword, SimpleBitset::new_empty()));
     }
+    base_regions[FORTRESS_MOAT].add_location(BaseConnection::new(LOC03, rules::always, SimpleBitset::new_empty()));
     base_regions[FORTRESS_MOAT].add_location(BaseConnection::new(LOC13, rules::mrhugs, SimpleBitset::new_empty()));
     base_regions[FORTRESS_MOAT].add_location(BaseConnection::new(LOC15, rules::always, SimpleBitset::new_empty()));
     base_regions[FORTRESS_MOAT].add_location(BaseConnection::new(LOC21, rules::always, SimpleBitset::new_empty()));
@@ -1193,6 +1194,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     base_regions[WHISTLE_ALTAR].add_jumpconnection(JumpConnection::new(FORTRESS_ROOF, rules::fortress_bridge_up, SimpleBitset::new_empty(), 3.0));
     base_regions[WHISTLE_ALTAR].add_jumpconnection(JumpConnection::new(FORTRESS_ROOF, rules::fortress_bridge_up_hook, SimpleBitset::new_empty(), 2.0));
     base_regions[WHISTLE_ALTAR].add_jumpconnection(JumpConnection::new(WHISTLE, rules::always, SimpleBitset::new_empty(), 3.0));
+    base_regions[WHISTLE_ALTAR].add_location(BaseConnection::new(LOC03, rules::always, SimpleBitset::new_empty()));
     base_regions[WHISTLE_ALTAR].add_location(BaseConnection::new(LOC13, rules::mrhugs, SimpleBitset::new_empty()));
     base_regions[WHISTLE_ALTAR].add_location(BaseConnection::new(LOC25, rules::sword, SimpleBitset::new_empty()));
     base_regions[WHISTLE_ALTAR].add_location(BaseConnection::new(LOC39, rules::no_princess, SimpleBitset::new_empty()));
