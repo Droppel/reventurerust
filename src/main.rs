@@ -708,10 +708,17 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>) -> Revent
                 continue; // This statechange leads to greedy bastard ending, no further progress is possible
             }
 
-            // let required_jump_increases = (weight * 2.0 - (START_JUMP * 2.0 - 2.0)) as i32;
-            // if required_jump_increases > TOTAL_JUMP_INCREASE {
-            //     continue;
-            // }
+            let req_jump_increases = ((1.0 + weight - START_JUMP) * 2.0) as i32;
+            if req_jump_increases > TOTAL_JUMP_INCREASE {
+                continue;
+            }
+
+            let jump_mask = 0b111 << items::APItems::JumpIncreaseBit1 as u8;
+            let mut apitems = statechange.apitems.clone();
+            let current_jump_increases = apitems.contents & jump_mask >> items::APItems::JumpIncreaseBit1 as u8;
+            let new_jump_increases = std::cmp::max(current_jump_increases, req_jump_increases as u64);
+            apitems.contents = (apitems.contents & !jump_mask) | (new_jump_increases << items::APItems::JumpIncreaseBit1 as u8);
+
             let name = get_region_identifier(region.base_region_idx, &new_state, &base_regions);
             let mut new_region_idx = graph.get_region(&name);
             if new_region_idx.is_none() {
@@ -726,7 +733,7 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>) -> Revent
             }
             let new_connection = Connection::new(
                 new_region_idx.unwrap(),
-                statechange.apitems.clone(),
+                apitems,
             );
             graph.add_connection(region_idx, new_connection);
         }
