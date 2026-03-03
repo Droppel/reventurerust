@@ -28,6 +28,10 @@ pub mod rules {
         state.event_bool(States::HasSword as u8)
     }
 
+    pub fn shield_sword(state: &ReventureState) -> bool {
+        shield(state) || sword(state)
+    }
+
     pub fn mrhugs(state: &ReventureState) -> bool {
         state.event_bool(States::HasMrHugs as u8)
     }
@@ -191,6 +195,10 @@ pub mod rules {
 
     pub fn no_chicken_princess(state: &ReventureState) -> bool {
         !chicken(state) && princess(state)
+    }
+
+    pub fn no_chicken(state: &ReventureState) -> bool {
+        !chicken(state)
     }
 
     pub fn no_chicken_no_princess(state: &ReventureState) -> bool {
@@ -583,7 +591,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
 
     // BelowVolcanoBridge connections
     base_regions[BELOW_VOLCANO_BRIDGE].add_connection(BaseConnection::new(LEFT_OF_DRAGON, rules::shovel, SimpleBitset::new_empty()));
-    base_regions[BELOW_VOLCANO_BRIDGE].add_jumpconnection(JumpConnection::new(GOLD_ROOM, rules::always, SimpleBitset::new_empty(), 2.0));
+    base_regions[BELOW_VOLCANO_BRIDGE].add_jumpconnection(JumpConnection::new(GOLD_ROOM, rules::always, SimpleBitset::new_empty(), 1.5));
     fn shovel_and_trinket(state: &ReventureState) -> bool {
         rules::shovel(state) && rules::lavatrinket(state)
     }
@@ -659,6 +667,8 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
 
     // Cloud connections
     base_regions[CLOUD].add_connection(BaseConnection::new(CASTLE_ROOF, rules::always, SimpleBitset::new_empty()));
+    base_regions[CLOUD].add_connection(BaseConnection::new(CHIMNEY, rules::always, SimpleBitset::new_empty()));
+    base_regions[CLOUD].add_connection(BaseConnection::new(MOUNTAIN_LEFT_OUTCROP, rules::always, SimpleBitset::new_empty()));
     // Could also drop to CastleMinions, but that would be redundant
     base_regions[CLOUD].add_connection(BaseConnection::new(CASTLE_CANNON_TO_SHOP, rules::always, SimpleBitset::new_empty()));
     base_regions[CLOUD].add_location(BaseConnection::new(LOC77, rules::always, SimpleBitset::new_empty()));
@@ -670,7 +680,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     ));
 
     // BelowCastleBridge connections
-    base_regions[BELOW_CASTLE_BRIDGE].add_jumpconnection(JumpConnection::new(SEWER, rules::always, SimpleBitset::new_empty(), 2.5));
+    base_regions[BELOW_CASTLE_BRIDGE].add_jumpconnection(JumpConnection::new(SEWER, rules::always, SimpleBitset::new_empty(), 2.0));
     base_regions[BELOW_CASTLE_BRIDGE].add_jumpconnection(JumpConnection::new(SECRET_PATH_MOAT_WELL, rules::always, SimpleBitset::new_empty(), 3.0));
     base_regions[BELOW_CASTLE_BRIDGE].add_connection(BaseConnection::new(CASTLE_MOAT, rules::always, SimpleBitset::new_empty()));
 
@@ -1038,7 +1048,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
 
     // MountainTreasure connections
     base_regions[MOUNTAIN_TREASURE].add_connection(BaseConnection::new(BELOW_LEAP_OF_FAITH, rules::always, SimpleBitset::new_empty()));
-    base_regions[MOUNTAIN_TREASURE].add_location(BaseConnection::new(LOC33, rules::no_princess, SimpleBitset::new_empty()));
+    base_regions[MOUNTAIN_TREASURE].add_location(BaseConnection::new(LOC33, rules::no_chicken_no_princess, SimpleBitset::new_empty()));
     base_regions[MOUNTAIN_TREASURE].add_location(BaseConnection::new(LOC62, rules::shovel, SimpleBitset::new_empty()));
     base_regions[MOUNTAIN_TREASURE].add_forcedstatechange(StateChange::new(
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
@@ -1123,9 +1133,15 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     if option_hard_combat {
         base_regions[FORTRESS_MOAT].add_connection(BaseConnection::new(FORTRESS_RIGHT_OF_SPIKEPIT, rules::sword, SimpleBitset::new_empty()));
     }
+    base_regions[FORTRESS_MOAT].add_location(BaseConnection::new(LOC13, rules::mrhugs, SimpleBitset::new_empty()));
     base_regions[FORTRESS_MOAT].add_location(BaseConnection::new(LOC15, rules::always, SimpleBitset::new_empty()));
     base_regions[FORTRESS_MOAT].add_location(BaseConnection::new(LOC21, rules::always, SimpleBitset::new_empty()));
-    base_regions[FORTRESS_MOAT].add_location(BaseConnection::new(LOC49, rules::sword, SimpleBitset::new_empty()));
+    base_regions[FORTRESS_MOAT].add_location(BaseConnection::new(LOC25, rules::sword, SimpleBitset::new_empty()));
+    if option_hard_combat {
+        base_regions[FORTRESS_MOAT].add_location(BaseConnection::new(LOC49, rules::sword, SimpleBitset::new_empty()));
+    } else {
+        base_regions[FORTRESS_MOAT].add_location(BaseConnection::new(LOC49, rules::shield_sword, SimpleBitset::new_empty()));
+    }
 
     // FortressAboveSDSwitch connections
     base_regions[FORTRESS_ABOVE_SD_SWITCH].add_jumpconnection(JumpConnection::new(FORTRESS_MOAT, rules::chicken, SimpleBitset::new_empty(), 2.0));
@@ -1177,6 +1193,8 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     base_regions[WHISTLE_ALTAR].add_jumpconnection(JumpConnection::new(FORTRESS_ROOF, rules::fortress_bridge_up, SimpleBitset::new_empty(), 3.0));
     base_regions[WHISTLE_ALTAR].add_jumpconnection(JumpConnection::new(FORTRESS_ROOF, rules::fortress_bridge_up_hook, SimpleBitset::new_empty(), 2.0));
     base_regions[WHISTLE_ALTAR].add_jumpconnection(JumpConnection::new(WHISTLE, rules::always, SimpleBitset::new_empty(), 3.0));
+    base_regions[WHISTLE_ALTAR].add_location(BaseConnection::new(LOC13, rules::mrhugs, SimpleBitset::new_empty()));
+    base_regions[WHISTLE_ALTAR].add_location(BaseConnection::new(LOC25, rules::sword, SimpleBitset::new_empty()));
     base_regions[WHISTLE_ALTAR].add_location(BaseConnection::new(LOC39, rules::no_princess, SimpleBitset::new_empty()));
     base_regions[WHISTLE_ALTAR].add_location(BaseConnection::new(LOC69, rules::anysword_princess, SimpleBitset::new_empty()));
     base_regions[WHISTLE_ALTAR].add_location(BaseConnection::new(LOC73, rules::mrhugs_princess, SimpleBitset::new_empty()));
