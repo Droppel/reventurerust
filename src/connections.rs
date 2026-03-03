@@ -443,7 +443,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
         SimpleBitset::new(vec![APItems::Chicken as u8]),
     ));
     fn rule_loc63(state: &ReventureState) -> bool {
-        !rules::chicken(state) && rules::sword(state)
+        !rules::chicken(state) && rules::sword(state) && rules::no_princess(state)
     }
     base_regions[CHICKEN].add_location(BaseConnection::new(LOC63, rule_loc63, SimpleBitset::new(vec![APItems::Chicken as u8])));
     fn rule_loc79(state: &ReventureState) -> bool {
