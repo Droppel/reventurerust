@@ -1208,6 +1208,9 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     // BelowLeapOfFaith connections
     base_regions[BELOW_LEAP_OF_FAITH].add_connection(BaseConnection::new(LEVERS, rules::always, SimpleBitset::new_empty()));
     base_regions[BELOW_LEAP_OF_FAITH].add_connection(BaseConnection::new(WHISTLE_ALTAR, rules::always, SimpleBitset::new_empty()));
+    base_regions[BELOW_LEAP_OF_FAITH].add_location(BaseConnection::new(LOC03, rules::always, SimpleBitset::new_empty()));
+    base_regions[BELOW_LEAP_OF_FAITH].add_location(BaseConnection::new(LOC13, rules::mrhugs, SimpleBitset::new_empty()));
+    base_regions[BELOW_LEAP_OF_FAITH].add_location(BaseConnection::new(LOC25, rules::sword, SimpleBitset::new_empty()));
 
     // Elevator connections
     base_regions[ELEVATOR].add_connection(BaseConnection::new(WHISTLE_ALTAR, rules::fortress_bridge_down_no_princess, SimpleBitset::new_empty()));
