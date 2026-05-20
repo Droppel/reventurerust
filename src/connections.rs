@@ -668,7 +668,7 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     // Cloud connections
     base_regions[CLOUD].add_connection(BaseConnection::new(CASTLE_ROOF, rules::always, SimpleBitset::new_empty()));
     base_regions[CLOUD].add_connection(BaseConnection::new(CHIMNEY, rules::always, SimpleBitset::new_empty()));
-    base_regions[CLOUD].add_connection(BaseConnection::new(MOUNTAIN_LEFT_OUTCROP, rules::always, SimpleBitset::new_empty()));
+    base_regions[CLOUD].add_jumpconnection(JumpConnection::new(MOUNTAIN_LEFT_OUTCROP, rules::always, SimpleBitset::new_empty(), 2.0));
     // Could also drop to CastleMinions, but that would be redundant
     base_regions[CLOUD].add_connection(BaseConnection::new(CASTLE_CANNON_TO_SHOP, rules::always, SimpleBitset::new_empty()));
     base_regions[CLOUD].add_location(BaseConnection::new(LOC77, rules::always, SimpleBitset::new_empty()));
