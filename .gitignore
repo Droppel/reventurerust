@@ -8,3 +8,9 @@ graphs/
 location_apstates.txt
 graph.bin
 profile.json.gz
+patches/espresso-logic/*
+!patches/espresso-logic/espresso-src/
+patches/espresso-logic/espresso-src/*
+!patches/espresso-logic/LICENSE
+!patches/espresso-logic/espresso-src/cpu_time.c
+!patches/espresso-logic/espresso-src/util_signature.c

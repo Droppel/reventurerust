@@ -5,4 +5,7 @@ edition = "2024"
 
 [dependencies]
 rand = "0.9.2"
-espresso-logic = "3.1"
+espresso-logic = "3.1.2"
+
+[patch.crates-io]
+espresso-logic = { path = "patches/espresso-logic" }
