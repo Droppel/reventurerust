@@ -73,6 +73,7 @@ pub mod locations {
     pub const LOC68: usize = 67;  // "68: Otaku Fever"
     pub const LOC69: usize = 68;  // "69: Quick and Dirty"
     pub const LOC70: usize = 69;  // "70: It's a Trap"
+    #[allow(dead_code)] // Currently not implemented
     pub const LOC71: usize = 70;  // "71: Sustainable Development"
     pub const LOC72: usize = 71;  // "72: Ecologist"
     pub const LOC73: usize = 72;  // "73: Dark Love"

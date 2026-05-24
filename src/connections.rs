@@ -1,6 +1,6 @@
 use std::vec;
 
-use crate::{BaseConnection, BaseRegion, JumpConnection, ReventureState, SimpleBitset, SpecialStatechange, StateChange, States};
+use crate::{BaseConnection, BaseRegion, JumpConnection, ReventureState, SimpleBitset, /*SpecialStatechange,*/ StateChange, States};
 use crate::locations::{locations::*, events::*, regions::*};
 use crate::items::APItems;
 
@@ -195,10 +195,6 @@ pub mod rules {
 
     pub fn no_chicken_princess(state: &ReventureState) -> bool {
         !chicken(state) && princess(state)
-    }
-
-    pub fn no_chicken(state: &ReventureState) -> bool {
-        !chicken(state)
     }
 
     pub fn no_chicken_no_princess(state: &ReventureState) -> bool {

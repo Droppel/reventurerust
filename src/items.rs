@@ -49,7 +49,9 @@ pub enum APItems {
     EventKillAlberto,
     EventKillDaniel,
     JumpIncreaseBit1,
+    #[allow(dead_code)] //Placeholders, all jump bits are set together, so we don't want to write anything else here
     JumpIncreaseBit2,
+    #[allow(dead_code)]
     JumpIncreaseBit3,
 }
 
