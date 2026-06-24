@@ -799,16 +799,28 @@ fn build_graph(item_locs: &Vec<usize>, base_regions: &Vec<BaseRegion>) -> Revent
     // std::fs::write("graph.bin", encoded).expect("Unable to write file");
 }
 
+fn read_input() -> String {
+    let mut input = String::new();
+    std::io::stdin().read_line(&mut input).expect("Failed to read input");
+    input.trim().to_string()
+}
 
 fn main() {
+    // Ask the player for their wanted settings
+    println!("Hard Jumps (yes/no)?");
+    let hard_jumps_input = read_input();
+    let option_hard_jumps = hard_jumps_input == "yes" || hard_jumps_input == "y";
+
+    println!("Hard Combat (yes/no)?");
+    let hard_combat_input = read_input();
+    let option_hard_combat = hard_combat_input == "yes" || hard_combat_input == "y";
+
+    
     // Parse options
     let args: Vec<String> = env::args().collect();
 
     let debug = false; // For testing purposes
     
-    let option_hard_jumps = args.contains(&"--hard-jumps".to_string());
-    let option_hard_combat = args.contains(&"--hard-combat".to_string());
-
     // Create all base regions
     let mut base_regions = locations::create_all_base_regions();
 
@@ -830,7 +842,6 @@ fn main() {
     if debug {
         start_region = locations::regions::LONKS_HOUSE; // For testing purposes
     }
-    println!("Selected start region: {}", base_regions[start_region].name); 
 
     // Set up region connections
     connections::setup_region_connections(&mut base_regions, start_region, option_hard_jumps, option_hard_combat);
