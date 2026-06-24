@@ -1286,8 +1286,13 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
 
     // FortressTreasure connections
     base_regions[FORTRESS_TREASURE].add_connection(BaseConnection::new(RIGHT_OF_FORTRESS, rules::always, SimpleBitset::new_empty()));
-    base_regions[FORTRESS_TREASURE].add_location(BaseConnection::new(LOC68, rules::always, SimpleBitset::new_empty()));
+    base_regions[FORTRESS_TREASURE].add_jumpconnection(JumpConnection::new(COMIC_STASH, rules::always, SimpleBitset::new_empty(), 2.0));
     base_regions[FORTRESS_TREASURE].add_location(BaseConnection::new(EVENT_KILL_JAVI, rules::sword, SimpleBitset::new_empty()));
+
+    // ComicStash connections
+    base_regions[COMIC_STASH].add_connection(BaseConnection::new(FORTRESS_TREASURE, rules::always, SimpleBitset::new_empty()));
+    base_regions[COMIC_STASH].add_location(BaseConnection::new(LOC86, rules::always, SimpleBitset::new_empty()));
+
 
     // RightOfFortress connections
     base_regions[RIGHT_OF_FORTRESS].add_jumpconnection(JumpConnection::new(FORTRESS_TREASURE, rules::always, SimpleBitset::new_empty(), 3.0));

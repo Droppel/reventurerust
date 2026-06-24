@@ -199,10 +199,11 @@ pub mod regions {
     pub const FORTRESS_ABOVE_SD_SWITCH: usize = 184;
     pub const FORTRESS_RIGHT_OF_SPIKEPIT: usize = 185;
     pub const PIRATE_SHIP: usize = 186;
+    pub const COMIC_STASH: usize = 187;
 }
 
 /// Total number of base regions (locations + events + game regions)
-pub const TOTAL_BASE_REGIONS: usize = regions::PIRATE_SHIP + 1;
+pub const TOTAL_BASE_REGIONS: usize = regions::COMIC_STASH + 1;
 
 /// Creates all base regions with their names
 pub fn create_all_base_regions() -> Vec<BaseRegion> {
@@ -400,6 +401,7 @@ pub fn create_all_base_regions() -> Vec<BaseRegion> {
     base_regions.push(BaseRegion::new("FortressAboveSDSwitch"));
     base_regions.push(BaseRegion::new("FortressRightOfSpikepit"));
     base_regions.push(BaseRegion::new("PirateShip"));
+    base_regions.push(BaseRegion::new("ComicStash"));
     
     base_regions
 }
