@@ -147,6 +147,7 @@ enum States {
     SacBurger,
     CastleBridgeDown,
     FortressBridgeDown,
+    FishingBridgeExtended,
 }
 
 

@@ -80,6 +80,10 @@ pub mod rules {
         state.event_bool(States::CastleBridgeDown as u8)
     }
 
+    pub fn fishing_bridge_extended(state: &ReventureState) -> bool {
+        state.event_bool(States::FishingBridgeExtended as u8)
+    }
+
     pub fn no_princess_castle_bridge_up(state: &ReventureState) -> bool {
         no_princess(state) && !castle_bridge_down(state)
     }
@@ -690,7 +694,8 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     base_regions[CASTLE_MOAT].add_jumpconnection(JumpConnection::new(BELOW_CASTLE_BRIDGE, rules::always, SimpleBitset::new_empty(), 2.0));
     base_regions[CASTLE_MOAT].add_connection(BaseConnection::new(ULTIMATE_DOOR, rules::shovel, SimpleBitset::new_empty()));
     base_regions[CASTLE_MOAT].add_connection(BaseConnection::new(BARN, rules::sword, SimpleBitset::new_empty()));
-    base_regions[CASTLE_MOAT].add_jumpconnection(JumpConnection::new(FISHING_BRIDGE, rules::always, SimpleBitset::new_empty(), 2.0));
+    base_regions[CASTLE_MOAT].add_jumpconnection(JumpConnection::new(FISHING_BRIDGE, rules::fishing_bridge_extended, SimpleBitset::new_empty(), 2.0));
+    base_regions[CASTLE_MOAT].add_jumpconnection(JumpConnection::new(FISHING_BRIDGE, rules::always, SimpleBitset::new_empty(), 3.0));
     base_regions[CASTLE_MOAT].add_connection(BaseConnection::new(FISHING_BRIDGE, rules::sword, SimpleBitset::new_empty()));
     base_regions[CASTLE_MOAT].add_location(BaseConnection::new(LOC95, rules::always, SimpleBitset::new_empty()));
     base_regions[CASTLE_MOAT].add_location(BaseConnection::new(LOC07, rules::no_princess, SimpleBitset::new_empty()));
@@ -994,6 +999,12 @@ pub fn setup_region_connections(base_regions: &mut [BaseRegion], start_region: u
     // BelowFishingBridge connections
     base_regions[BELOW_FISHING_BRIDGE].add_jumpconnection(JumpConnection::new(FISHING_BRIDGE, rules::always, SimpleBitset::new_empty(), 2.0));
     base_regions[BELOW_FISHING_BRIDGE].add_connection(BaseConnection::new(WATER_FALLS, rules::always, SimpleBitset::new_empty()));
+    base_regions[BELOW_FISHING_BRIDGE].add_statechange(StateChange::new(
+        vec![States::FishingBridgeExtended as u8], 
+        vec![true], 
+        rules::always, 
+        SimpleBitset::new_empty()
+    ));
     base_regions[BELOW_FISHING_BRIDGE].add_forcedstatechange(StateChange::new(
         vec![States::HasDarkStone as u8, States::DestroyedDarkstone as u8],
         vec![false, true],
